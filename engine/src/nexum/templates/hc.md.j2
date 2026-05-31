@@ -1,0 +1,27 @@
+HABEAS CORPUS — {{ feito.id }}
+
+Quadrante dogmático: {{ feito.quadrante }}
+Eixo: {{ feito.eixo_dogmatico }}
+
+I — DOS FATOS
+
+{% for fato in fatos -%}
+{{ loop.index }}. {{ fato.verificado }}
+   (Fonte: {{ fato.fonte.uri }})
+
+{% endfor %}
+II — DA TABELA DE VULNERABILIDADES
+
+| # | Fato Proposto | Realidade Verificada | Status | Impacto |
+|---|---|---|---|---|
+{% for v in feito.vulnerabilidades -%}
+| {{ loop.index }} | {{ v.proposto }} | {{ v.realidade_verificada }} | {{ v.status.value }} | {{ v.impacto }} |
+{% endfor %}
+
+III — DO DIREITO
+
+[Subsunção dispositiva entra na Fase 4 via LLM em Temperatura Zero.]
+
+IV — DOS PEDIDOS
+
+Pelo exposto, requer-se ...
