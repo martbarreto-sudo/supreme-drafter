@@ -13,6 +13,7 @@ processo vivem fora do repositório, no `$CASO_DATA_DIR` controlado pelo operado
 - [casos/teses-feito-fb.md](./casos/teses-feito-fb.md) — arquitetura de teses do Feito-FB
 
 ## Produto e evolução
+- [recomendacao-estrategica.md](./recomendacao-estrategica.md) — **julgamento direto sobre o caminho**
 - [produto.md](./produto.md) — valor, precificação, escala, riscos
 - [insights.md](./insights.md) — depuração e insights evolutivos do projeto
 - [deploy.md](./deploy.md) — arquitetura de deploy (Fase 5), decisões e ressalvas
