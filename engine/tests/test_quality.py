@@ -1,6 +1,6 @@
-from nexum.casos.data import FEITOS
-from nexum.models import Fato, FontePrimaria
-from nexum.quality import avaliar_qualidade
+from nexus.casos.data import FEITOS
+from nexus.models import Fato, FontePrimaria
+from nexus.quality import avaliar_qualidade
 
 
 def _fato() -> Fato:

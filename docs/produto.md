@@ -1,4 +1,4 @@
-# Nexum by Tigre — Estratégia de Produto, Precificação e Escala
+# Nexus by Tigre — Estratégia de Produto, Precificação e Escala
 
 > Documento vivo de análise. Tudo aqui é hipótese fundamentada — números de mercado precisam ser confirmados em pesquisa primária antes de virar política comercial. Pontos marcados com **⚠️** sinalizam premissas a validar.
 
@@ -13,13 +13,13 @@
 | Doutrina | Mapeada (KAKAY, Toron, Tofic). Templates jurídicos ainda em forma tácita / NotebookLM. |
 | Validação de fato | Protocolo HALT/Dado Líquido conceitualizado; ainda sem implementação algorítmica. |
 | Mercado | Sem clientes externos. Sem precificação publicada. Sem contrato-modelo. |
-| Marca | Forte conceitualmente ("Nexum by Tigre", Tier 0, estética dourado/dark). Ainda não opera como entidade comercial separada. |
+| Marca | Forte conceitualmente ("Nexus by Tigre", Tier 0, estética dourado/dark). Ainda não opera como entidade comercial separada. |
 
 **Implicação:** o produto hoje é **uma metodologia + uma marca**, sem o substrato técnico que justifique sua precificação como SaaS jurídico premium. A precificação abaixo é traçada para o **estado-alvo** (Fases 3-5 concluídas), com pontos de entrada intermediários.
 
 ## 2. Proposta de valor — onde está o "dinheiro líquido"
 
-A diferenciação real do Nexum não é "IA jurídica" (commodity em 2025-2026), e sim a **conjunção de três eixos**:
+A diferenciação real do Nexus não é "IA jurídica" (commodity em 2025-2026), e sim a **conjunção de três eixos**:
 
 1. **Anti-Alucinação como contrato de produto.** Protocolo HALT promete que nenhuma peça gerada conterá fato não-auditado. Em direito criminal, isto não é feature — é **redução de risco de inadmissibilidade**, que tem preço sombra altíssimo (perda do remédio heroico, prescrição, etc.).
 2. **Doutrina DNA-criminal brasileira.** KAKAY, Toron, Tofic não são citação de marketing — são as matrizes que orientam a lógica de *distinguishing*, audição de silêncio e desenho retórico. Engines genéricos não têm isso embutido.
@@ -129,7 +129,7 @@ Estágios sequenciais, **não paralelos**. Cada estágio precisa ser provado ant
 
 ## 7. Restrições regulatórias (não ignorar)
 
-- **CED-OAB e publicidade:** marketing do Nexum não pode prometer resultado, sustentar superioridade comparativa entre advogados, ou usar nomes de clientes sem autorização.
+- **CED-OAB e publicidade:** marketing do Nexus não pode prometer resultado, sustentar superioridade comparativa entre advogados, ou usar nomes de clientes sem autorização.
 - **Sigilo profissional:** dados de cliente do escritório de Marcelo não podem servir de training data sem consentimento — mesmo anonimizados.
 - **LGPD + segredo de justiça:** logs de PJe, dados pessoais sensíveis (saúde, orientação, etc.) exigem tratamento específico, contrato de operação, e provavelmente DPO.
 - **Responsabilidade técnica:** a engine é ferramenta — o advogado-operador é o responsável final pela peça. Isto precisa estar **explícito no contrato** com cliente Tier 1/2 para evitar transferência indevida de responsabilidade.

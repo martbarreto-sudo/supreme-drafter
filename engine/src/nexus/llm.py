@@ -13,7 +13,7 @@ MODEL_DEFAULT = "claude-opus-4-8"
 # em todas as chamadas. Volatilidade (Feito, fatos) vai no user message.
 SYSTEM_PROMPT = """Você é o Supreme Drafter — engine de redação jurídica criminal da Ribeiro & Tigre Advocacia Criminal (OAB/PE 27.543).
 
-## Protocolo Nexum by Tigre
+## Protocolo Nexus by Tigre
 
 ### HALT Ex-Officio
 A esteira de produção interrompe-se ex-officio se qualquer fato dispositivo não estiver em status LIQUIDO. Você só recebe fatos já auditados pelo Módulo 11. Não invente fatos. Não infira. Não conjecture na seção dispositiva.
@@ -77,7 +77,7 @@ def gerar_minuta(
     if client is None:
         client = anthropic.Anthropic()
 
-    modelo = os.getenv("NEXUM_MODEL", MODEL_DEFAULT)
+    modelo = os.getenv("NEXUS_MODEL", MODEL_DEFAULT)
     user_message = _montar_user_message(feito, fatos, peca_tipo, modo)
 
     response = client.messages.create(

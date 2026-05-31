@@ -1,6 +1,6 @@
 # HUB de Agentes × Cérebro Claude — Arquitetura de Integração
 
-> Como o HUB de automação (Make, conta martbarreto@gmail.com) alavanca o engine Nexum
+> Como o HUB de automação (Make, conta martbarreto@gmail.com) alavanca o engine Nexus
 > (Claude) como cérebro de redação. Honesto sobre o que está construído e o que é roadmap.
 
 ## Visão geral
@@ -8,7 +8,7 @@
 ```
 [Gatilho no HUB/Make]                        [Cérebro Claude]              [Saída no HUB]
 Novo doc no Drive  ─┐                      ┌─ POST /draft/llm ─┐         ┌─ Gmail: rascunho
-Email no Gmail     ─┼─▶ Make scenario ────▶│  engine Nexum     │────────▶┼─ Drive: salva minuta
+Email no Gmail     ─┼─▶ Make scenario ────▶│  engine Nexus     │────────▶┼─ Drive: salva minuta
 Mensagem Slack     ─┘   (módulo HTTP)      │  HALT + quality   │         ├─ Slack: notifica
                                            └───────────────────┘         └─ Lumin: e-sign
 ```
@@ -18,7 +18,7 @@ Mensagem Slack     ─┘   (módulo HTTP)      │  HALT + quality   │       
 | Camada | Ferramenta | Papel | Estado |
 |---|---|---|---|
 | Orquestração / gatilhos | **Make (HUB)** | Dispara, roteia, conecta Gmail/Drive/Slack/Lumin | ✅ Conta conectada (OAuth) |
-| Cérebro de redação | **Claude (engine Nexum)** | HALT, Dado Líquido, geração, quality_score | ✅ Construído; ⚠️ a hospedar |
+| Cérebro de redação | **Claude (engine Nexus)** | HALT, Dado Líquido, geração, quality_score | ✅ Construído; ⚠️ a hospedar |
 | Conhecimento | **Drive** | Dossiês / fontes primárias (fora do repo) | ⚠️ Integração a desenhar |
 | Entrega | Gmail / Lumin / Drive | Rascunho, assinatura, arquivo | ✅ Conexões disponíveis |
 

@@ -1,5 +1,5 @@
-from nexum.halt import auditar
-from nexum.models import DraftRequest, Fato, FontePrimaria
+from nexus.halt import auditar
+from nexus.models import DraftRequest, Fato, FontePrimaria
 
 
 def _req(fato: Fato) -> DraftRequest:

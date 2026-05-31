@@ -1,6 +1,6 @@
-# Marketplace NEXUM — Escopo e Arquitetura do MVP
+# Marketplace NEXUS — Escopo e Arquitetura do MVP
 
-> Documento de escopo para a camada SaaS sobre o engine Nexum existente. Você assumiu
+> Documento de escopo para a camada SaaS sobre o engine Nexus existente. Você assumiu
 > explicitamente o risco regulatório OAB ao escolher esta direção
 > (`docs/recomendacao-estrategica.md`). Este documento registra **como** mitigamos esse
 > risco no design, sem bloquear o desenvolvimento.
@@ -105,7 +105,7 @@ Por isso o MVP **não tem compra avulsa**.
 ### 5.1. Entidades novas (PostgreSQL via SQLAlchemy)
 
 ```python
-# engine/src/nexum/db/models.py — esboço, não código final
+# engine/src/nexus/db/models.py — esboço, não código final
 
 class User(Base):
     id: UUID  # PK
@@ -189,11 +189,11 @@ class Audit(Base):  # cada peça gerada
 | Endpoint | Hoje | Marketplace |
 |---|---|---|
 | `GET /healthz` | aberto | aberto |
-| `POST /autos` | Bearer `NEXUM_TOKEN` | JWT do usuário; salva em `CASO_DATA_DIR/{user_id}/{feito_id}/{sha}.pdf` |
-| `POST /draft/llm` | Bearer `NEXUM_TOKEN` | JWT do usuário; verifica plano ativo + decrementa `pecas_consumidas_no_periodo`; 402 se sem peças |
-| `POST /draft` (determinístico) | Bearer `NEXUM_TOKEN` | Manter como admin/interno (não exposto a usuário) |
+| `POST /autos` | Bearer `NEXUS_TOKEN` | JWT do usuário; salva em `CASO_DATA_DIR/{user_id}/{feito_id}/{sha}.pdf` |
+| `POST /draft/llm` | Bearer `NEXUS_TOKEN` | JWT do usuário; verifica plano ativo + decrementa `pecas_consumidas_no_periodo`; 402 se sem peças |
+| `POST /draft` (determinístico) | Bearer `NEXUS_TOKEN` | Manter como admin/interno (não exposto a usuário) |
 
-**Nota:** `NEXUM_TOKEN` continua existindo para endpoints administrativos (debug,
+**Nota:** `NEXUS_TOKEN` continua existindo para endpoints administrativos (debug,
 operações internas), separados do JWT de usuário.
 
 ## 8. Fluxos principais
@@ -298,12 +298,12 @@ dependencies = [
 ```bash
 # Existentes
 ANTHROPIC_API_KEY=sk-ant-...
-NEXUM_MODEL=claude-opus-4-8
-NEXUM_TOKEN=...                   # endpoints administrativos
+NEXUS_MODEL=claude-opus-4-8
+NEXUS_TOKEN=...                   # endpoints administrativos
 CASO_DATA_DIR=/data/feitos
 
 # Novas — persistência e auth
-DATABASE_URL=postgresql+asyncpg://user:pw@host:5432/nexum
+DATABASE_URL=postgresql+asyncpg://user:pw@host:5432/nexus
 JWT_SECRET=<256-bit-random>        # rotacionar a cada deploy ideal
 JWT_ALGORITHM=HS256
 
@@ -316,7 +316,7 @@ STRIPE_PRICE_CORPORATE=price_...
 STRIPE_CUSTOMER_PORTAL_URL=https://billing.stripe.com/p/login/...
 
 # Nova — frontend (para redirect Stripe)
-FRONTEND_URL=https://app.nexum.tigre.com  # placeholder; ver §14
+FRONTEND_URL=https://app.nexus.tigre.com  # placeholder; ver §14
 ```
 
 ## 11. Deploy
@@ -398,8 +398,8 @@ FRONTEND_URL=https://app.nexum.tigre.com  # placeholder; ver §14
 
 | Decisão | Opções | Minha sugestão |
 |---|---|---|
-| Nome do produto | Nexum / Nexus / Inova by Tigre | **Nexum** (alinha com docs e código) |
-| Domínio frontend | `app.nexum.com.br` / `nexum.ribeiroetigre.org` / `app.inovabytigre.com` | `app.nexum.com.br` (registrar) |
+| Nome do produto | Nexus / Nexus / Inova by Tigre | **Nexus** (alinha com docs e código) |
+| Domínio frontend | `app.nexus.com.br` / `nexus.ribeiroetigre.org` / `app.inovabytigre.com` | `app.nexus.com.br` (registrar) |
 | Validação OAB no MVP | API CNA / declaração assinada / verificação manual amostral | **Declaração assinada + amostragem manual** |
 | Trial sem cartão | Sim / não | **Sim** (reduz fricção, padrão SaaS B2B) |
 | Plataforma de pagamento | Stripe / PagSeguro / Iugu | **Stripe** (Pix + cartão; melhor dev-ex; aceita BRL nativamente) |

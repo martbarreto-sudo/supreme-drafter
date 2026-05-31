@@ -1,6 +1,6 @@
 from fastapi.testclient import TestClient
 
-from nexum.api import app
+from nexus.api import app
 
 client = TestClient(app)
 

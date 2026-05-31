@@ -13,7 +13,7 @@ from .halt import auditar
 from .models import DraftRequest, Minuta
 from .upload import receber_autos
 
-app = FastAPI(title="Nexum by Tigre — Supreme Drafter", version="0.1.0")
+app = FastAPI(title="Nexus by Tigre — Supreme Drafter", version="0.1.0")
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 _jinja = Environment(

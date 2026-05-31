@@ -1,4 +1,4 @@
-# Documentação — Nexum by Tigre / Supreme Drafter
+# Documentação — Nexus by Tigre / Supreme Drafter
 
 Índice da base doutrinária e operacional. Tudo aqui é anonimizado; dados reais de
 processo vivem fora do repositório, no `$CASO_DATA_DIR` controlado pelo operador.

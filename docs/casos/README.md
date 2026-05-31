@@ -1,6 +1,6 @@
 # Índice de Feitos (anonimizado)
 
-Esta pasta cataloga os feitos vivos da operação Nexum by Tigre em **forma anonimizada**. Nenhum número de processo real, nome de parte ou dado sensível é versionado neste repositório — apenas identificadores curtos e o quadrante dogmático.
+Esta pasta cataloga os feitos vivos da operação Nexus by Tigre em **forma anonimizada**. Nenhum número de processo real, nome de parte ou dado sensível é versionado neste repositório — apenas identificadores curtos e o quadrante dogmático.
 
 Dados sensíveis ficam fora do repositório, em volume controlado pelo operador (ver `engine/data/` na fase de implementação do engine).
 
