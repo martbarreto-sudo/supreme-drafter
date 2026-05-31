@@ -90,3 +90,45 @@ class Subscription(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+
+
+class PaymentStatus(str, enum.Enum):
+    PAID = "PAID"
+    REFUNDED = "REFUNDED"
+    FAILED = "FAILED"
+
+
+class Payment(Base):
+    """Cada invoice paga vira uma Payment. Audit trail financeiro."""
+
+    __tablename__ = "payments"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), index=True
+    )
+    stripe_invoice_id: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    amount_cents: Mapped[int] = mapped_column(Integer)
+    currency: Mapped[str] = mapped_column(String(3), default="brl")
+    status: Mapped[PaymentStatus] = mapped_column(SAEnum(PaymentStatus, name="paymentstatus"))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+
+class StripeEvent(Base):
+    """Idempotência de webhook. event_id da Stripe é PK natural.
+
+    Antes de aplicar mutações de qualquer event_type, checa se event_id já
+    está aqui. Se sim, retorna 200 sem fazer nada. Esta é a primitiva
+    correta de idempotência (não checar Payment como blueprint externo
+    sugeria — racy + tarde demais no fluxo).
+    """
+
+    __tablename__ = "stripe_events"
+
+    event_id: Mapped[str] = mapped_column(String(255), primary_key=True)
+    event_type: Mapped[str] = mapped_column(String(100))
+    processed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
