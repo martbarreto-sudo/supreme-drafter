@@ -10,11 +10,8 @@ from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 
 import pytest
-import pytest_asyncio
-from fastapi.testclient import TestClient
 from sqlalchemy import select
 
-from nexus.api import app
 from nexus.billing.service import (
     AssinaturaInativa,
     PeriodoExpirado,
@@ -32,22 +29,6 @@ from nexus.db.models import (
     SubscriptionStatus,
     User,
 )
-from nexus.db.session import get_session
-
-
-@pytest_asyncio.fixture
-async def client(monkeypatch, db_session):
-    monkeypatch.setenv(
-        "JWT_SECRET", "test-secret-with-at-least-32-characters-please"
-    )
-    monkeypatch.setenv("JWT_TTL_MINUTES", "15")
-
-    async def _override():
-        yield db_session
-
-    app.dependency_overrides[get_session] = _override
-    yield TestClient(app)
-    app.dependency_overrides.clear()
 
 
 _SIGNUP = {
