@@ -8,12 +8,14 @@ from fastapi.responses import JSONResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .auth import require_bearer
+from .auth.routes import router as auth_router
 from .casos.data import FEITOS
 from .halt import auditar
 from .models import DraftRequest, Minuta
 from .upload import receber_autos
 
 app = FastAPI(title="Nexus by Tigre — Supreme Drafter", version="0.1.0")
+app.include_router(auth_router)
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 _jinja = Environment(
