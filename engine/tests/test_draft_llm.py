@@ -162,7 +162,9 @@ async def test_draft_llm_sucesso_consome_uma_peca(client, monkeypatch, db_sessio
     )
     assert r.status_code == 200
     body = r.json()
-    assert body["texto"] == "minuta de teste"
+    # texto vem com disclaimer obrigatório no topo + minuta original embaixo
+    assert "MINUTA AUTOMATIZADA, NÃO PROTOCOLAR SEM REVISÃO" in body["texto"]
+    assert "minuta de teste" in body["texto"]
     assert body["modelo"] == "mock-model"
     assert body["billing"]["pecas_consumidas_no_periodo"] == 1
     assert body["billing"]["pecas_incluidas"] == 3

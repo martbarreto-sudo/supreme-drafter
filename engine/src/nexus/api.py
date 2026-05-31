@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
@@ -25,6 +26,7 @@ from .casos.data import FEITOS
 from .db.models import User
 from .db.session import get_session
 from .halt import auditar
+from .legal.disclaimer import prepend_disclaimer
 from .models import DraftRequest, Minuta
 from .upload import receber_autos
 
@@ -149,8 +151,17 @@ async def draft_llm(
     from .quality import avaliar_qualidade
 
     minuta = gerar_minuta(feito, req.fatos, req.peca_tipo)
+    # quality_score é avaliado sobre o TEXTO ORIGINAL do LLM (sem disclaimer),
+    # para que gates como "submissão burocrática" não sofram interferência do
+    # cabeçalho. Disclaimer é cosmético/legal, não afeta avaliação técnica.
     qualidade = avaliar_qualidade(minuta.texto, feito, req.fatos)
     falhas = validar_feito_hbm(minuta.texto) if req.feito_id == "Feito-HBM" else []
+
+    # disclaimer obrigatório — toda peça gerada carrega o cabeçalho que
+    # nomeia o advogado-operador responsável e explicita que é minuta,
+    # não peça final. Aplicado ANTES de persistir e ANTES de responder.
+    data_iso = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
+    texto_final = prepend_disclaimer(minuta.texto, user, data_iso)
 
     # consumir cota só após geração bem-sucedida
     await consumir_peca(session, sub)
@@ -165,7 +176,7 @@ async def draft_llm(
             user_id=user.id,
             feito_id=req.feito_id,
             peca_tipo=req.peca_tipo,
-            minuta_texto=minuta.texto,
+            minuta_texto=texto_final,  # com disclaimer no topo
             quality_score=qualidade.score,
             modelo=minuta.modelo,
             input_tokens=minuta.input_tokens,
@@ -181,7 +192,7 @@ async def draft_llm(
         "audit_id": audit_id,
         "feito_id": req.feito_id,
         "peca_tipo": req.peca_tipo,
-        "texto": minuta.texto,
+        "texto": texto_final,  # com disclaimer
         "modelo": minuta.modelo,
         "usage": {
             "input_tokens": minuta.input_tokens,

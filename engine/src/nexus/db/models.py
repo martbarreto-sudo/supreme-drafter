@@ -61,6 +61,7 @@ class User(Base):
     tos_aceito_em: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    tos_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
 
 class Subscription(Base):

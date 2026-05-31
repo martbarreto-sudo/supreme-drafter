@@ -11,7 +11,14 @@ from nexus.db.session import get_session
 from .deps import get_current_user
 from .jwt import create_access_token
 from .schemas import LoginIn, SignupIn, TokenOut, UserOut
-from .service import EmailAlreadyExists, InvalidCredentials, authenticate, create_user
+from .service import (
+    EmailAlreadyExists,
+    InvalidCredentials,
+    TosNaoAceito,
+    TosVersaoIncompativel,
+    authenticate,
+    create_user,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -34,6 +41,16 @@ async def signup(
 ) -> UserOut:
     try:
         user = await create_user(session, payload)
+    except TosNaoAceito:
+        raise HTTPException(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "Aceite dos Termos de Uso é obrigatório para cadastro",
+        )
+    except TosVersaoIncompativel as exc:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            f"Versão do TOS inválida (esperada {exc.atual}, recebida {exc.recebida})",
+        )
     except EmailAlreadyExists:
         raise HTTPException(status.HTTP_409_CONFLICT, "Email já cadastrado")
     return _to_user_out(user)

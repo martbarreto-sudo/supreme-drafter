@@ -58,6 +58,8 @@ _DEFAULT_SIGNUP = {
     "oab_numero": "12345",
     "oab_uf": "PE",
     "password": "senhaForte12345",
+    "aceito_tos": True,
+    "tos_version": 1,  # mantenha em sync com legal.disclaimer.TOS_VERSION_ATUAL
 }
 
 

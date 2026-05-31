@@ -37,6 +37,8 @@ _SIGNUP = {
     "oab_numero": "12345",
     "oab_uf": "PE",
     "password": "senhaSegura12345",
+    "aceito_tos": True,
+    "tos_version": 1,
 }
 
 

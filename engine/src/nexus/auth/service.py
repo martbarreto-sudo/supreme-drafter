@@ -1,16 +1,20 @@
 """Regras de negócio do auth — não conhece HTTP, recebe AsyncSession.
 
 Signup cria User + Subscription(TRIAL) atomicamente — o trial é parte
-do contrato de cadastro (14 dias, 3 peças), não opcional.
+do contrato de cadastro (14 dias, 3 peças), não opcional. TOS deve ser
+aceito no signup; sem aceite, cadastro é rejeitado.
 """
 
 from __future__ import annotations
+
+from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from nexus.billing.service import create_trial_subscription
 from nexus.db.models import User
+from nexus.legal.disclaimer import TOS_VERSION_ATUAL
 
 from .passwords import hash_password, verify_password
 from .schemas import SignupIn
@@ -24,7 +28,25 @@ class InvalidCredentials(Exception):
     pass
 
 
+class TosNaoAceito(Exception):
+    """aceito_tos=False — usuário não concordou com os termos."""
+
+
+class TosVersaoIncompativel(Exception):
+    """tos_version diferente da versão atual — frontend está desatualizado."""
+
+    def __init__(self, recebida: int, atual: int) -> None:
+        super().__init__(f"recebida={recebida}, atual={atual}")
+        self.recebida = recebida
+        self.atual = atual
+
+
 async def create_user(session: AsyncSession, signup: SignupIn) -> User:
+    if not signup.aceito_tos:
+        raise TosNaoAceito()
+    if signup.tos_version != TOS_VERSION_ATUAL:
+        raise TosVersaoIncompativel(signup.tos_version, TOS_VERSION_ATUAL)
+
     email = signup.email.lower()
     existing = await session.execute(select(User).where(User.email == email))
     if existing.scalar_one_or_none() is not None:
@@ -35,6 +57,8 @@ async def create_user(session: AsyncSession, signup: SignupIn) -> User:
         oab_numero=signup.oab_numero,
         oab_uf=signup.oab_uf,
         password_hash=hash_password(signup.password),
+        tos_aceito_em=datetime.now(timezone.utc),
+        tos_version=TOS_VERSION_ATUAL,
     )
     session.add(user)
     # flush popula user.id via column default (UUID) — necessário para FK do

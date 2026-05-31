@@ -16,7 +16,34 @@ _VALID_SIGNUP = {
     "oab_numero": "27543",
     "oab_uf": "PE",
     "password": "minhaSenhaForte123",
+    "aceito_tos": True,
+    "tos_version": 1,
 }
+
+
+async def test_signup_sem_aceite_tos_422(client):
+    r = client.post(
+        "/auth/signup", json={**_VALID_SIGNUP, "aceito_tos": False}
+    )
+    assert r.status_code == 422
+
+
+async def test_signup_tos_version_errada_409(client):
+    r = client.post("/auth/signup", json={**_VALID_SIGNUP, "tos_version": 99})
+    assert r.status_code == 409
+
+
+async def test_signup_registra_tos_aceito_em_e_version(client, db_session):
+    from nexus.db.models import User
+    from sqlalchemy import select
+
+    r = client.post("/auth/signup", json=_VALID_SIGNUP)
+    assert r.status_code == 201
+    user = (await db_session.execute(
+        select(User).where(User.email == _VALID_SIGNUP["email"])
+    )).scalar_one()
+    assert user.tos_aceito_em is not None
+    assert user.tos_version == 1
 
 
 async def test_signup_cria_user(client):
