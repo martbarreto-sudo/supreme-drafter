@@ -1,10 +1,15 @@
-"""Regras de negócio do auth — não conhece HTTP, recebe AsyncSession."""
+"""Regras de negócio do auth — não conhece HTTP, recebe AsyncSession.
+
+Signup cria User + Subscription(TRIAL) atomicamente — o trial é parte
+do contrato de cadastro (14 dias, 3 peças), não opcional.
+"""
 
 from __future__ import annotations
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from nexus.billing.service import create_trial_subscription
 from nexus.db.models import User
 
 from .passwords import hash_password, verify_password
@@ -32,6 +37,11 @@ async def create_user(session: AsyncSession, signup: SignupIn) -> User:
         password_hash=hash_password(signup.password),
     )
     session.add(user)
+    # flush popula user.id via column default (UUID) — necessário para FK do
+    # Subscription. Sem flush, user.id é None na construção do Subscription.
+    await session.flush()
+    # trial criado na mesma transação — signup é atômico com a assinatura
+    session.add(create_trial_subscription(user))
     await session.commit()
     await session.refresh(user)
     return user

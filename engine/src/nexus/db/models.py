@@ -11,7 +11,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum as SAEnum, String, func
+from sqlalchemy import DateTime, Enum as SAEnum, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
@@ -22,6 +22,20 @@ class OABStatus(str, enum.Enum):
     DECLARED = "DECLARED"                          # advogado declarou OAB + assinou TOS
     VERIFIED = "VERIFIED"                          # verificação manual/API confirmou
     REVOKED = "REVOKED"                            # acesso suspenso
+
+
+class SubscriptionStatus(str, enum.Enum):
+    TRIAL = "TRIAL"          # 14 dias após signup, 3 peças
+    ACTIVE = "ACTIVE"        # Stripe subscription paga e em dia
+    PAST_DUE = "PAST_DUE"    # pagamento falhou; bloqueia uso até regularizar
+    CANCELED = "CANCELED"    # cancelado; sem novos ciclos
+
+
+class PlanCode(str, enum.Enum):
+    TRIAL = "TRIAL"
+    SOLO = "SOLO"
+    BANCA = "BANCA"
+    CORPORATE = "CORPORATE"
 
 
 def _uuid() -> str:
@@ -46,4 +60,33 @@ class User(Base):
     )
     tos_aceito_em: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
+    )
+
+
+class Subscription(Base):
+    """Uma assinatura por usuário (1:1). Upgrade/downgrade atualiza a mesma row.
+
+    Trial é criado automaticamente no signup. Mudanças de plano (Fase C/Stripe)
+    atualizam plan_code + status + stripe_subscription_id + período.
+    """
+
+    __tablename__ = "subscriptions"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), unique=True, index=True
+    )
+    plan_code: Mapped[PlanCode] = mapped_column(SAEnum(PlanCode, name="plancode"))
+    status: Mapped[SubscriptionStatus] = mapped_column(
+        SAEnum(SubscriptionStatus, name="subscriptionstatus")
+    )
+    stripe_subscription_id: Mapped[str | None] = mapped_column(
+        String(255), nullable=True, unique=True
+    )
+    current_period_start: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    current_period_end: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    pecas_incluidas: Mapped[int] = mapped_column(Integer)
+    pecas_consumidas_no_periodo: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
     )
