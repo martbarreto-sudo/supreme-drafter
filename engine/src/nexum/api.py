@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -61,3 +62,36 @@ def draft(req: DraftRequest):
             "Termo de desinteresse de órgão auxiliar (NUDEM/DPPE, quando aplicável)",
         ],
     )
+
+
+@app.post("/draft/llm")
+def draft_llm(req: DraftRequest):
+    feito = FEITOS.get(req.feito_id)
+    if feito is None:
+        raise HTTPException(404, f"Feito '{req.feito_id}' não catalogado")
+
+    halt = auditar(req)
+    if halt is not None:
+        return JSONResponse(status_code=422, content=halt.model_dump())
+
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        raise HTTPException(503, "ANTHROPIC_API_KEY ausente — engine LLM indisponível")
+
+    from .llm import gerar_minuta, validar_feito_hbm
+
+    minuta = gerar_minuta(feito, req.fatos, req.peca_tipo)
+    falhas = validar_feito_hbm(minuta.texto) if req.feito_id == "Feito-HBM" else []
+
+    return {
+        "feito_id": req.feito_id,
+        "peca_tipo": req.peca_tipo,
+        "texto": minuta.texto,
+        "modelo": minuta.modelo,
+        "usage": {
+            "input_tokens": minuta.input_tokens,
+            "cache_read_tokens": minuta.cache_read_tokens,
+            "cache_creation_tokens": minuta.cache_creation_tokens,
+            "output_tokens": minuta.output_tokens,
+        },
+        "assertions_falhas": falhas,
+    }
