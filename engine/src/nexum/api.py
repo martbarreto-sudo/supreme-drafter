@@ -3,13 +3,15 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import JSONResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from .auth import require_bearer
 from .casos.data import FEITOS
 from .halt import auditar
 from .models import DraftRequest, Minuta
+from .upload import receber_autos
 
 app = FastAPI(title="Nexum by Tigre — Supreme Drafter", version="0.1.0")
 
@@ -24,6 +26,14 @@ _jinja = Environment(
 @app.get("/healthz")
 def healthz() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@app.post("/autos", dependencies=[Depends(require_bearer)])
+async def upload_autos(
+    feito_id: str = Form(...),
+    arquivo: UploadFile = File(...),
+):
+    return await receber_autos(feito_id, arquivo)
 
 
 @app.get("/casos/{feito_id}/vulnerabilidades")
