@@ -163,3 +163,41 @@ Ordem por **maior alavanca / menor risco**:
 3. **Qual o teto de Inner Circle?** (Sugestão: 5)
 4. **Quando começar Estágio 1?** (Sugestão: depois da Fase 4 do engine — caso-piloto Feito-HBM validado)
 5. **Marca registrada de "Dado Líquido" e "HALT Ex-Officio" — registrar agora ou esperar?** (Recomendação: registrar agora — INPI é lento)
+
+## 11. Modelo de receita escalonado em 3 camadas (proposta a auditar)
+
+Proposta de monetização em três camadas, capturando receita proporcional ao impacto.
+Convergente com o modelo híbrido do §4.5, mas com unidades de cobrança distintas.
+**Números são hipótese ⚠️ — precisam de pesquisa primária; e há um risco OAB sério
+na camada 2 que precisa de parecer antes de qualquer execução.**
+
+| Camada | Unidade | Faixa ⚠️ | Margem-alvo ⚠️ | Quem paga |
+|---|---|---|---|---|
+| **1. Análise de Risco (SaaS por caso)** | por análise | R$ 500–2.000 | 60–75% | Advogados independentes / pequenos escritórios |
+| **2. Parecer Estruturado (marketplace)** | comissão sobre parecer premium (`quality_score` > 85) | 30–40% de R$ 5–15k | ~85% | Escritórios médios |
+| **3. Acesso Corporativo (retainer)** | mensal, acesso ilimitado | R$ 50–200k/mês | ~90% | Tribunais, Defensoria, grandes escritórios |
+
+**Como resolve a tensão quantidade × qualidade:** segmenta o mercado pela unidade de
+cobrança — volume (camada 1), qualidade (camada 2), confiança (camada 3).
+
+### ⚠️ Bandeiras vermelhas a resolver ANTES de executar
+
+1. **Camada 2 (marketplace de pareceres) é o maior risco OAB.** Comercializar "parecer
+   jurídico premium" com comissão a terceiros esbarra em: vedação à mercantilização da
+   advocacia, captação de clientela, e responsabilidade técnica de quem assina o parecer.
+   `quality_score > 85` **não** torna um documento um parecer assinável — gate heurístico
+   não é responsabilidade profissional. **Esta camada precisa de parecer formal da OAB/PE
+   antes de qualquer linha de código.** Pode ser inviável na forma proposta.
+2. **Defensoria/Tribunais (camada 3) compram por licitação**, não por retainer comercial
+   direto. O ciclo e as regras são outros — tratado no §3 como segmento de baixa prioridade.
+3. **Números `+900 → +9.000 casos` e margens 60–90% não são auditados.** São aspiracionais.
+   A margem real depende do custo de LLM por peça (ver §5) e do tempo humano de revisão —
+   que **não desaparece**, porque o advogado-operador segue responsável.
+4. **Infra de cobrança não existe** (Stripe, marketplace, painel corporativo, Google
+   Workspace). É roadmap, não estado atual — ver `insights.md §1`.
+
+### Recomendação
+
+Executar **apenas a camada 1** (SaaS por análise) no piloto — é a de menor risco
+regulatório e mapeia direto ao engine atual (`/draft/llm` + `quality_score`). Congelar
+camada 2 até parecer OAB. Tratar camada 3 como venda consultiva caso-a-caso, não produto.

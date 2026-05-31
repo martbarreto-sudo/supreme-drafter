@@ -1,4 +1,6 @@
-HABEAS CORPUS — {{ feito.id }}
+EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) [AUTORIDADE / FORO — preencher no ambiente do operador]
+
+HABEAS CORPUS COM PEDIDO LIMINAR — {{ feito.id }}
 
 Quadrante dogmático: {{ feito.quadrante }}
 Eixo: {{ feito.eixo_dogmatico }}
@@ -7,12 +9,12 @@ I — DOS FATOS
 
 {% for fato in fatos -%}
 {{ loop.index }}. {{ fato.verificado }}
-   (Fonte: {{ fato.fonte.uri }})
+   (Fonte primária: {{ fato.fonte.uri }})
 
 {% endfor %}
-II — DA TABELA DE VULNERABILIDADES
+II — DA MATRIZ DE VULNERABILIDADES
 
-| # | Fato Proposto | Realidade Verificada | Status | Impacto |
+| # | Fato Proposto (Narrativa do Estado) | Realidade dos Dados Líquidos | Status | Vício Jurídico / Risco |
 |---|---|---|---|---|
 {% for v in feito.vulnerabilidades -%}
 | {{ loop.index }} | {{ v.proposto }} | {{ v.realidade_verificada }} | {{ v.status.value }} | {{ v.impacto }} |
@@ -20,8 +22,24 @@ II — DA TABELA DE VULNERABILIDADES
 
 III — DO DIREITO
 
-[Subsunção dispositiva entra na Fase 4 via LLM em Temperatura Zero.]
+[Subsunção dispositiva — gerada na fase LLM em Temperatura Zero, ancorada no eixo: {{ feito.eixo_dogmatico }}.
+Desconstrução micro-analítica do ato coator; isolamento de teses; distinguishing sumular quando aplicável.]
 
-IV — DOS PEDIDOS
+IV — DO PEDIDO LIMINAR
 
-Pelo exposto, requer-se ...
+Presentes o fumus boni iuris (vícios consolidados na Matriz de Vulnerabilidades supra)
+e o periculum in mora (perecimento de direito pela perpetuação do ato coator), requer-se
+a concessão de LIMINAR, inaudita altera parte, para [EFEITO CONCRETO — especificar pelo
+operador: suspensão/revogação do ato impugnado].
+
+V — DOS PEDIDOS
+
+a) o conhecimento e processamento da impetração;
+b) a concessão da liminar nos termos do item IV;
+c) no mérito, a concessão definitiva da ordem para [PEDIDO FINAL — especificar];
+d) a intimação do MP e demais providências de estilo.
+
+AUDITORIA DE SILÊNCIO
+
+[Itens que o dossiê não entregou e que podem ser determinantes — preencher a partir do SilenceAuditor:
+certidão de trânsito, cadeia de hashes da fonte primária, termo de desinteresse de órgão auxiliar, etc.]
