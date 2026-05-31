@@ -78,8 +78,10 @@ def draft_llm(req: DraftRequest):
         raise HTTPException(503, "ANTHROPIC_API_KEY ausente — engine LLM indisponível")
 
     from .llm import gerar_minuta, validar_feito_hbm
+    from .quality import avaliar_qualidade
 
     minuta = gerar_minuta(feito, req.fatos, req.peca_tipo)
+    qualidade = avaliar_qualidade(minuta.texto, feito, req.fatos)
     falhas = validar_feito_hbm(minuta.texto) if req.feito_id == "Feito-HBM" else []
 
     return {
@@ -93,5 +95,6 @@ def draft_llm(req: DraftRequest):
             "cache_creation_tokens": minuta.cache_creation_tokens,
             "output_tokens": minuta.output_tokens,
         },
+        "quality": qualidade.to_dict(),
         "assertions_falhas": falhas,
     }

@@ -60,6 +60,20 @@ A engine usa:
 
 > **Nota sobre "Temperatura Zero":** Opus 4.8/4.7 removeram o parâmetro `temperature`. O determinismo do dispositivo é alcançado via prompt rígido + estrutura, não por temperature=0. A metáfora do protocolo permanece válida; a implementação muda.
 
+## Quality Gates (quality_score)
+
+`/draft/llm` roda `avaliar_qualidade()` pós-geração e devolve um `quality.score` (0-100) com o detalhe de cada gate. Cinco gates determinísticos auditam traços epistemológicos do protocolo:
+
+| Gate | Verifica |
+|---|---|
+| `fonte_por_fato` | Cada fato dispositivo tem sua fonte primária citada na peça |
+| `precedente_do_eixo` | Os precedentes/temas do eixo dogmático aparecem na minuta |
+| `auditoria_silencio` | Bloco de Auditoria de Silêncio presente |
+| `pedido_presente` | Há pedido/requerimento |
+| `assinatura_tigre` | Ausência de submissão burocrática (data venia, ousamos…) |
+
+Isto generaliza o `validar_feito_hbm` para qualquer feito e dá ao operador um sinal de qualidade verificável antes da assinatura — não substitui a revisão humana do advogado-operador.
+
 ## Caso-piloto: Feito-HBM (Tema 1.258/STF)
 
 A função `validar_feito_hbm()` audita pós-geração:
