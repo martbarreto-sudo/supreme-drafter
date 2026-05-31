@@ -3,83 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocolo: Supreme Drafter | Ribeiro & Tigre</title>
+    <title>Nexum by Tigre — Supreme Drafter | Ribeiro & Tigre</title>
     <style>
+        :root {
+            --bg: #050b14;
+            --gold: #d4af37;
+            --gold-soft: rgba(212, 175, 55, 0.2);
+            --gold-strong: rgba(212, 175, 55, 0.6);
+            --muted: #a9a9a9;
+            --text: #ffffff;
+        }
+        * { box-sizing: border-box; }
         body {
-            background-color: #050b14;
-            color: #d4af37; /* Dourado Ribeiro & Tigre */
+            background-color: var(--bg);
+            color: var(--gold);
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 24px;
             text-align: center;
         }
         .terminal-box {
-            border: 1px solid #d4af37;
+            border: 1px solid var(--gold);
             padding: 40px;
-            max-width: 800px;
+            max-width: 880px;
+            width: 100%;
             background: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 15px var(--gold-soft);
+        }
+        .brand-tag {
+            font-size: 0.85em;
+            letter-spacing: 4px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 8px;
         }
         h1 {
-            font-size: 2.5em;
+            font-size: 2.4em;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            margin: 0 0 6px;
         }
+        h1 .accent {
+            color: var(--text);
+        }
+        .subtitle {
+            font-size: 1em;
+            color: var(--gold);
+            margin-bottom: 18px;
+        }
+        .lema {
+            font-size: 0.95em;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            border-top: 1px dashed var(--gold-soft);
+            border-bottom: 1px dashed var(--gold-soft);
+            padding: 10px 0;
+            margin: 0 auto 28px;
+            max-width: 700px;
+        }
+        .lema strong { color: var(--gold); font-weight: normal; }
         .system-status {
             font-size: 0.9em;
-            margin-bottom: 30px;
-            color: #a9a9a9;
+            margin-bottom: 28px;
+            color: var(--muted);
+            line-height: 1.6;
         }
         .warning-panel {
-            border: 2px solid #d4af37;
+            border: 2px solid var(--gold);
             padding: 20px;
-            margin-bottom: 40px;
-            font-size: 1.1em;
-            line-height: 1.5;
-            color: #ffffff;
+            margin-bottom: 36px;
+            font-size: 1.05em;
+            line-height: 1.55;
+            color: var(--text);
+            text-align: left;
         }
-        /* BOTÃO DE REDIRECIONAMENTO AUTOMÁTICO */
-        .btn-iniciar {
+        .warning-panel strong { color: var(--gold); }
+        .cta-row {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 36px;
+        }
+        .btn {
             display: inline-block;
             background-color: transparent;
-            color: #d4af37;
-            border: 2px solid #d4af37;
-            padding: 15px 40px;
-            font-size: 1.2em;
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            padding: 14px 32px;
+            font-size: 1.05em;
             font-weight: bold;
+            font-family: inherit;
             text-decoration: none;
             text-transform: uppercase;
+            letter-spacing: 1px;
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        .btn-iniciar:hover {
-            background-color: #d4af37;
-            color: #050b14;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+        .btn:hover {
+            background-color: var(--gold);
+            color: var(--bg);
+            box-shadow: 0 0 20px var(--gold-strong);
         }
+        .btn.secondary {
+            border-style: dashed;
+        }
+        footer {
+            border-top: 1px solid var(--gold-soft);
+            padding-top: 18px;
+            font-size: 0.8em;
+            color: var(--muted);
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
+        footer a {
+            color: var(--gold);
+            text-decoration: none;
+        }
+        footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <div class="terminal-box">
-        <h1>ACESSO AO TERMINAL</h1>
+        <div class="brand-tag">Nexum by Tigre</div>
+        <h1>Supreme <span class="accent">Drafter</span></h1>
+        <div class="subtitle">Engine de Redação Estratégica · Tier 0</div>
+
+        <div class="lema">
+            <strong>Dado Líquido</strong> · <strong>Temperatura Zero</strong> · <strong>Anti-Alucinação</strong>
+        </div>
+
         <div class="system-status">
             [SYSTEM CHECK COMPLETE]<br>
-            [TARGET: MARCELOTIGRE.COM INTRANET]
+            [TARGET: MARCELOTIGRE.COM INTRANET]<br>
+            [PROTOCOLO HALT EX-OFFICIO: ATIVO]
         </div>
 
         <div class="warning-panel">
-            <strong>ATENÇÃO:</strong> Você está prestes a ingressar no ambiente operacional do Supreme Drafter. A partir deste ponto, todas as interações devem seguir rigorosamente o padrão de inputs estabelecido (Dossiê + Relatório Ouro + Modo).
+            <strong>ATENÇÃO:</strong> Você está prestes a ingressar no ambiente operacional do Supreme Drafter. A partir deste ponto, todas as interações devem seguir rigorosamente o padrão de inputs estabelecido (Dossiê + Relatório Ouro + Modo). O Módulo 11 (Algorithmic Bypass) opera sob o dogma do Dado Líquido — fatos não auditados são purgados antes da minuta.
         </div>
 
-        <!-- HIPERLINK INJETADO DIRETAMENTE NO BOTÃO -->
-        <a href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310" class="btn-iniciar">
-            INICIAR SESSÃO TIER 0
-        </a>
+        <div class="cta-row">
+            <a href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310" class="btn">
+                Iniciar Sessão Tier 0
+            </a>
+            <a href="./docs/protocolo.md" class="btn secondary">
+                Protocolo &amp; Doutrina
+            </a>
+        </div>
+
+        <footer>
+            Ribeiro &amp; Tigre Advocacia Criminal · OAB/PE 27.543<br>
+            <a href="https://ai.ribeiroetigre.org">ai.ribeiroetigre.org</a>
+        </footer>
     </div>
 
 </body>
