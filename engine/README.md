@@ -1,6 +1,9 @@
-# Nexum Engine — MVP (Fase 3)
+# Nexum Engine — MVP (Fases 3 + 4)
 
-Engine determinístico do Nexum by Tigre. Sem LLM nesta fase — pipeline ponta-a-ponta com Jinja2 e validação HALT / Dado Líquido. Integração com Claude API entra na Fase 4.
+Engine do Nexum by Tigre. Dois caminhos de geração:
+
+- **`/draft`** — determinístico via Jinja2; sem LLM, sem custo de token. Para validar pipeline e HALT.
+- **`/draft/llm`** — chama Claude API com adaptive thinking + prompt caching da doutrina. Requer `ANTHROPIC_API_KEY`.
 
 ## Setup
 
@@ -45,8 +48,23 @@ curl -X POST localhost:8000/draft -H 'Content-Type: application/json' -d '{
 # 200 — minuta com tabela de vulnerabilidades
 ```
 
-## Próximos passos (Fase 4)
+## Configuração (Fase 4)
 
-- Cliente `anthropic` SDK (Claude Sonnet 4.6 + prompt caching no system prompt)
-- Caso-piloto Feito-HBM com Temperatura Zero (`temperature=0`)
-- Asserções automáticas pós-geração: presença de distinguishing Tema 1.258, citação HC 598.887/SC, tabela preenchida
+- `ANTHROPIC_API_KEY` — obrigatório para `/draft/llm`. Sem isto, o endpoint retorna 503.
+- `NEXUM_MODEL` — opcional. Default: `claude-opus-4-8`. Alternativa: `claude-sonnet-4-6` (custo ~40% menor, qualidade ainda alta).
+
+A engine usa:
+- **Adaptive thinking** (`thinking={"type": "adaptive"}`) — Claude decide profundidade do raciocínio
+- **Effort `high`** — recomendado para trabalho jurídico sensível
+- **Prompt caching** no system prompt (doutrina + protocolo) — reduz custo em ~90% após primeira chamada
+
+> **Nota sobre "Temperatura Zero":** Opus 4.8/4.7 removeram o parâmetro `temperature`. O determinismo do dispositivo é alcançado via prompt rígido + estrutura, não por temperature=0. A metáfora do protocolo permanece válida; a implementação muda.
+
+## Caso-piloto: Feito-HBM (Tema 1.258/STF)
+
+A função `validar_feito_hbm()` audita pós-geração:
+- ✅ Distinguishing explícito contra Tema 1.258/STF
+- ✅ Citação ao precedente HC 598.887/SC (STJ)
+- ✅ Tabela de vulnerabilidades presente
+
+Testes usam `unittest.mock` no cliente Anthropic — zero custo de token em CI.
