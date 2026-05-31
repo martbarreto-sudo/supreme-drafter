@@ -36,8 +36,30 @@ FEITOS: dict[str, Feito] = {
     ),
     "Feito-FB": Feito(
         id="Feito-FB",
-        quadrante="Robotização penal punitiva",
-        eixo_dogmatico="Tema 1249/STJ",
-        vulnerabilidades=[],
+        quadrante="Medidas protetivas — nulidade de origem",
+        eixo_dogmatico="Tema 1249/STJ (escudo) + Art. 315, §2º, CPP (nulidade)",
+        vulnerabilidades=[
+            # Anonimizado. fonte=None + PENDENTE: o HALT exige auditoria contra
+            # fonte primária no ambiente do operador antes de qualquer minuta.
+            Vulnerabilidade(
+                fato_id="representacao-mismatch",
+                proposto="Representação/FONAR como substrato probatório apto contra o Paciente",
+                realidade_verificada="PENDENTE — auditar titularidade nominal do documento "
+                "contra o nome do Paciente no PJe",
+                fonte=None,
+                status=StatusFato.PENDENTE,
+                impacto="Ausência material de justa causa se confirmado mismatch subjetivo "
+                "(Geraldo Prado: contaminação por derivação)",
+            ),
+            Vulnerabilidade(
+                fato_id="liminar-generica",
+                proposto="Decisão liminar como regular exercício da tutela de urgência",
+                realidade_verificada="PENDENTE — auditar se o decisum enfrenta a divergência "
+                "e fundamenta concretamente",
+                fonte=None,
+                status=StatusFato.PENDENTE,
+                impacto="Nulidade por fundamentação genérica (Art. 93, IX, CRFB c/c Art. 315, §2º, CPP)",
+            ),
+        ],
     ),
 }
