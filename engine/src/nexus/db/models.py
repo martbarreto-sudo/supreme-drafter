@@ -132,3 +132,31 @@ class StripeEvent(Base):
     processed_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+
+
+class Audit(Base):
+    """Registro de cada peça gerada com sucesso por /draft/llm.
+
+    Texto da minuta é persistido em disco (minuta_path); a tabela guarda
+    metadados + métricas de uso de tokens (para reconciliação de custo
+    LLM vs cobrança do plano).
+    """
+
+    __tablename__ = "audits"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=_uuid)
+    user_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("users.id"), index=True
+    )
+    feito_id: Mapped[str] = mapped_column(String(100))
+    peca_tipo: Mapped[str] = mapped_column(String(20))  # HC, RESE, etc.
+    quality_score: Mapped[int] = mapped_column(Integer)
+    modelo: Mapped[str] = mapped_column(String(50))
+    minuta_path: Mapped[str] = mapped_column(String(500))  # CASO_DATA_DIR/{user_id}/audits/{id}.md
+    input_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cache_read_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    cache_creation_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    output_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
