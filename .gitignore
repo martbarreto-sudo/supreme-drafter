@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtual env / uv
+.venv/
+uv.lock
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Dados sensíveis — nunca commitar dados de processo
+engine/data/
+*.local
