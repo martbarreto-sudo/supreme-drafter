@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .audits.routes import router as audits_router
 from .audits.service import CasoDataDirAusente, gravar_audit
+from .user_data.routes import router as user_data_router
 from .auth.deps import get_current_user
 from .auth.routes import router as auth_router
 from .billing.routes import router as billing_router
@@ -34,6 +35,7 @@ app = FastAPI(title="Nexus by Tigre — Supreme Drafter", version="0.1.0")
 app.include_router(auth_router)
 app.include_router(billing_router)
 app.include_router(audits_router)
+app.include_router(user_data_router)
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 _jinja = Environment(
