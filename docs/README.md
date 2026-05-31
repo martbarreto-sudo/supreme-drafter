@@ -16,6 +16,7 @@ processo vivem fora do repositório, no `$CASO_DATA_DIR` controlado pelo operado
 - [produto.md](./produto.md) — valor, precificação, escala, riscos
 - [insights.md](./insights.md) — depuração e insights evolutivos do projeto
 - [deploy.md](./deploy.md) — arquitetura de deploy (Fase 5), decisões e ressalvas
+- [hub-integration.md](./hub-integration.md) — HUB de agentes (Make) × cérebro Claude
 
 ## Engine
 - [../engine/README.md](../engine/README.md) — setup, endpoints, quality gates, caso-piloto
