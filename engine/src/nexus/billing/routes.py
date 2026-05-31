@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from nexus.auth.deps import get_current_user
 from nexus.db.models import User
 from nexus.db.session import get_session
+from nexus.middleware import limiter
 
 from .checkout import create_checkout_session
 from .plans import PlanIndisponivel
@@ -44,7 +45,9 @@ async def get_subscription(
 
 
 @router.post("/checkout", response_model=CheckoutOut)
+@limiter.limit("10/minute")
 async def checkout(
+    request: Request,
     payload: CheckoutIn,
     user: User = Depends(get_current_user),
 ) -> CheckoutOut:

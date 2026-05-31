@@ -7,6 +7,9 @@ Migrations são testadas separadamente em test_migrations.py (Fase futura).
 Fixture `client` provê um TestClient com JWT_SECRET configurado e a
 sessão SQLite injetada via dependency_override de get_session. Usar nos
 testes que batem na API HTTP.
+
+Rate limit do slowapi é DESABILITADO globalmente nos testes (linha abaixo)
+para que testes que batem em endpoints em loop não estourem 429.
 """
 
 from __future__ import annotations
@@ -18,6 +21,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 
 from nexus.db import models  # noqa: F401 — registra tabelas
 from nexus.db.base import Base
+from nexus.middleware.rate_limit import limiter as _limiter
+
+# Desliga em tempo de import (antes de qualquer request rodar)
+_limiter.enabled = False
 
 
 @pytest_asyncio.fixture
@@ -43,6 +50,8 @@ async def client(monkeypatch, db_session):
         "JWT_SECRET", "test-secret-with-at-least-32-characters-please"
     )
     monkeypatch.setenv("JWT_TTL_MINUTES", "15")
+    # Rate limit OFF nos testes — testes batem em endpoints em loop
+    monkeypatch.setenv("NEXUS_RATE_LIMIT_DISABLED", "1")
 
     async def _override():
         yield db_session
