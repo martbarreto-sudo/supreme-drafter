@@ -12,6 +12,11 @@ processo vivem fora do repositório, no `$CASO_DATA_DIR` controlado pelo operado
 - [casos/README.md](./casos/README.md) — índice dos feitos (RC / HBM / FB)
 - [casos/teses-feito-fb.md](./casos/teses-feito-fb.md) — arquitetura de teses do Feito-FB
 
+## Protocolo e auditoria
+- [hub-agentes.md](./hub-agentes.md) — **mapa-mestre** do ecossistema (brand + protocolo + agentes + skills + engine)
+- [tier-0-protocolo.md](./tier-0-protocolo.md) — protocolo doutrinário canônico (7 camadas)
+- [audit-drive-gems.md](./audit-drive-gems.md) — auditoria dos 8 Gems Gemini + 3 Skills do Drive vs. TIER 0
+
 ## Produto e evolução
 - [recomendacao-estrategica.md](./recomendacao-estrategica.md) — **julgamento direto sobre o caminho**
 - [marketplace-escopo.md](./marketplace-escopo.md) — escopo e arquitetura do MVP marketplace
