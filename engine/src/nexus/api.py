@@ -4,9 +4,10 @@ import os
 from datetime import datetime, timezone
 from pathlib import Path
 
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
+from slowapi.errors import RateLimitExceeded
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .audits.routes import router as audits_router
@@ -28,10 +29,14 @@ from .db.models import User
 from .db.session import get_session
 from .halt import auditar
 from .legal.disclaimer import prepend_disclaimer
+from .middleware import limiter, rate_limit_exception_handler
 from .models import DraftRequest, Minuta
 from .upload import receber_autos
 
 app = FastAPI(title="Nexus by Tigre — Supreme Drafter", version="0.1.0")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, rate_limit_exception_handler)
+
 app.include_router(auth_router)
 app.include_router(billing_router)
 app.include_router(audits_router)
@@ -51,12 +56,14 @@ def healthz() -> dict[str, str]:
 
 
 @app.post("/autos")
+@limiter.limit("60/minute")
 async def upload_autos(
+    request: Request,
     feito_id: str = Form(...),
     arquivo: UploadFile = File(...),
     user: User = Depends(get_current_user),
 ):
-    """Upload de PDF dos autos. JWT obrigatório.
+    """Upload de PDF dos autos. JWT obrigatório. Rate-limited 60/min/IP.
 
     Não consome peça (storage é parte do plano). O fonte_uri retornado
     pode ser usado em /draft/llm para gerar a minuta com cobrança.
@@ -121,7 +128,9 @@ def _quota_exception_para_http(exc: Exception) -> HTTPException:
 
 
 @app.post("/draft/llm")
+@limiter.limit("30/minute")
 async def draft_llm(
+    request: Request,
     req: DraftRequest,
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),

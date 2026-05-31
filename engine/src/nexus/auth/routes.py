@@ -1,12 +1,13 @@
-"""Rotas /auth — signup, login, me."""
+"""Rotas /auth — signup, login, me. Rate-limited contra brute-force/spam."""
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from nexus.db.models import User
 from nexus.db.session import get_session
+from nexus.middleware import limiter
 
 from .deps import get_current_user
 from .jwt import create_access_token
@@ -35,7 +36,9 @@ def _to_user_out(user: User) -> UserOut:
 
 
 @router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+@limiter.limit("3/minute")
 async def signup(
+    request: Request,  # exigido pelo slowapi
     payload: SignupIn,
     session: AsyncSession = Depends(get_session),
 ) -> UserOut:
@@ -57,7 +60,9 @@ async def signup(
 
 
 @router.post("/login", response_model=TokenOut)
+@limiter.limit("5/minute")
 async def login(
+    request: Request,
     payload: LoginIn,
     session: AsyncSession = Depends(get_session),
 ) -> TokenOut:
