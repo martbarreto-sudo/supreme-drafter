@@ -29,7 +29,9 @@ def _caso_data_dir() -> Path:
     return p
 
 
-async def receber_autos(feito_id: str, arquivo: UploadFile) -> dict[str, str]:
+async def receber_autos(
+    user_id: str, feito_id: str, arquivo: UploadFile
+) -> dict[str, str]:
     if not _FEITO_RE.match(feito_id):
         raise HTTPException(400, "feito_id inválido (use [A-Za-z0-9_-])")
     if arquivo.content_type not in ALLOWED_MIME:
@@ -46,7 +48,8 @@ async def receber_autos(feito_id: str, arquivo: UploadFile) -> dict[str, str]:
         chunks.append(chunk)
 
     sha256 = h.hexdigest()
-    base = _caso_data_dir() / feito_id
+    # Isolamento por user_id — uploads de cada advogado ficam em diretório próprio
+    base = _caso_data_dir() / user_id / feito_id
     base.mkdir(parents=True, exist_ok=True)
     dest = base / f"{sha256}.pdf"
     if not dest.exists():

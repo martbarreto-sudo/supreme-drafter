@@ -7,28 +7,7 @@ SQLite in-memory do fixture db_session. JWT_SECRET via monkeypatch.
 from __future__ import annotations
 
 import pytest
-import pytest_asyncio
-from fastapi.testclient import TestClient
 from jose import JWTError
-
-from nexus.api import app
-from nexus.db.session import get_session
-
-
-@pytest_asyncio.fixture
-async def client(monkeypatch, db_session):
-    monkeypatch.setenv(
-        "JWT_SECRET",
-        "test-secret-with-at-least-32-characters-please",
-    )
-    monkeypatch.setenv("JWT_TTL_MINUTES", "15")
-
-    async def _override():
-        yield db_session
-
-    app.dependency_overrides[get_session] = _override
-    yield TestClient(app)
-    app.dependency_overrides.clear()
 
 
 _VALID_SIGNUP = {
