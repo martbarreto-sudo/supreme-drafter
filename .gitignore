@@ -6,9 +6,8 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 
-# Virtual env / uv
+# Virtual env (uv.lock é commitado — build Docker exige lockfile)
 .venv/
-uv.lock
 
 # OS / editor
 .DS_Store

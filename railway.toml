@@ -1,0 +1,17 @@
+# Railway config — define que o build vem do diretório engine/.
+# Quando o repo for conectado ao Railway, esse arquivo evita ter que
+# configurar Root Directory manualmente no painel.
+#
+# Postgres add-on é provisionado pelo dashboard (não via toml) e expõe
+# DATABASE_URL automaticamente como env var no service.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "engine/Dockerfile"
+buildContext = "engine"
+
+[deploy]
+healthcheckPath = "/healthz"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

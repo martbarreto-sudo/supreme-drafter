@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from slowapi.errors import RateLimitExceeded
@@ -36,6 +37,20 @@ from .upload import receber_autos
 app = FastAPI(title="Nexus by Tigre — Supreme Drafter", version="0.1.0")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, rate_limit_exception_handler)
+
+# CORS — origens permitidas via env CORS_ORIGINS (comma-separated).
+# Em desenvolvimento, deixe vazio (sem CORS). Em produção com frontend,
+# liste explicitamente os domínios do frontend.
+_cors_raw = os.getenv("CORS_ORIGINS", "").strip()
+if _cors_raw:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[o.strip() for o in _cors_raw.split(",") if o.strip()],
+        allow_credentials=True,
+        allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+        allow_headers=["Authorization", "Content-Type"],
+        max_age=600,
+    )
 
 app.include_router(auth_router)
 app.include_router(billing_router)
