@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from nexus.quality import GateResult, QualityReport
 from tests.conftest import signup_and_login
 
+_DEFAULT_NAME = "Default User"
+
 
 @dataclass
 class _FakeMinuta:
@@ -66,7 +68,10 @@ async def test_draft_llm_sucesso_grava_audit_e_minuta_em_disco(
     assert audit_id is not None
 
     minuta_path = tmp_path / user["id"] / "audits" / f"{audit_id}.md"
-    assert minuta_path.read_text(encoding="utf-8") == "minuta de teste — texto completo"
+    conteudo = minuta_path.read_text(encoding="utf-8")
+    # disclaimer obrigatório no topo + texto da minuta abaixo
+    assert "MINUTA AUTOMATIZADA, NÃO PROTOCOLAR SEM REVISÃO" in conteudo
+    assert "minuta de teste — texto completo" in conteudo
 
 
 async def test_draft_llm_sem_caso_data_dir_devolve_audit_id_none(
@@ -84,7 +89,9 @@ async def test_draft_llm_sem_caso_data_dir_devolve_audit_id_none(
     )
     assert r.status_code == 200
     assert r.json()["audit_id"] is None
-    assert r.json()["texto"] == "minuta de teste — texto completo"
+    # disclaimer aplicado mesmo sem persistência
+    assert "MINUTA AUTOMATIZADA, NÃO PROTOCOLAR SEM REVISÃO" in r.json()["texto"]
+    assert "minuta de teste — texto completo" in r.json()["texto"]
 
 
 # ---------- GET /user/audits ----------
@@ -181,7 +188,11 @@ async def test_get_audit_detail_devolve_minuta(client, monkeypatch, tmp_path):
     assert r.status_code == 200
     body = r.json()
     assert body["id"] == audit_id
-    assert body["minuta"] == "minuta de teste — texto completo"
+    # detalhe traz minuta persistida (com disclaimer aplicado)
+    assert "MINUTA AUTOMATIZADA, NÃO PROTOCOLAR SEM REVISÃO" in body["minuta"]
+    assert "minuta de teste — texto completo" in body["minuta"]
+    # disclaimer nomeia o advogado-operador autenticado
+    assert _DEFAULT_NAME in body["minuta"] or "Default User" in body["minuta"]
     assert body["usage"]["input_tokens"] == 1234
     assert body["usage"]["cache_read_tokens"] == 5678
     assert body["usage"]["output_tokens"] == 500

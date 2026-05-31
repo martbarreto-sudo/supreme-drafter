@@ -23,6 +23,8 @@ class SignupIn(BaseModel):
     oab_numero: OABNumero
     oab_uf: UF
     password: Senha
+    aceito_tos: bool  # deve ser True; False → 422
+    tos_version: int  # deve coincidir com TOS_VERSION_ATUAL; outras → 409
 
 
 class LoginIn(BaseModel):
