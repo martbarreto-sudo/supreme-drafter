@@ -1,7 +1,5 @@
 from unittest.mock import MagicMock
 
-import pytest
-
 from nexum.casos.data import FEITOS
 from nexum.llm import (
     MODEL_DEFAULT,
