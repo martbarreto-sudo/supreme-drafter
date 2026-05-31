@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+from nexus.db.models import PlanCode
+
 
 class SubscriptionOut(BaseModel):
     plan_code: str
@@ -13,3 +15,11 @@ class SubscriptionOut(BaseModel):
     pecas_incluidas: int
     pecas_consumidas_no_periodo: int
     pecas_restantes: int
+
+
+class CheckoutIn(BaseModel):
+    plan_code: PlanCode
+
+
+class CheckoutOut(BaseModel):
+    url: str
