@@ -52,6 +52,22 @@ curl -X POST localhost:8000/draft -H 'Content-Type: application/json' -d '{
 
 - `ANTHROPIC_API_KEY` — obrigatório para `/draft/llm`. Sem isto, o endpoint retorna 503.
 - `NEXUM_MODEL` — opcional. Default: `claude-opus-4-8`. Alternativa: `claude-sonnet-4-6` (custo ~40% menor, qualidade ainda alta).
+- `NEXUM_TOKEN` — bearer obrigatório para `/autos` (e recomendado para `/draft/llm` em deploy).
+- `CASO_DATA_DIR` — diretório fora do repo onde `/autos` persiste binários e onde os dados reais dos feitos vivem em produção.
+
+## Upload de autos (Dado Líquido por hash)
+
+`POST /autos` recebe um PDF, calcula SHA-256, persiste em `$CASO_DATA_DIR/{feito_id}/{sha256}.pdf` e devolve um `fonte_uri` no esquema `hash://{feito_id}/{sha256}` que é aceito como fonte primária pelo Dado Líquido — ou seja, o upload **ancora** o fato auditável diretamente no protocolo, sem texto colado.
+
+```bash
+curl -X POST localhost:8000/autos \
+  -H "Authorization: Bearer $NEXUM_TOKEN" \
+  -F "feito_id=Feito-HBM" \
+  -F "arquivo=@inquerito-fls-12.pdf"
+# → { "feito_id": "...", "sha256": "...", "fonte_uri": "hash://Feito-HBM/...", "bytes": "..." }
+```
+
+Códigos: `200` ok · `400` feito_id inválido · `401` sem auth · `403` token errado · `413` >20 MiB · `415` não-PDF · `503` env ausente.
 
 A engine usa:
 - **Adaptive thinking** (`thinking={"type": "adaptive"}`) — Claude decide profundidade do raciocínio
