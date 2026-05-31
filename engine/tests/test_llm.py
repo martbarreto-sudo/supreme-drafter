@@ -1,13 +1,13 @@
 from unittest.mock import MagicMock
 
-from nexum.casos.data import FEITOS
-from nexum.llm import (
+from nexus.casos.data import FEITOS
+from nexus.llm import (
     MODEL_DEFAULT,
     SYSTEM_PROMPT,
     gerar_minuta,
     validar_feito_hbm,
 )
-from nexum.models import Fato, FontePrimaria
+from nexus.models import Fato, FontePrimaria
 
 
 def _mock_response(text: str):
@@ -70,7 +70,7 @@ def test_gerar_minuta_chama_anthropic_com_caching_e_adaptive():
 
 
 def test_gerar_minuta_respeita_env_var_modelo(monkeypatch):
-    monkeypatch.setenv("NEXUM_MODEL", "claude-sonnet-4-6")
+    monkeypatch.setenv("NEXUS_MODEL", "claude-sonnet-4-6")
     client = MagicMock()
     client.messages.create.return_value = _mock_response("...")
 

@@ -1,6 +1,6 @@
-# Nexum Engine — MVP (Fases 3 + 4)
+# Nexus Engine — MVP (Fases 3 + 4)
 
-Engine do Nexum by Tigre. Dois caminhos de geração:
+Engine do Nexus by Tigre. Dois caminhos de geração:
 
 - **`/draft`** — determinístico via Jinja2; sem LLM, sem custo de token. Para validar pipeline e HALT.
 - **`/draft/llm`** — chama Claude API com adaptive thinking + prompt caching da doutrina. Requer `ANTHROPIC_API_KEY`.
@@ -11,7 +11,7 @@ Engine do Nexum by Tigre. Dois caminhos de geração:
 cd engine
 uv sync --extra dev
 uv run pytest -v
-uv run uvicorn nexum.api:app --reload
+uv run uvicorn nexus.api:app --reload
 ```
 
 ## Endpoints
@@ -51,8 +51,8 @@ curl -X POST localhost:8000/draft -H 'Content-Type: application/json' -d '{
 ## Configuração (Fase 4)
 
 - `ANTHROPIC_API_KEY` — obrigatório para `/draft/llm`. Sem isto, o endpoint retorna 503.
-- `NEXUM_MODEL` — opcional. Default: `claude-opus-4-8`. Alternativa: `claude-sonnet-4-6` (custo ~40% menor, qualidade ainda alta).
-- `NEXUM_TOKEN` — bearer obrigatório para `/autos` (e recomendado para `/draft/llm` em deploy).
+- `NEXUS_MODEL` — opcional. Default: `claude-opus-4-8`. Alternativa: `claude-sonnet-4-6` (custo ~40% menor, qualidade ainda alta).
+- `NEXUS_TOKEN` — bearer obrigatório para `/autos` (e recomendado para `/draft/llm` em deploy).
 - `CASO_DATA_DIR` — diretório fora do repo onde `/autos` persiste binários e onde os dados reais dos feitos vivem em produção.
 
 ## Upload de autos (Dado Líquido por hash)
@@ -61,7 +61,7 @@ curl -X POST localhost:8000/draft -H 'Content-Type: application/json' -d '{
 
 ```bash
 curl -X POST localhost:8000/autos \
-  -H "Authorization: Bearer $NEXUM_TOKEN" \
+  -H "Authorization: Bearer $NEXUS_TOKEN" \
   -F "feito_id=Feito-HBM" \
   -F "arquivo=@inquerito-fls-12.pdf"
 # → { "feito_id": "...", "sha256": "...", "fonte_uri": "hash://Feito-HBM/...", "bytes": "..." }

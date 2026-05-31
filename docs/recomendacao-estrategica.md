@@ -10,7 +10,7 @@
 | **OAB/PE 27.543 + 600 sustentações + 100 júris** | Consolidado | Capital reputacional alto |
 | **Ribeiro & Tigre** (Recife/Brasília/SP) | Operante | Banca real |
 | **Inova by Tigre** (método 10 etapas, cobertura ConJur 2025) | Publicado, com mídia | Marca-metodologia consolidada |
-| **Engine Nexum** (este repo, 11 commits) | Construído, 37 testes verdes | Infraestrutura técnica funcional |
+| **Engine Nexus** (este repo, 11 commits) | Construído, 37 testes verdes | Infraestrutura técnica funcional |
 | **Caso-piloto Feito-HBM** (Tema 1.258/STF) | Anonimizado, eixo dogmático claro | Validação real possível em dias |
 
 Você **não é** uma startup pré-produto. Você é um advogado consolidado com método publicado e
@@ -28,22 +28,22 @@ Isso é uma armadilha conhecida para fundador-solo em LegalTech:
 - Na prática, são passivo técnico (bugs reais no webhook Stripe, claims de feature inexistentes)
   e passivo regulatório (cobrar análise por crédito ≠ honorário e cai na zona OAB).
 - Você gasta o capital de atenção construindo um produto que **não é o seu**, enquanto o produto
-  que **é o seu** (Inova by Tigre + Nexum como infra) fica parado.
+  que **é o seu** (Inova by Tigre + Nexus como infra) fica parado.
 
 ## Minha recomendação
 
-**Nexum é infraestrutura interna do escritório Ribeiro & Tigre. Inova by Tigre é o produto
+**Nexus é infraestrutura interna do escritório Ribeiro & Tigre. Inova by Tigre é o produto
 público.** Não invente uma terceira marca SaaS.
 
 Por que essa estrutura é a certa para você agora:
 
 1. **Inova by Tigre já tem chancela ConJur e está publicado.** É o produto que o mercado já
-   reconhece. Nexum é o "como" por trás do "quê" (Inova).
+   reconhece. Nexus é o "como" por trás do "quê" (Inova).
 2. **Monetização que sobrevive à OAB:** Inova é metodologia/treinamento/licença de método para
    outros advogados — **dentro** do que a OAB tolera (já está no ar). Marketplace SaaS de
    análise jurídica por crédito está **fora** sem parecer formal. Os dois modelos não são
    comparáveis em risco.
-3. **Engine fica defensável:** Nexum como infra privada protege seu *know-how* (HALT, Dado
+3. **Engine fica defensável:** Nexus como infra privada protege seu *know-how* (HALT, Dado
    Líquido, doutrina embutida) em vez de expô-lo num SaaS comoditizado. Capital intelectual
    composta — fica seu.
 4. **HITL real:** advogado-operador segue responsável, que é a única forma de a OAB e o cliente
@@ -56,9 +56,9 @@ Por que essa estrutura é a certa para você agora:
 2. **Validar com Feito-HBM real** — rodar o engine localmente (Railway depois), pegar o caso já
    catalogado anonimizado, gerar peça em `/draft/llm` com fontes primárias do PJe, **você revisa,
    ajusta, assina, protocola**. Esse ciclo prova o produto antes de qualquer venda.
-3. **Provisionar Railway com `NEXUM_TOKEN` + `CASO_DATA_DIR`** — infra privada do escritório,
+3. **Provisionar Railway com `NEXUS_TOKEN` + `CASO_DATA_DIR`** — infra privada do escritório,
    não exposta ao público. Ver `deploy.md`.
-4. **Reposicionar a landing como porta da Inova by Tigre** — Nexum vira o motor mencionado no
+4. **Reposicionar a landing como porta da Inova by Tigre** — Nexus vira o motor mencionado no
    rodapé, não o protagonista. JSON-LD já está pronto para isso (commit `867cc42`).
 
 ## O que **adiar** (não eliminar — adiar)

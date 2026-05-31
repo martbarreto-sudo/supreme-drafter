@@ -1,4 +1,4 @@
-# Protocolo Nexum by Tigre — Supreme Drafter
+# Protocolo Nexus by Tigre — Supreme Drafter
 
 > Engine de redação estratégica criminal sob o dogma do **Dado Líquido**.
 > Ribeiro & Tigre Advocacia Criminal · OAB/PE 27.543

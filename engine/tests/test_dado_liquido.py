@@ -1,5 +1,5 @@
-from nexum.dado_liquido import avaliar, fonte_valida
-from nexum.models import Fato, FontePrimaria, StatusFato
+from nexus.dado_liquido import avaliar, fonte_valida
+from nexus.models import Fato, FontePrimaria, StatusFato
 
 
 def test_fonte_valida_log_pje():

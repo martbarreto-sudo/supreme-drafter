@@ -1,6 +1,6 @@
 # Doutrina de Referência
 
-Matrizes operacionais que sustentam o protocolo Nexum by Tigre. Listadas apenas como referência bibliográfica e linhas argumentativas públicas — sem reprodução integral de obras.
+Matrizes operacionais que sustentam o protocolo Nexus by Tigre. Listadas apenas como referência bibliográfica e linhas argumentativas públicas — sem reprodução integral de obras.
 
 ## Matrizes principais
 

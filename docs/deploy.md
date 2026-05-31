@@ -11,7 +11,7 @@ GitHub push/PR ──▶ GitHub Actions (ci.yml: ruff + pytest)
 landing estática ──▶ GitHub Pages (index.html + docs/)   [já configurado: pages.yml]
                         │
 engine (FastAPI) ──▶ host de container persistente        [a provisionar]
-                        └─▶ Claude API (Opus 4.8 / Sonnet 4.6 via NEXUM_MODEL)
+                        └─▶ Claude API (Opus 4.8 / Sonnet 4.6 via NEXUS_MODEL)
 ```
 
 ## Decisões
@@ -21,7 +21,7 @@ engine (FastAPI) ──▶ host de container persistente        [a provisionar]
 | CI | **GitHub Actions** (`ci.yml`) | ruff + pytest no `engine/`. ✅ Implementado. |
 | Frontend estático | **GitHub Pages** (`pages.yml`) | ✅ Workflow já restaurado; dispara em push para `master`. |
 | Host do engine | **Railway** (recomendado) | Concordo: Railpack sem Dockerfile, billing por uso, container persistente. Ainda **não provisionado** — exige sua conta + secrets. |
-| LLM | **Claude Opus 4.8** default; **Sonnet 4.6** via `NEXUM_MODEL` | Já suportado. Sonnet para reduzir custo conforme volume. |
+| LLM | **Claude Opus 4.8** default; **Sonnet 4.6** via `NEXUS_MODEL` | Já suportado. Sonnet para reduzir custo conforme volume. |
 | Secret da API | `ANTHROPIC_API_KEY` em secrets do host / GitHub | Nunca no repo, nunca no chat. |
 
 ## Onde discordo do relatório (over-spec para agora)
@@ -44,8 +44,8 @@ engine (FastAPI) ──▶ host de container persistente        [a provisionar]
 ## Passos para provisionar (quando você decidir)
 
 1. Criar projeto no Railway, conectar o repo, apontar root para `engine/`.
-2. `railway variables set ANTHROPIC_API_KEY=...` (e `NEXUM_MODEL` se Sonnet).
-3. Start command: `uv run uvicorn nexum.api:app --host 0.0.0.0 --port $PORT`.
+2. `railway variables set ANTHROPIC_API_KEY=...` (e `NEXUS_MODEL` se Sonnet).
+3. Start command: `uv run uvicorn nexus.api:app --host 0.0.0.0 --port $PORT`.
 4. Configurar CORS no FastAPI para o domínio do Pages, com auth no `/draft/llm`.
 5. **Decisão de arquitetura pendente** (`insights.md §5`): o NotebookLM atual é
    substituído, complementado, ou vira UI deste engine? Isso define se o Pages chama o

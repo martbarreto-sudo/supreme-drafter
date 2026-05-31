@@ -2,7 +2,7 @@
 
 Generaliza o validar_feito_hbm hardcoded para uma bateria de gates determinísticos
 que rodam sobre a minuta gerada e produzem um quality_score auditável. Cada gate
-verifica um traço epistemológico do protocolo Nexum: fonte por fato, precedente do
+verifica um traço epistemológico do protocolo Nexus: fonte por fato, precedente do
 eixo, auditoria de silêncio, e Assinatura Tigre (ausência de submissão burocrática).
 """
 

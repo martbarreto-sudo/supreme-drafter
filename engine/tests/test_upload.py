@@ -2,14 +2,14 @@ import hashlib
 
 from fastapi.testclient import TestClient
 
-from nexum.api import app
+from nexus.api import app
 
 client = TestClient(app)
 PDF = b"%PDF-1.4 conteudo fake"
 
 
 def _wire(monkeypatch, tmp_path):
-    monkeypatch.setenv("NEXUM_TOKEN", "test-token")
+    monkeypatch.setenv("NEXUS_TOKEN", "test-token")
     monkeypatch.setenv("CASO_DATA_DIR", str(tmp_path))
 
 
@@ -43,8 +43,8 @@ def test_upload_pdf_valido_grava_e_devolve_hash(monkeypatch, tmp_path):
 
 def test_fonte_uri_compatible_with_dado_liquido(monkeypatch, tmp_path):
     # O fonte_uri produzido tem que casar com o validador do Dado Líquido
-    from nexum.dado_liquido import fonte_valida
-    from nexum.models import Fato, FontePrimaria
+    from nexus.dado_liquido import fonte_valida
+    from nexus.models import Fato, FontePrimaria
 
     _wire(monkeypatch, tmp_path)
     body = _post(headers={"Authorization": "Bearer test-token"}).json()
@@ -86,14 +86,14 @@ def test_upload_feito_id_invalido_400(monkeypatch, tmp_path):
 
 
 def test_upload_sem_caso_data_dir_503(monkeypatch, tmp_path):
-    monkeypatch.setenv("NEXUM_TOKEN", "test-token")
+    monkeypatch.setenv("NEXUS_TOKEN", "test-token")
     monkeypatch.delenv("CASO_DATA_DIR", raising=False)
     r = _post(headers={"Authorization": "Bearer test-token"})
     assert r.status_code == 503
 
 
-def test_upload_sem_nexum_token_503(monkeypatch, tmp_path):
-    monkeypatch.delenv("NEXUM_TOKEN", raising=False)
+def test_upload_sem_nexus_token_503(monkeypatch, tmp_path):
+    monkeypatch.delenv("NEXUS_TOKEN", raising=False)
     monkeypatch.setenv("CASO_DATA_DIR", str(tmp_path))
     r = _post(headers={"Authorization": "Bearer anything"})
     assert r.status_code == 503

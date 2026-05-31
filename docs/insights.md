@@ -1,4 +1,4 @@
-# Nexum by Tigre — Depuração e Insights Evolutivos
+# Nexus by Tigre — Depuração e Insights Evolutivos
 
 > Documento vivo. Consolida o que aprendemos construindo o engine e a direção de
 > evolução. Honesto sobre o que está pronto, o que é hipótese, e o que depende de você.
