@@ -8,6 +8,8 @@ from fastapi.responses import JSONResponse
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .audits.routes import router as audits_router
+from .audits.service import CasoDataDirAusente, gravar_audit
 from .auth.deps import get_current_user
 from .auth.routes import router as auth_router
 from .billing.routes import router as billing_router
@@ -29,6 +31,7 @@ from .upload import receber_autos
 app = FastAPI(title="Nexus by Tigre — Supreme Drafter", version="0.1.0")
 app.include_router(auth_router)
 app.include_router(billing_router)
+app.include_router(audits_router)
 
 _TEMPLATES_DIR = Path(__file__).parent / "templates"
 _jinja = Environment(
@@ -149,10 +152,33 @@ async def draft_llm(
     qualidade = avaliar_qualidade(minuta.texto, feito, req.fatos)
     falhas = validar_feito_hbm(minuta.texto) if req.feito_id == "Feito-HBM" else []
 
-    # consumir só após geração bem-sucedida
+    # consumir cota só após geração bem-sucedida
     await consumir_peca(session, sub)
 
+    # registrar audit (texto em disco + metadados em DB). Falha aqui ainda
+    # devolve a minuta ao usuário — peça já foi cobrada e LLM já correu;
+    # melhor responder do que abortar.
+    audit_id: str | None = None
+    try:
+        audit = await gravar_audit(
+            session,
+            user_id=user.id,
+            feito_id=req.feito_id,
+            peca_tipo=req.peca_tipo,
+            minuta_texto=minuta.texto,
+            quality_score=qualidade.score,
+            modelo=minuta.modelo,
+            input_tokens=minuta.input_tokens,
+            cache_read_tokens=minuta.cache_read_tokens,
+            cache_creation_tokens=minuta.cache_creation_tokens,
+            output_tokens=minuta.output_tokens,
+        )
+        audit_id = audit.id
+    except CasoDataDirAusente:
+        pass  # sem CASO_DATA_DIR, segue sem persistir; resposta inclui audit_id=None
+
     return {
+        "audit_id": audit_id,
         "feito_id": req.feito_id,
         "peca_tipo": req.peca_tipo,
         "texto": minuta.texto,
