@@ -13,6 +13,7 @@ FEITOS: dict[str, Feito] = {
             "(contágio probatório / frutos da árvore envenenada) + "
             "art. 226, II e III, CPP"
         ),
+        tribunal_destino="STJ — Sexta Turma",
         vulnerabilidades=[
             Vulnerabilidade(
                 fato_id="reconhecimento-inicial",
@@ -51,6 +52,7 @@ FEITOS: dict[str, Feito] = {
             "RHC 143.169/RJ, STJ (prova digital sem hash = nulidade) + "
             "art. 158-A, CPP (cadeia de custódia)"
         ),
+        tribunal_destino="TJ-PE — Câmara Criminal",
         vulnerabilidades=[
             Vulnerabilidade(
                 fato_id="marco-temporal",
@@ -70,6 +72,7 @@ FEITOS: dict[str, Feito] = {
             "(nulidade por fundamentação genérica) + art. 93, IX, CRFB "
             "(motivação obrigatória)"
         ),
+        tribunal_destino="TJ-PE — Vara de Medidas Protetivas de Urgência",
         vulnerabilidades=[
             # Anonimizado. fonte=None + PENDENTE: o HALT exige auditoria contra
             # fonte primária no ambiente do operador antes de qualquer minuta.
