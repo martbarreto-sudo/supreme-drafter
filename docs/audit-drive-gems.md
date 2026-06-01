@@ -232,38 +232,39 @@ Tutor de Direito para PAS/Cebraspe. Nada a ver com Nexus.
 
 ## Skills (`.skill` = zip ZIP files)
 
-### `engenharia-juridica.skill` (8.5 KB) — a mais completa
+### `engenharia-juridica.skill` (8.5 KB) — a mais completa ✅ EXTRAÍDA
 
-Estrutura interna:
+Conteúdo agora versionado em `docs/skills/engenharia-juridica/`:
 ```
-SKILL.md                      (9.6 KB — instrução principal)
-scripts/organizar_drive.py    (11.6 KB — script de organização)
-references/mapa_precedentes.md (6.9 KB — mapa STF/STJ)
-templates/peticao_padrao.md   (2.6 KB — template peça)
-references/, scripts/, templates/ (subdirs)
+SKILL.md                       (5074B — instrução + taxonomia 3 níveis)
+scripts/organizar_drive.py     (8290B — automação Google Drive API)
+references/mapa_precedentes.md (4257B — mapa STF/STJ)
+templates/peticao_padrao.md    (1483B — template-âncora)
 ```
 
-**Recomendação:** vale **extrair** o conteúdo do `SKILL.md` + `mapa_precedentes.md`
-+ `peticao_padrao.md` (não fiz nesta auditoria; oferece dado novo para o engine).
+Princípio central: **Imperativo da Concreção** — jamais cita tese abstrata
+sem Dado Líquido. Exatamente o princípio raiz TIER 0 §0.
 
-### `peticao-nexumdocs.skill` (2.2 KB)
+### `peticao-nexumdocs.skill` (2.2 KB) ✅ EXTRAÍDA
 
-Estrutura mais enxuta. SKILL.md de ~7 KB. Referenciado por TIER 0 §1 como o
-**formato canônico de petição** (corpo Times 12pt, margens 3cm/2cm, timbrado
-institucional R&T, estrutura endereçamento → qualificação → nome → exórdio →
-seções → requerimentos → fecho → assinatura).
+`docs/skills/peticao-nexumdocs/SKILL.md` (3146B). Formato canônico PJe:
+Times 12pt, margens 3/2cm, **sem timbrado/rodapé/numeração** (PJe numera).
+Voz do Tigre: "denodo e respeito de estilo", "sobremodo enviesada",
+"sofreguidão acusatória", "orfandade probatória". Negrito como bisturi.
 
-**Recomendação:** alinhar os templates Jinja2 do engine (`hc.md.j2` e futuros)
-ao formato `peticao-nexumdocs`. Pode ser via Pandoc-templating depois de o
-texto gerado.
+**Recomendação:** alinhar os templates Jinja2 do engine (`hc.md.j2`) ao
+formato canônico aqui descrito. O template existente já está próximo.
 
-### `metodo-tigre.skill` (2.2 KB)
+### `metodo-tigre.skill` (2.2 KB) ✅ EXTRAÍDA
 
-Estrutura mínima. Provável metodologia operacional. SKILL.md ~7 KB.
+`docs/skills/metodo-tigre/SKILL.md` (3538B). **Método Tigre V2.0 = Inova
+by Tigre** — metodologia autoral em 5 fases com **REGRA CARDINAL:
+proibida redação imediata**. Fases 1-4 entregam relatório primeiro;
+Fase 5 (peça) só após "Aprovado, siga para a peça".
 
-**Recomendação:** extrair e auditar separadamente. Se for o método dos
-4 modos (Pertinaz/Adayldo/Patrick/Manus), confirma o que já vimos no
-Redator de Elite.
+Mapeamento direto com TIER 0 Camada 5 (ESTRATEGISTA → REDATOR →
+VERIFICADOR → AUDITOR → CURADORIA HUMANA). Vocabulário diferente, ritual
+idêntico.
 
 ---
 
@@ -290,9 +291,11 @@ Redator de Elite.
    DISSECAÇÃO PENAL no formato do Analista Primário — 1h
 5. **`engine/src/nexus/auditor.py`** implementando os 5 passos do AUDITOR
    FORENSE (anomalia temporal, cegueira deliberada, contágio inter-pecas) — 2h
-6. **Extrair conteúdo dos 3 `.skill`** (especialmente `engenharia-juridica`)
-   e incorporar `references/mapa_precedentes.md` e `templates/peticao_padrao.md`
-   ao engine — 1h depois de extrair
+6. ~~**Extrair conteúdo dos 3 `.skill`**~~ ✅ **DONE** — conteúdo
+   versionado em `docs/skills/`. Próximo: portar `templates/peticao_padrao.md`
+   para `engine/src/nexus/templates/peticao_padrao.md.j2` e incorporar
+   `references/mapa_precedentes.md` ao catálogo do engine — ~30min de
+   código quando priorizado.
 
 Quando você quiser, eu sigo por esses pontos. Nada disso é urgente para o
 deploy; é refinamento doutrinal para o produto estar 100% alinhado ao que
