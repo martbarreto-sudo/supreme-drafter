@@ -26,8 +26,10 @@
 
 ### 1.2. Inova by Tigre — produto público da metodologia
 
-- **Equipe:** Diego Cavalcante (empresário), Marcelo Tigre (criminalista),
-  César Caputo (supervisão jurídica).
+- **Autoria:** **Marcelo Tigre** — método desenvolvido por ele a partir da
+  prática operacional consolidada do escritório (100+ júris, 600+ sustentações,
+  atuação em STJ/STF). Diego Cavalcante atua na gestão/business e César Caputo
+  na supervisão jurídica complementar; a metodologia em si é do Marcelo.
 - **Tese:** **metodologia em 10 etapas**, da triagem inicial da ação criminal
   à checagem final da tese jurídica. Inspirada em **teoria dos jogos**
   aplicada ao processo penal — antecipa movimentos da acusação, mapeia

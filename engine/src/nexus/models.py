@@ -43,7 +43,22 @@ class Feito(BaseModel):
     vulnerabilidades: list[Vulnerabilidade] = Field(default_factory=list)
 
 
-PecaTipo = Literal["HC", "RHC", "AGRAVO", "MEMORIAIS"]
+# Catálogo de peças cobertas (alinhado com M Advogado Criminalista —
+# vide docs/audit-drive-gems.md §4). Adicionar peca_tipo aqui exige também
+# criar template Jinja2 em templates/{peca_tipo.lower()}.md.j2 para a rota
+# determinística /draft; o /draft/llm aceita qualquer tipo via prompt.
+PecaTipo = Literal[
+    "HC",                  # Habeas Corpus
+    "RHC",                 # Recurso Ordinário em Habeas Corpus
+    "AGRG",                # Agravo Regimental (em HC, REsp, RExt etc)
+    "AGRAVO",              # alias retro-compat — preferir AGRG
+    "RCL",                 # Reclamação Constitucional (STF/STJ)
+    "APELACAO",            # Razões/Memoriais de Apelação criminal
+    "MEMORIAIS",           # Memoriais Defensivos (alegações finais, júri)
+    "RESPOSTA_ACUSACAO",   # Resposta à Acusação (art. 396-A CPP)
+    "EDCL",                # Embargos de Declaração
+    "MANIFESTACAO",        # Manifestação Defensiva (medidas protetivas etc)
+]
 
 
 class DraftRequest(BaseModel):
