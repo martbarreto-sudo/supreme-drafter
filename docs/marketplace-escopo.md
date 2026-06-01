@@ -94,7 +94,13 @@ Por isso o MVP **não tem compra avulsa**.
 
 ### 4.3. Critérios de precificação
 
-- **Custo LLM real (Opus 4.8 com prompt caching):** ~US$ 0,10–0,30 por peça.
+- **Custo LLM real por peça:**
+  - **Opus 4.8** (US$ 15/1M input, US$ 75/1M output, cache hit US$ 1,50/1M):
+    ~US$ 0,24–0,35 por peça (cache do system prompt amortiza após 1ª chamada)
+  - **Sonnet 4.6** (US$ 3/1M input, US$ 15/1M output, cache hit US$ 0,30/1M):
+    ~US$ 0,04–0,07 por peça
+  - Sonnet é ~80% mais barato que Opus — vale como default para volumes
+    altos; Opus continua melhor para peças complexas com fundamentação densa
 - **Margem-alvo:** 70–80% (padrão SaaS B2B).
 - **Sanity check:** preço por peça (preço/peças) deve ser sensivelmente **menor** que
   o que o advogado pagaria a um estagiário/assistente para gerar uma minuta análoga.

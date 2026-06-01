@@ -163,7 +163,8 @@ curl $APP/billing/subscription -H "Authorization: Bearer $TOKEN"
 - **Railway compute:** US$ 5–15/mês (varia com tráfego)
 - **Railway Postgres:** US$ 5/mês (1 GB; sobe quando passar)
 - **Railway volume:** US$ 0,25/GB/mês
-- **Anthropic Opus 4.8:** US$ 0,10–0,30 por peça gerada (com prompt caching)
+- **Anthropic Opus 4.8:** US$ 0,24–0,35 por peça gerada (com prompt caching;
+  cache hit US$ 1,50/1M tokens reduz custo de input do system prompt em 90%)
 - **Stripe:** 3,99% + R$ 0,39 por transação BR
 
 **Cenário com 50 peças/mês:**
@@ -171,7 +172,9 @@ curl $APP/billing/subscription -H "Authorization: Bearer $TOKEN"
 - LLM: ~US$ 7,50–15/mês
 - Total fixo: ~US$ 20–30/mês
 
-Para Sonnet 4.6 em vez de Opus, custo LLM cai ~60%.
+Para Sonnet 4.6 em vez de Opus, custo LLM cai ~80% (US$ 0,04–0,07 por peça
+vs US$ 0,24–0,35 do Opus). Sonnet é o default sensato para volume; Opus
+para peças com fundamentação mais densa.
 
 ## O que este doc não cobre (decisões futuras)
 
