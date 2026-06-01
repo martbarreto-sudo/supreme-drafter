@@ -17,6 +17,25 @@ FEITOS: dict[str, Feito] = {
                 status=StatusFato.LIQUIDO,
                 impacto="Vício de origem no sumário da culpa — distinguishing Tema 1.258",
             ),
+            Vulnerabilidade(
+                fato_id="termo-ausente",
+                proposto="Ato formal de reconhecimento lavrado conforme art. 226, II e III, CPP",
+                realidade_verificada="PENDENTE — auditar inexistência de termo formal de "
+                "reconhecimento nos autos (auditoria de silêncio documental)",
+                fonte=None,
+                status=StatusFato.PENDENTE,
+                impacto="Quebra do procedimento legal — nulidade autônoma além do Tema 1.258",
+            ),
+            Vulnerabilidade(
+                fato_id="reconhecimento-em-juizo-viciado",
+                proposto="Reconhecimento posterior em juízo como ato autônomo e válido",
+                realidade_verificada="PENDENTE — verificar se a vítima/testemunha foi exposta "
+                "à fotografia ANTES da audiência (contágio probatório)",
+                fonte=None,
+                status=StatusFato.PENDENTE,
+                impacto="Nulidade derivada — Teoria dos Frutos da Árvore Envenenada "
+                "(STJ HC 712.781/RJ)",
+            ),
         ],
     ),
     "Feito-RC": Feito(

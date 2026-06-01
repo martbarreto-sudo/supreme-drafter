@@ -15,8 +15,18 @@ def test_vulnerabilidades_feito_existente():
     r = client.get("/casos/Feito-HBM/vulnerabilidades")
     assert r.status_code == 200
     body = r.json()
-    assert len(body) == 1
-    assert body[0]["status"] == "LIQUIDO"
+    # Feito-HBM tem 3 vulnerabilidades (reconhecimento-inicial LIQUIDO +
+    # termo-ausente e reconhecimento-em-juizo-viciado PENDENTE)
+    assert len(body) == 3
+    fato_ids = {v["fato_id"] for v in body}
+    assert {
+        "reconhecimento-inicial",
+        "termo-ausente",
+        "reconhecimento-em-juizo-viciado",
+    } == fato_ids
+    # A primeira vulnerabilidade (com fonte primária ancorada) é LIQUIDO
+    primeira = next(v for v in body if v["fato_id"] == "reconhecimento-inicial")
+    assert primeira["status"] == "LIQUIDO"
 
 
 def test_vulnerabilidades_feito_inexistente():
