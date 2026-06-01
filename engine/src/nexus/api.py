@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from .audits.routes import router as audits_router
 from .audits.service import CasoDataDirAusente, gravar_audit
+from .auditor import auditar_adversarial
 from .user_data.routes import router as user_data_router
 from .auth.deps import get_current_user
 from .auth.routes import router as auth_router
@@ -189,6 +190,12 @@ async def draft_llm(
     data_iso = datetime.now(timezone.utc).strftime("%d/%m/%Y %H:%M UTC")
     texto_final = prepend_disclaimer(minuta.texto, user, data_iso)
 
+    # AUDITOR adversarial (Camada 4 do TIER 0) — roda sobre o TEXTO ORIGINAL
+    # (sem disclaimer; disclaimer é cabeçalho cosmético) para não distorcer
+    # heurísticas como vocabulário vetado ou endereçamento. NÃO bloqueia
+    # entrega: apenas sinaliza para o curador humano decidir.
+    parecer_adversarial = auditar_adversarial(minuta.texto, req.fatos)
+
     # consumir cota só após geração bem-sucedida
     await consumir_peca(session, sub)
 
@@ -228,6 +235,7 @@ async def draft_llm(
         },
         "quality": qualidade.to_dict(),
         "assertions_falhas": falhas,
+        "auditor_adversarial": parecer_adversarial.to_dict(),
         "billing": {
             "pecas_consumidas_no_periodo": sub.pecas_consumidas_no_periodo,
             "pecas_incluidas": sub.pecas_incluidas,

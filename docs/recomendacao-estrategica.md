@@ -32,22 +32,28 @@ Isso é uma armadilha conhecida para fundador-solo em LegalTech:
 
 ## Minha recomendação
 
-**Nexus é infraestrutura interna do escritório Ribeiro & Tigre. Inova by Tigre é o produto
-público.** Não invente uma terceira marca SaaS.
+**Nexus é infraestrutura técnica deste repo. Inova by Tigre é metodologia
+embrionária autoral do Marcelo Tigre — independente, não fundida com o Nexus.**
 
-Por que essa estrutura é a certa para você agora:
+Por que separar:
 
-1. **Inova by Tigre já tem chancela ConJur e está publicado.** É o produto que o mercado já
-   reconhece. Nexus é o "como" por trás do "quê" (Inova).
-2. **Monetização que sobrevive à OAB:** Inova é metodologia/treinamento/licença de método para
-   outros advogados — **dentro** do que a OAB tolera (já está no ar). Marketplace SaaS de
-   análise jurídica por crédito está **fora** sem parecer formal. Os dois modelos não são
-   comparáveis em risco.
-3. **Engine fica defensável:** Nexus como infra privada protege seu *know-how* (HALT, Dado
-   Líquido, doutrina embutida) em vez de expô-lo num SaaS comoditizado. Capital intelectual
-   composta — fica seu.
-4. **HITL real:** advogado-operador segue responsável, que é a única forma de a OAB e o cliente
-   final confiarem.
+1. **Inova by Tigre já tem chancela ConJur e está publicado** como **método**
+   autoral do Marcelo (não como software). É produto de mentoria/treinamento
+   que vive por mérito próprio.
+2. **Nexus é a infra técnica** (este repo) — protocolo TIER 0 em código,
+   com HALT + Dado Líquido + audit trail. Não precisa se apresentar como
+   "implementação do Inova" para ter valor.
+3. **Não fundir os dois evita dois riscos:**
+   - **Conflito de marca** — Inova tem narrativa própria ("teoria dos jogos
+     no processo penal"); Nexus é infra. Misturar reduz clareza de ambos.
+   - **Exposição de know-how** — se Nexus for vendido como "Inova-em-código",
+     compromete o moat da mentoria Inova.
+4. **Monetização independente:**
+   - Inova: metodologia/treinamento/licença — modelo já consolidado, OAB
+     tolera.
+   - Nexus: ferramenta de produtividade B2B para advogados (escopo §1) com
+     gate OAB explícito — caminho separado.
+5. **HITL real em ambos:** advogado-operador responsável.
 
 ## As 4 ações das próximas 4-8 semanas (em ordem)
 
@@ -58,8 +64,10 @@ Por que essa estrutura é a certa para você agora:
    ajusta, assina, protocola**. Esse ciclo prova o produto antes de qualquer venda.
 3. **Provisionar Railway com `NEXUS_TOKEN` + `CASO_DATA_DIR`** — infra privada do escritório,
    não exposta ao público. Ver `deploy.md`.
-4. **Reposicionar a landing como porta da Inova by Tigre** — Nexus vira o motor mencionado no
-   rodapé, não o protagonista. JSON-LD já está pronto para isso (commit `867cc42`).
+4. **Reposicionar a landing** — sem fundir Inova com Nexus. A landing
+   é da banca (Ribeiro & Tigre) e/ou do Nexus como infra. Inova vive
+   no domínio próprio `inovabytigre.com`. Não criar fusão visual entre
+   marcas que devem permanecer independentes.
 
 ## O que **adiar** (não eliminar — adiar)
 
