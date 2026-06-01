@@ -16,6 +16,7 @@ processo vivem fora do repositório, no `$CASO_DATA_DIR` controlado pelo operado
 - [hub-agentes.md](./hub-agentes.md) — **mapa-mestre** do ecossistema (brand + protocolo + agentes + skills + engine)
 - [tier-0-protocolo.md](./tier-0-protocolo.md) — protocolo doutrinário canônico (7 camadas)
 - [audit-drive-gems.md](./audit-drive-gems.md) — auditoria dos 8 Gems Gemini + 3 Skills do Drive vs. TIER 0
+- [skills/](./skills/) — Skills extraídas do Drive (engenharia-juridica, metodo-tigre, peticao-nexumdocs)
 
 ## Produto e evolução
 - [recomendacao-estrategica.md](./recomendacao-estrategica.md) — **julgamento direto sobre o caminho**
