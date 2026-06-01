@@ -53,10 +53,11 @@
   railway.toml + 113/113 testes verdes.
 - **Posicionamento:** se for público algum dia, é como **ferramenta de
   produtividade para advogados B2B** (escopo §1), não consultoria ao leigo.
-- **Recomendação estratégica anterior** ([recomendacao-estrategica.md](./recomendacao-estrategica.md)):
-  Nexus permanecer infra interna do escritório; Inova by Tigre é a marca
-  comercial. Decisão depois revisada para "marketplace agora" e arquitetada
-  em [marketplace-escopo.md](./marketplace-escopo.md).
+- **Independente da Inova by Tigre.** Inova é metodologia embrionária autoral
+  do Marcelo Tigre (vide §1.2); vive em domínio e narrativa próprios. Nexus
+  não se apresenta como "implementação do Inova" — são marcas e produtos
+  separados, sob mesma autoria intelectual mas sem fusão visual nem
+  programática.
 
 ## 2. Protocolo doutrinário — fonte da verdade
 
