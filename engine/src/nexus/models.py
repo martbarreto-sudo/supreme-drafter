@@ -45,6 +45,12 @@ class Feito(BaseModel):
         description="Destinatário processual da peça (ex.: 'STJ', 'TJ-PE — 2ª Vara Criminal'). "
         "Curador humano confirma antes do protocolo.",
     )
+    fontes_silenciadas: list[str] = Field(
+        default_factory=list,
+        description="Auditoria de Silêncio — documentos/atos que DEVERIAM estar nos autos "
+        "para sustentar a acusação e NÃO estão. Cada item entra como linha do bloco "
+        "AUDITORIA DE SILÊNCIO da minuta e como prova negativa contra o Estado.",
+    )
     vulnerabilidades: list[Vulnerabilidade] = Field(default_factory=list)
 
 

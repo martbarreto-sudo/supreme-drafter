@@ -14,6 +14,12 @@ FEITOS: dict[str, Feito] = {
             "art. 226, II e III, CPP"
         ),
         tribunal_destino="STJ — Sexta Turma",
+        fontes_silenciadas=[
+            "Termo formal de reconhecimento lavrado conforme art. 226, II e III, CPP",
+            "Vídeo/áudio da audiência de instrução para auditar exposição prévia à foto",
+            "Registro de outras testemunhas oculares — corroboração ausente",
+            "Laudo de papiloscopia ou perícia técnica independente do reconhecimento subjetivo",
+        ],
         vulnerabilidades=[
             Vulnerabilidade(
                 fato_id="reconhecimento-inicial",
@@ -53,6 +59,12 @@ FEITOS: dict[str, Feito] = {
             "art. 158-A, CPP (cadeia de custódia)"
         ),
         tribunal_destino="TJ-PE — Câmara Criminal",
+        fontes_silenciadas=[
+            "Hash MD5/SHA-256 do dispositivo apreendido (registrado na apreensão)",
+            "Cadeia de custódia documentada do dispositivo entre apreensão e laudo",
+            "Logs de acesso/manipulação do dispositivo na delegacia",
+            "Mandado judicial específico para extração de dados em nuvem (se aplicável)",
+        ],
         vulnerabilidades=[
             Vulnerabilidade(
                 fato_id="marco-temporal",
@@ -73,6 +85,12 @@ FEITOS: dict[str, Feito] = {
             "(motivação obrigatória)"
         ),
         tribunal_destino="TJ-PE — Vara de Medidas Protetivas de Urgência",
+        fontes_silenciadas=[
+            "FONAR (Formulário Nacional de Avaliação de Risco) preenchido com nome da ofendida",
+            "Termo de oitiva da ofendida em juízo após a liminar",
+            "Documentação da reavaliação periódica do risco (Tema 1249/STJ)",
+            "Comprovação de contemporaneidade entre fato e pedido de medida",
+        ],
         vulnerabilidades=[
             # Anonimizado. fonte=None + PENDENTE: o HALT exige auditoria contra
             # fonte primária no ambiente do operador antes de qualquer minuta.
