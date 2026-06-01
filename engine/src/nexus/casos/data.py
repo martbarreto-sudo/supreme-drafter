@@ -7,7 +7,12 @@ FEITOS: dict[str, Feito] = {
     "Feito-HBM": Feito(
         id="Feito-HBM",
         quadrante="Reconhecimento fotográfico",
-        eixo_dogmatico="Tema 1.258/STF + HC 598.887/SC (STJ)",
+        eixo_dogmatico=(
+            "Tema 1.258/STF (distinguishing) + HC 598.887/SC, STJ "
+            "(reconhecimento foto isolada = nulidade) + HC 712.781/RJ, STJ "
+            "(contágio probatório / frutos da árvore envenenada) + "
+            "art. 226, II e III, CPP"
+        ),
         vulnerabilidades=[
             Vulnerabilidade(
                 fato_id="reconhecimento-inicial",
@@ -41,7 +46,11 @@ FEITOS: dict[str, Feito] = {
     "Feito-RC": Feito(
         id="Feito-RC",
         quadrante="Telemática / interceptação",
-        eixo_dogmatico="Tema 977/STF",
+        eixo_dogmatico=(
+            "Tema 977/STF (cadeia de custódia de prova digital) + "
+            "RHC 143.169/RJ, STJ (prova digital sem hash = nulidade) + "
+            "art. 158-A, CPP (cadeia de custódia)"
+        ),
         vulnerabilidades=[
             Vulnerabilidade(
                 fato_id="marco-temporal",
@@ -56,7 +65,11 @@ FEITOS: dict[str, Feito] = {
     "Feito-FB": Feito(
         id="Feito-FB",
         quadrante="Medidas protetivas — nulidade de origem",
-        eixo_dogmatico="Tema 1249/STJ (escudo) + Art. 315, §2º, CPP (nulidade)",
+        eixo_dogmatico=(
+            "Tema 1249/STJ (escudo procedimental MP) + art. 315, §2º, CPP "
+            "(nulidade por fundamentação genérica) + art. 93, IX, CRFB "
+            "(motivação obrigatória)"
+        ),
         vulnerabilidades=[
             # Anonimizado. fonte=None + PENDENTE: o HALT exige auditoria contra
             # fonte primária no ambiente do operador antes de qualquer minuta.
