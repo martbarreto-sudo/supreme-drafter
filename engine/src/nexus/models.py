@@ -45,6 +45,12 @@ class Feito(BaseModel):
         description="Destinatário processual da peça (ex.: 'STJ', 'TJ-PE — 2ª Vara Criminal'). "
         "Curador humano confirma antes do protocolo.",
     )
+    peca_alvo: PecaTipo | None = Field(
+        default=None,
+        description="Tipo de peça típico para este eixo dogmático (ex.: 'HC' para Tema 1.258, "
+        "'MANIFESTACAO' para medidas protetivas). Sugestão ao operador — não vinculante; "
+        "o curador decide qual peça gerar via /draft/llm.",
+    )
     fontes_silenciadas: list[str] = Field(
         default_factory=list,
         description="Auditoria de Silêncio — documentos/atos que DEVERIAM estar nos autos "

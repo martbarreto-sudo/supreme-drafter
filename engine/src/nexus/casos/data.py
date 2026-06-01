@@ -14,6 +14,7 @@ FEITOS: dict[str, Feito] = {
             "art. 226, II e III, CPP"
         ),
         tribunal_destino="STJ — Sexta Turma",
+        peca_alvo="HC",
         fontes_silenciadas=[
             "Termo formal de reconhecimento lavrado conforme art. 226, II e III, CPP",
             "Vídeo/áudio da audiência de instrução para auditar exposição prévia à foto",
@@ -59,6 +60,7 @@ FEITOS: dict[str, Feito] = {
             "art. 158-A, CPP (cadeia de custódia)"
         ),
         tribunal_destino="TJ-PE — Câmara Criminal",
+        peca_alvo="APELACAO",
         fontes_silenciadas=[
             "Hash MD5/SHA-256 do dispositivo apreendido (registrado na apreensão)",
             "Cadeia de custódia documentada do dispositivo entre apreensão e laudo",
@@ -85,6 +87,7 @@ FEITOS: dict[str, Feito] = {
             "(motivação obrigatória)"
         ),
         tribunal_destino="TJ-PE — Vara de Medidas Protetivas de Urgência",
+        peca_alvo="MANIFESTACAO",
         fontes_silenciadas=[
             "FONAR (Formulário Nacional de Avaliação de Risco) preenchido com nome da ofendida",
             "Termo de oitiva da ofendida em juízo após a liminar",
