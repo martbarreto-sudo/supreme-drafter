@@ -40,6 +40,11 @@ class Feito(BaseModel):
     id: str
     quadrante: str
     eixo_dogmatico: str
+    tribunal_destino: str | None = Field(
+        default=None,
+        description="Destinatário processual da peça (ex.: 'STJ', 'TJ-PE — 2ª Vara Criminal'). "
+        "Curador humano confirma antes do protocolo.",
+    )
     vulnerabilidades: list[Vulnerabilidade] = Field(default_factory=list)
 
 
