@@ -12,7 +12,10 @@ def _fato() -> Fato:
     )
 
 
-# Minuta sintética que satisfaz todos os gates do Feito-HBM
+# Minuta sintética que satisfaz todos os gates do Feito-HBM.
+# Inclui todos os precedentes/dispositivos catalogados no eixo dogmático
+# (Tema 1.258, HC 598.887, HC 712.781, art. 226) — esse é justamente o
+# contrato que o gate `precedente_do_eixo` verifica.
 _MINUTA_OK = """
 HABEAS CORPUS — Feito-HBM
 
@@ -23,7 +26,8 @@ II. TABELA DE VULNERABILIDADES
 | ... |
 
 III. DO DIREITO
-Distinguishing estrito contra o Tema 1.258/STF, conforme HC 598.887/SC (STJ).
+Distinguishing estrito contra o Tema 1.258/STF, conforme HC 598.887/SC (STJ)
+e HC 712.781/RJ (STJ — contágio probatório). Violação do art. 226, II e III, do CPP.
 
 IV. DOS PEDIDOS
 Requer-se a concessão da ordem.

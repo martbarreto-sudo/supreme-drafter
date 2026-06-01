@@ -76,12 +76,16 @@ def _gate_fonte_por_fato(minuta: str, fatos: list[Fato]) -> GateResult:
 def _ref_tokens(uri: str) -> list[str]:
     """Tokens identificadores de uma fonte para detectar sua citação na minuta.
 
-    Ex.: certidao://feito-hbm/inquerito-fls-12 → ['certidao', 'feito-hbm', 'inquerito-fls-12', '12']
+    Ex.: certidao://feito-hbm/inquerito-fls-12 → ['certidao', 'feito', 'hbm', 'inquerito', 'fls']
+
+    Filtra tokens < 3 chars para evitar colisões: tokens numéricos curtos como
+    "12" colidem com substrings de números de precedente (ex.: "712.781") e
+    geram falso positivo no gate fonte_por_fato.
     """
     corpo = uri.split("://", 1)[-1]
     partes = re.split(r"[/\-_]", corpo)
     tokens = [uri.split("://", 1)[0]] + [p for p in partes if p]
-    return [t for t in tokens if len(t) >= 2]
+    return [t for t in tokens if len(t) >= 3]
 
 
 def _gate_precedente_do_eixo(minuta: str, feito: Feito) -> GateResult:
