@@ -51,7 +51,7 @@ curl -X POST localhost:8000/draft -H 'Content-Type: application/json' -d '{
 ## Configuração (Fase 4)
 
 - `ANTHROPIC_API_KEY` — obrigatório para `/draft/llm`. Sem isto, o endpoint retorna 503.
-- `NEXUS_MODEL` — opcional. Default: `claude-opus-4-8`. Alternativa: `claude-sonnet-4-6` (custo ~40% menor, qualidade ainda alta).
+- `NEXUS_MODEL` — opcional. Default: `claude-opus-4-8` (~US$ 0,24–0,35 por peça). Alternativa: `claude-sonnet-4-6` (~US$ 0,04–0,07 por peça — ~80% mais barato, qualidade ainda alta para a maioria dos casos).
 - `NEXUS_TOKEN` — bearer obrigatório para `/autos` (e recomendado para `/draft/llm` em deploy).
 - `CASO_DATA_DIR` — diretório fora do repo onde `/autos` persiste binários e onde os dados reais dos feitos vivem em produção.
 
