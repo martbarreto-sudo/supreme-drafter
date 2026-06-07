@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supreme Drafter V18 | Controladoria</title>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --gold-dark: #b8962e;
+            --bg-primary: #050b14;
+            --bg-secondary: #0a1628;
+            --bg-card: #0d1f3c;
+            --text-primary: #ffffff;
+            --text-secondary: #a9a9a9;
+            --success: #00c853;
+            --warning: #ffc107;
+            --danger: #ff5252;
+            --info: #00bcd4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-bottom: 1px solid var(--gold);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            background: var(--gold);
+            color: var(--bg-primary);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border-radius: 3px;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--bg-secondary);
+            border-right: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(212, 175, 55, 0.1);
+            border-left-color: var(--gold);
+        }
+
+        .nav-item.active {
+            color: var(--gold);
+        }
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+        }
+
+        .nav-badge.warning {
+            background: var(--warning);
+            color: var(--bg-primary);
+        }
+
+        .nav-badge.success {
+            background: var(--success);
+        }
+
+        /* Main Content */
+        .main-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            color: var(--gold);
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .card-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .status-badge {
+            font-size: 0.65rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .status-entregue {
+            background: rgba(0, 200, 83, 0.2);
+            color: var(--success);
+        }
+
+        .status-pendente {
+            background: rgba(255, 193, 7, 0.2);
+            color: var(--warning);
+        }
+
+        .status-urgente {
+            background: rgba(255, 82, 82, 0.2);
+            color: var(--danger);
+        }
+
+        .status-analise {
+            background: rgba(0, 188, 212, 0.2);
+            color: var(--info);
+        }
+
+        .card-body {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Workflow Section */
+        .workflow-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .workflow-title {
+            font-size: 1rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .workflow-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .workflow-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        .workflow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .step-icon.completed {
+            background: var(--gold);
+            color: var(--bg-primary);
+        }
+
+        .step-icon.active {
+            background: var(--bg-secondary);
+            color: var(--gold);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.3);
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            max-width: 100px;
+        }
+
+        /* Right Panel */
+        .right-panel {
+            background: var(--bg-secondary);
+            border-left: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 1.5rem;
+        }
+
+        .panel-section {
+            margin-bottom: 2rem;
+        }
+
+        .panel-title {
+            font-size: 0.8rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Countdown */
+        .countdown-card {
+            background: linear-gradient(135deg, rgba(255, 82, 82, 0.2) 0%, rgba(255, 82, 82, 0.05) 100%);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .countdown-title {
+            font-size: 0.75rem;
+            color: var(--danger);
+            margin-bottom: 0.5rem;
+        }
+
+        .countdown-case {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .countdown-timer {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .timer-unit {
+            background: var(--bg-primary);
+            padding: 0.5rem;
+            border-radius: 4px;
+            text-align: center;
+            min-width: 50px;
+        }
+
+        .timer-value {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--danger);
+        }
+
+        .timer-label {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        /* Activity Feed */
+        .activity-item {
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-text {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .activity-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* Gen Agents */
+        .gen-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .gen-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .gen-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .gen-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .gen-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--gold);
+            color: var(--bg-primary);
+        }
+
+        .action-icon {
+            font-size: 1.25rem;
+        }
+
+        /* Table */
+        .table-container {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: var(--bg-secondary);
+            color: var(--gold);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 1rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        tr:hover {
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .case-link {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .case-link:hover {
+            color: var(--gold);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gold);
+            transition: width 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar, .right-panel {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <h1>SUPREME DRAFTER</h1>
+            <span>V18</span>
+        </div>
+        <div class="header-stats">
+            <div class="stat-item">
+                <div class="stat-value">148</div>
+                <div class="stat-label">NPUs Ativas</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Workspaces</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">2</div>
+                <div class="stat-label">Entregas Hoje</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Gens Ativos</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Workspaces Ativos</div>
+                <div class="nav-item active">
+                    <span class="nav-icon">I</span>
+                    <span>Operacao Kefale</span>
+                    <span class="nav-badge">4</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">II</span>
+                    <span>Prescricao</span>
+                    <span class="nav-badge warning">1</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">III</span>
+                    <span>Hearsay Rule</span>
+                    <span class="nav-badge success">OK</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">IV</span>
+                    <span>Consuncao</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">V</span>
+                    <span>Execucao Penal</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">VI</span>
+                    <span>Medidas Protetivas</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">Fluxo de Trabalho</div>
+                <div class="nav-item">
+                    <span class="nav-icon">1</span>
+                    <span>Ingestao PJe</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">2</span>
+                    <span>Scrubber (Rust)</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">3</span>
+                    <span>Auditoria Gens</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">4</span>
+                    <span>Curadoria HITL</span>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-title">API Routes</div>
+                <div class="nav-item">
+                    <span class="nav-icon">&gt;</span>
+                    <span>/auth/revoke</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">&gt;</span>
+                    <span>/workspaces</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">&gt;</span>
+                    <span>/uploads/presign</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">&gt;</span>
+                    <span>/conversations</span>
+                </div>
+                <div class="nav-item">
+                    <span class="nav-icon">&gt;</span>
+                    <span>/messages/stream</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Workflow -->
+            <div class="workflow-container">
+                <div class="workflow-title">Fluxo de Producao de Minutas</div>
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-icon completed">1</div>
+                        <div class="step-label">Ingestao de Dossie</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-icon completed">2</div>
+                        <div class="step-label">Higienizacao PII</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-icon completed">3</div>
+                        <div class="step-label">Analise dos Gens</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-icon active">4</div>
+                        <div class="step-label">Geracao de Minuta</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-icon">5</div>
+                        <div class="step-label">Curadoria Humana</div>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-icon">6</div>
+                        <div class="step-label">Protocolo PJe</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Cards -->
+            <div class="section-header">
+                <h2 class="section-title">Casos em Andamento</h2>
+            </div>
+
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Leandro Vidal da Silva</div>
+                            <div class="card-subtitle">RSE 0018084-07.2026.8.17.2001</div>
+                        </div>
+                        <span class="status-badge status-entregue">Entregue</span>
+                    </div>
+                    <div class="card-body">
+                        REsp Art. 155 CPP - Hearsay / Tema 1.260 STJ. Despronuncia requerida.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">WS III</div>
+                        <div class="meta-item">PDF 41KB</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Joao Marcos dos Santos</div>
+                            <div class="card-subtitle">AGR 0017121-85.2025.8.17.9000</div>
+                        </div>
+                        <span class="status-badge status-entregue">Entregue</span>
+                    </div>
+                    <div class="card-body">
+                        REsp Inclusao SPF - Cadeia de Custodia Digital / Sumula 661 STJ.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">SPF</div>
+                        <div class="meta-item">PDF 42KB</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Leandro Ferreira da Silva</div>
+                            <div class="card-subtitle">AP 0031951-54.2006.8.17.0001</div>
+                        </div>
+                        <span class="status-badge status-urgente">Urgente</span>
+                    </div>
+                    <div class="card-body">
+                        Prescricao Intercorrente PPP - Termo fatal: 31/03/2027. Prazo de 12 anos.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">WS II</div>
+                        <div class="meta-item">300 dias</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Frederico G. Xavier de Souza</div>
+                            <div class="card-subtitle">AP 0002237-43.2025.8.17.2730</div>
+                        </div>
+                        <span class="status-badge status-pendente">Pendente</span>
+                    </div>
+                    <div class="card-body">
+                        Abuso de Autoridade Art. 13, III, Lei 13.869/19 - Interrogatorio sem defensor.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">WS I</div>
+                        <div class="meta-item">CERESP-BH</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Raphael Jose Lopes</div>
+                            <div class="card-subtitle">AP 0015384-69.2024.8.17.2990</div>
+                        </div>
+                        <span class="status-badge status-pendente">Pendente</span>
+                    </div>
+                    <div class="card-body">
+                        Impronuncia - Hearsay Rule HC 560.552/RS. Irmao da vitima isentou o reu.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">WS III</div>
+                        <div class="meta-item">Juri Olinda</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Henrique Brito de Moraes</div>
+                            <div class="card-subtitle">RHC 232.619/PE</div>
+                        </div>
+                        <span class="status-badge status-analise">Analise</span>
+                    </div>
+                    <div class="card-body">
+                        Consuncao + Afastamento Hediondez - Pistola 9mm e uso restrito, nao proibido.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">WS IV</div>
+                        <div class="meta-item">STJ</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Osnir Candido Urbano</div>
+                            <div class="card-subtitle">AP 0002237-43.2025.8.17.2730</div>
+                        </div>
+                        <span class="status-badge status-pendente">Pendente</span>
+                    </div>
+                    <div class="card-body">
+                        Cadeia de Custodia - Celular de Bambam sem hash MD5/SHA-256. Litispendencia.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">WS I</div>
+                        <div class="meta-item">Op. Kefale</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <div class="card-title">Brunno Henrique de Sena</div>
+                            <div class="card-subtitle">GEP 1002725-87.2021.8.17.4001</div>
+                        </div>
+                        <span class="status-badge status-analise">Analise</span>
+                    </div>
+                    <div class="card-body">
+                        Execucao Penal - Falta grave sem apreensao fisica. Inercia judicial em escolta.
+                    </div>
+                    <div class="card-meta">
+                        <div class="meta-item">WS V</div>
+                        <div class="meta-item">44a 6m</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rotas da API -->
+            <div class="section-header">
+                <h2 class="section-title">Mapeamento de Rotas NEXUM API v2</h2>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Endpoint</th>
+                            <th>Verbo</th>
+                            <th>Funcao</th>
+                            <th>Seguranca</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>/api/v2/auth/revoke</code></td>
+                            <td>POST</td>
+                            <td>DLP Kill-Switch - Revogacao de Sessao</td>
+                            <td>mTLS + Admin Cert</td>
+                            <td><span class="status-badge status-entregue">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v2/workspaces</code></td>
+                            <td>POST</td>
+                            <td>Criacao de Workspace Isolado</td>
+                            <td>JWT + RLS</td>
+                            <td><span class="status-badge status-entregue">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v2/workspaces/{id}</code></td>
+                            <td>GET</td>
+                            <td>Recuperacao de Metadados</td>
+                            <td>JWT + Tenant Check</td>
+                            <td><span class="status-badge status-entregue">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v2/uploads/presign</code></td>
+                            <td>POST</td>
+                            <td>URL Assinada S3 Privado</td>
+                            <td>SHA-256 + Scrubber</td>
+                            <td><span class="status-badge status-entregue">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v2/sources</code></td>
+                            <td>POST</td>
+                            <td>Ingestao e Indexacao PJe</td>
+                            <td>ClamAV + NFC</td>
+                            <td><span class="status-badge status-entregue">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v2/conversations</code></td>
+                            <td>POST</td>
+                            <td>Inicializacao RAG</td>
+                            <td>context_lock</td>
+                            <td><span class="status-badge status-entregue">Ativo</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>/api/v2/messages/stream</code></td>
+                            <td>GET</td>
+                            <td>Streaming SSE Analista STJ</td>
+                            <td>mTLS + Volatile RAM</td>
+                            <td><span class="status-badge status-entregue">Ativo</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <!-- Right Panel -->
+        <aside class="right-panel">
+            <div class="panel-section">
+                <div class="panel-title">Alertas de Prazo</div>
+
+                <div class="countdown-card">
+                    <div class="countdown-title">PRESCRICAO INTERCORRENTE</div>
+                    <div class="countdown-case">Leandro Ferreira da Silva</div>
+                    <div class="countdown-timer">
+                        <div class="timer-unit">
+                            <div class="timer-value" id="days">300</div>
+                            <div class="timer-label">Dias</div>
+                        </div>
+                        <div class="timer-unit">
+                            <div class="timer-value" id="hours">00</div>
+                            <div class="timer-label">Horas</div>
+                        </div>
+                        <div class="timer-unit">
+                            <div class="timer-value" id="mins">00</div>
+                            <div class="timer-label">Min</div>
+                        </div>
+                        <div class="timer-unit">
+                            <div class="timer-value" id="secs">00</div>
+                            <div class="timer-label">Seg</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">Gens Ativos</div>
+
+                <div class="gen-card">
+                    <div class="gen-header">
+                        <span class="gen-name">Gen-Custodia</span>
+                        <span class="gen-status"></span>
+                    </div>
+                    <div class="gen-desc">Art. 158-A/158-B CPP - Hash e Metadados</div>
+                </div>
+
+                <div class="gen-card">
+                    <div class="gen-header">
+                        <span class="gen-name">Gen-Reconhecimento</span>
+                        <span class="gen-status"></span>
+                    </div>
+                    <div class="gen-desc">Art. 226 CPP / HC 598.887/SC</div>
+                </div>
+
+                <div class="gen-card">
+                    <div class="gen-header">
+                        <span class="gen-name">Gen-Chronos</span>
+                        <span class="gen-status"></span>
+                    </div>
+                    <div class="gen-desc">Art. 109 CP - Prescricao e Prazos</div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">Acoes Rapidas</div>
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="window.open('resp-leandro-vidal.html')">
+                        <span class="action-icon">L</span>
+                        <span>Leandro Vidal</span>
+                    </button>
+                    <button class="action-btn" onclick="window.open('resp-joao-marcos.html')">
+                        <span class="action-icon">J</span>
+                        <span>Joao Marcos</span>
+                    </button>
+                    <button class="action-btn" onclick="window.print()">
+                        <span class="action-icon">P</span>
+                        <span>Imprimir</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="action-icon">+</span>
+                        <span>Novo Caso</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">Atividade Recente</div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">P</div>
+                    <div class="activity-content">
+                        <div class="activity-text">PDF Joao Marcos gerado</div>
+                        <div class="activity-time">Hoje, 16:38</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">P</div>
+                    <div class="activity-content">
+                        <div class="activity-text">PDF Leandro Vidal gerado</div>
+                        <div class="activity-time">Hoje, 16:38</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">D</div>
+                    <div class="activity-content">
+                        <div class="activity-text">Dossie Joao Marcos ingerido</div>
+                        <div class="activity-time">Hoje, 15:04</div>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon">A</div>
+                    <div class="activity-content">
+                        <div class="activity-text">Tema 1.260 STJ verificado</div>
+                        <div class="activity-time">Hoje, 14:30</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Countdown Timer for Leandro Ferreira
+        function updateCountdown() {
+            const targetDate = new Date('2027-03-31T23:59:59');
+            const now = new Date();
+            const diff = targetDate - now;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('mins').textContent = mins.toString().padStart(2, '0');
+            document.getElementById('secs').textContent = secs.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
