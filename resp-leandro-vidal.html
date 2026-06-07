@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REsp — Leandro de Araújo Vidal | Ribeiro & Tigre</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 3cm 2cm 3cm;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            padding: 2cm 3cm;
+            max-width: 21cm;
+            margin: 0 auto;
+        }
+        .header-tribunal {
+            text-align: center;
+            margin-bottom: 2em;
+            font-weight: bold;
+        }
+        .header-tribunal .destino {
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-bottom: 0.5em;
+        }
+        .dados-processo {
+            margin-bottom: 2em;
+            font-size: 11pt;
+        }
+        .dados-processo p {
+            margin-bottom: 0.3em;
+        }
+        .dados-processo strong {
+            display: inline-block;
+            width: 120px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 2em 0 1.5em 0;
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 1.5em 0 0.8em 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 1.2em 0 0.6em 0;
+        }
+        p {
+            text-align: justify;
+            text-indent: 2em;
+            margin-bottom: 0.8em;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        .citacao {
+            margin: 1em 0 1em 4em;
+            font-size: 10pt;
+            line-height: 1.3;
+            text-align: justify;
+        }
+        .citacao-fonte {
+            text-align: right;
+            font-size: 10pt;
+            font-style: italic;
+            margin-top: 0.3em;
+        }
+        ul, ol {
+            margin: 0.8em 0 0.8em 3em;
+        }
+        li {
+            margin-bottom: 0.5em;
+            text-align: justify;
+        }
+        .assinatura {
+            margin-top: 4em;
+            text-align: center;
+        }
+        .assinatura .local-data {
+            margin-bottom: 3em;
+        }
+        .assinatura .advogado {
+            margin-bottom: 0.3em;
+            font-weight: bold;
+        }
+        .assinatura .oab {
+            font-size: 10pt;
+        }
+        .destaque {
+            font-weight: bold;
+        }
+        .sublinhado {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 0.4em 0.6em;
+            text-align: left;
+            vertical-align: top;
+        }
+        table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        .nota-rodape {
+            font-size: 9pt;
+            margin-top: 2em;
+            padding-top: 1em;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #050b14;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .btn-print:hover {
+            background: #b8962e;
+        }
+        .status-tema {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 1em;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+    </style>
+</head>
+<body>
+
+<button class="btn-print no-print" onclick="window.print()">IMPRIMIR / SALVAR PDF</button>
+
+<div class="header-tribunal">
+    <p class="destino">Excelentíssimo Senhor Desembargador Presidente do Egrégio Tribunal de Justiça do Estado de Pernambuco</p>
+</div>
+
+<div class="dados-processo">
+    <p><strong>Processo:</strong> RSE nº 0018084-07.2026.8.17.2001</p>
+    <p><strong>Origem:</strong> 2ª Câmara Criminal do TJPE</p>
+    <p><strong>Relator:</strong> Des. Isaías Andrade Lins Neto</p>
+    <p><strong>Recorrente:</strong> LEANDRO DE ARAÚJO VIDAL</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+</div>
+
+<h1>Recurso Especial</h1>
+
+<p><strong>LEANDRO DE ARAÚJO VIDAL</strong>, já qualificado nos autos do Recurso em Sentido Estrito em epígrafe, por seus advogados infra-assinados, com fundamento no <strong>artigo 105, inciso III, alínea "a", da Constituição da República</strong>, vem, respeitosamente, interpor o presente</p>
+
+<p class="no-indent" style="text-align: center; font-size: 14pt; font-weight: bold; margin: 1.5em 0;">RECURSO ESPECIAL</p>
+
+<p>em face do v. acórdão unânime proferido pela Colenda 2ª Câmara Criminal deste Egrégio Tribunal, que negou provimento ao recurso defensivo e manteve a decisão de pronúncia, por <strong>negativa de vigência ao artigo 155 do Código de Processo Penal</strong>, consoante as razões anexas.</p>
+
+<p>Requer seja o presente recurso recebido, processado e remetido ao Colendo Superior Tribunal de Justiça.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 3 de junho de 2026.</p>
+    <p class="advogado">Marcelo Cabral de Vasconcelos</p>
+    <p class="oab">OAB/PE</p>
+    <br><br>
+    <p class="advogado">Ydigoras Ribeiro de Albuquerque Junior</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<h1>Razões do Recurso Especial</h1>
+
+<div class="dados-processo">
+    <p><strong>Recorrente:</strong> LEANDRO DE ARAÚJO VIDAL</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+    <p><strong>Origem:</strong> Acórdão da 2ª Câmara Criminal do TJPE — RSE nº 0018084-07.2026.8.17.2001</p>
+</div>
+
+<p class="no-indent" style="text-align: center; margin: 2em 0;"><strong>EMÉRITOS MINISTROS,<br>COLENDA TURMA JULGADORA,</strong></p>
+
+<h2>I — Síntese da Demanda e do Acórdão Recorrido</h2>
+
+<p>O Recorrente foi denunciado pela suposta prática dos crimes de homicídio qualificado (art. 121, §2º, I e IV, do Código Penal), homicídio qualificado tentado (art. 121, §2º, II e IV, c/c art. 14, II, do CP) e associação criminosa armada (art. 288, §1º, do CP).</p>
+
+<p>Pronunciado em primeiro grau, interpôs Recurso em Sentido Estrito perante o Tribunal de Justiça do Estado de Pernambuco. A 2ª Câmara Criminal, por votação unânime, <strong>negou provimento</strong> ao recurso, mantendo integralmente a decisão de pronúncia.</p>
+
+<p>O v. acórdão recorrido, conquanto reconheça que a prova se assenta em elementos indiretos — inclusive testemunho de "ouvir dizer" (<em>hearsay</em>) —, sustenta sua suficiência ao argumento de que "não versa o caso unicamente de prova testemunhal hearsay", remetendo "eventuais dúvidas" à soberania do Tribunal do Júri.</p>
+
+<p>Daí a interposição do presente Recurso Especial, fundado na <strong>negativa de vigência ao artigo 155 do Código de Processo Penal</strong>.</p>
+
+<h2>II — Da Admissibilidade</h2>
+
+<h3>II.1 — Do Cabimento (art. 105, III, "a", CR/88)</h3>
+
+<p>O v. acórdão recorrido negou vigência ao <strong>artigo 155 do Código de Processo Penal</strong> ao admitir a manutenção da pronúncia lastreada em elementos informativos do inquérito policial e em testemunho indireto (<em>hearsay</em>), sem a necessária confirmação por prova direta produzida sob o crivo do contraditório judicial.</p>
+
+<p>Trata-se de <strong>questão exclusivamente de direito federal</strong>: a definição da espécie de prova apta a fundamentar a pronúncia, à luz do comando normativo do art. 155 do CPP.</p>
+
+<h3>II.2 — Da Não Incidência da Súmula 7/STJ</h3>
+
+<p>Não se pretende a revaloração do acervo probatório. O Recorrente parte da <strong>própria premissa fática fixada pelo acórdão</strong> — que admite o lastro indireto e defende expressamente a suficiência do <em>hearsay</em> — para questionar o <strong>limite normativo</strong> do art. 155 do CPP.</p>
+
+<p>É a exata via percorrida no precedente paradigma <strong>REsp 1.916.733/MG</strong> (Rel. Min. Ribeiro Dantas, 5ª Turma, j. 23/11/2021, DJe 26/11/2021, Info 719), no qual esta Corte Superior examinou a suficiência de depoimento indireto para sustentar qualificadoras na pronúncia, <strong>sem revolvimento fático</strong>, por se tratar de matéria de direito.</p>
+
+<h3>II.3 — Do Prequestionamento</h3>
+
+<p>A matéria foi devida e expressamente ventilada nas razões do Recurso em Sentido Estrito, com citação do artigo 155 do CPP e dos precedentes desta Corte Superior sobre o tema. O v. acórdão recorrido enfrentou a questão, rejeitando a tese defensiva, o que configura o necessário prequestionamento.</p>
+
+<h3>II.4 — Da Tempestividade e do Preparo</h3>
+
+<p>O presente recurso é tempestivo, interposto dentro do prazo legal de 15 (quinze) dias. O Recorrente é beneficiário da justiça gratuita, estando dispensado do recolhimento do preparo.</p>
+
+<h2>III — Do Mérito: Negativa de Vigência ao Art. 155 do CPP</h2>
+
+<h3>III.1 — O Comando Normativo do Art. 155 do CPP</h3>
+
+<p>O artigo 155 do Código de Processo Penal estabelece:</p>
+
+<div class="citacao">
+"Art. 155. O juiz formará sua convicção pela livre apreciação da prova produzida em contraditório judicial, não podendo fundamentar sua decisão <strong>exclusivamente</strong> nos elementos informativos colhidos na investigação, ressalvadas as provas cautelares, não repetíveis e antecipadas."
+</div>
+
+<p>A norma opera uma <strong>separação ontológica</strong> entre <em>elementos de informação</em> (inquérito) e <em>prova</em> (contraditório judicial). A pronúncia, por sua natureza — que remete o acusado ao julgamento popular e, no caso concreto, sustenta custódia cautelar —, não prescinde de lastro probatório judicializado e direto.</p>
+
+<h3>III.2 — A Prova Contra o Recorrente: Elementos Inquisitoriais e Testemunho Indireto</h3>
+
+<p>A imputação de autoria contra <strong>Leandro de Araújo Vidal</strong> repousa em:</p>
+
+<ol type="a">
+    <li><strong>Relatos inquisitoriais</strong> — colhidos exclusivamente na fase policial, sem confirmação em audiência de instrução, consistentes em declarações de terceiros que reproduziram o que "se dizia na comunidade" (<em>vox publica</em>);</li>
+    <li><strong>Depoimento do policial investigador</strong> — que, em juízo, limitou-se a reproduzir o conteúdo da apuração policial, sem relatar percepção direta dos fatos imputados ao Recorrente;</li>
+    <li><strong>Informações de fontes não submetidas ao contraditório direto</strong> — cujo conteúdo foi transmitido por intermediários, sem que o declarante originário fosse inquirido pela defesa.</li>
+</ol>
+
+<p>Nenhuma <strong>testemunha ocular</strong> apontou, em juízo, a participação do Recorrente nos fatos. A prova judicializada, ela própria, é <strong>indireta</strong> — constituindo típico <em>hearsay</em> (testemunho de "ouvir dizer").</p>
+
+<h3>III.3 — A Jurisprudência Consolidada do Superior Tribunal de Justiça</h3>
+
+<p>Esta Corte Superior, em reiterados julgados, firmou o entendimento de que o artigo 155 do CPP veda a pronúncia fundada exclusivamente em elementos inquisitoriais e em testemunho indireto:</p>
+
+<div class="citacao">
+"<strong>RECURSO ESPECIAL. HOMICÍDIO QUALIFICADO. PRONÚNCIA. QUALIFICADORAS FUNDADAS EXCLUSIVAMENTE EM DEPOIMENTO INDIRETO. VIOLAÇÃO AO ART. 155 DO CPP.</strong> [...] As qualificadoras não podem ser admitidas na pronúncia quando fundadas exclusivamente em testemunho indireto (hearsay), colhido apenas no inquérito policial, sem confirmação em juízo por prova direta. Recurso especial provido para excluir as qualificadoras."
+<p class="citacao-fonte">(REsp 1.916.733/MG, Rel. Min. Ribeiro Dantas, 5ª Turma, j. 23/11/2021, Info 719)</p>
+</div>
+
+<div class="citacao">
+"O testemunho indireto (<em>hearsay</em>), produzido apenas no inquérito policial, não constitui, isoladamente, meio de prova apto a fundamentar a pronúncia."
+<p class="citacao-fonte">(REsp 1.373.356/BA, Rel. Min. Rogerio Schietti Cruz, 6ª Turma, Info 603)</p>
+</div>
+
+<p>No caso em exame, <strong>mesmo a prova colhida em juízo</strong> é de natureza indireta — o policial reproduziu a apuração; as demais fontes não foram submetidas ao confronto. Incide, com maior razão, a ratio decidendi dos precedentes.</p>
+
+<h3>III.4 — O Direito ao Confronto (Art. 212 do CPP c/c Art. 8.2.f da CADH)</h3>
+
+<p>O testemunho de "ouvir dizer" padece de vício estrutural: <strong>não permite o confronto</strong>. O declarante originário jamais comparece ao crivo da defesa.</p>
+
+<p>O artigo 8.2, alínea "f", da Convenção Americana sobre Direitos Humanos (Pacto de San José da Costa Rica), de <em>status</em> supralegal no ordenamento brasileiro, assegura ao acusado o direito de:</p>
+
+<div class="citacao">
+"inquirir as testemunhas presentes no tribunal e de obter o comparecimento, como testemunhas ou peritos, de outras pessoas que possam lançar luz sobre os fatos."
+</div>
+
+<p>O artigo 212 do CPP positiva a inquirição direta pelas partes (<em>cross-examination</em>) como núcleo do contraditório. O artigo 213 do CPP, por sua vez, veda à testemunha manifestar "apreciações pessoais, salvo quando inseparáveis da narrativa do fato" — e relatar o que "se dizia na comunidade" é, precisamente, apreciação desvinculada da percepção direta.</p>
+
+<p>Pronunciar com base em relato não confrontável fere o <strong>devido processo convencional</strong> e o <strong>contraditório constitucional</strong> (art. 5º, LV, CR/88).</p>
+
+<h3>III.5 — O Standard Probatório da Pronúncia e a Superação do In Dubio Pro Societate</h3>
+
+<p>O v. acórdão recorrido, ao remeter "eventuais dúvidas" ao Tribunal do Júri, aplica, em substância, o brocardo <em>in dubio pro societate</em>, há muito <strong>rechaçado pelo Supremo Tribunal Federal</strong>:</p>
+
+<div class="citacao">
+"A pronúncia é ato jurisdicional de <strong>filtragem</strong>, não mero carimbo de passagem. A ausência de suporte probatório mínimo não autoriza a remessa ao júri sob o pretexto de respeito à soberania popular. O <em>in dubio pro societate</em> não encontra amparo constitucional."
+<p class="citacao-fonte">(ARE 1.067.392/CE, Rel. Min. Gilmar Mendes, 2ª Turma, j. 26/03/2019)</p>
+</div>
+
+<p>A pronúncia exige <strong>prova consistente de autoria</strong>, não a mera possibilidade de que o acusado tenha praticado o fato. Remeter ao Conselho de Sentença a tarefa de distinguir elemento de cognição de prova apta à condenação é transferir filtragem que compete ao juízo togado.</p>
+
+<h3>III.6 — O Tema 1.260/STJ: Alinhamento Perfeito</h3>
+
+<div class="status-tema">
+    <strong>TEMA 1.260/STJ</strong> — REsp 2.048.687/BA, Rel. Min. Reynaldo Soares da Fonseca, 3ª Seção<br><br>
+    <strong>Questões submetidas a julgamento:</strong><br>
+    (a) Se a pronúncia pode ser baseada exclusivamente em elementos obtidos no inquérito policial, sem confirmação em juízo;<br>
+    (b) Se o testemunho indireto (<em>hearsay</em>), <strong>ainda que colhido em juízo</strong>, basta isoladamente para a pronúncia.<br><br>
+    <strong>Status:</strong> Julgamento suspenso por pedido de vista do Min. Rogerio Schietti Cruz. O voto do Relator é favorável à vedação em ambas as hipóteses.<br><br>
+    <em>Fonte: STJ, Notícias, 06/11/2024 e 02/01/2026.</em>
+</div>
+
+<p>As duas questões afetadas no Tema 1.260 correspondem <strong>exatamente</strong> ao caso concreto — especialmente a <strong>letra (b)</strong>, que aborda a insuficiência do testemunho indireto mesmo quando colhido em audiência, hipótese do depoimento policial nos presentes autos.</p>
+
+<p>O voto do Eminente Ministro Relator, já proferido, é no sentido de que:</p>
+
+<ol type="i">
+    <li>A pronúncia não pode se basear apenas em elementos obtidos no inquérito policial sem confirmação em juízo;</li>
+    <li>O testemunho indireto, ainda que colhido em juízo, não constitui, isoladamente, meio de prova apto à pronúncia.</li>
+</ol>
+
+<p>Caso Vossas Excelências entendam pertinente, requer-se o <strong>sobrestamento</strong> do presente recurso até a fixação da tese no Tema 1.260, ou, alternativamente, o julgamento em consonância com a ratio já delineada pelo Relator.</p>
+
+<h2>IV — Da Distinção do AgRg no REsp 2.192.889/MG</h2>
+
+<p>Antevê-se possível invocação do precedente <strong>AgRg no REsp 2.192.889/MG</strong> (Rel. Min. Reynaldo Soares da Fonseca, 5ª Turma, j. 18/03/2025), no qual se tolerou o <em>hearsay</em> em contexto de facção criminosa, sob o argumento de que o temor da comunidade explicaria a ausência de testemunhas diretas.</p>
+
+<p>O distinguishing é imperativo:</p>
+
+<ol type="a">
+    <li>O temor da comunidade é <strong>circunstância de fato</strong>, não causa de <strong>dispensa normativa</strong> do art. 155 do CPP;</li>
+    <li>Admitir que o medo converta <em>hearsay</em> em prova suficiente <strong>esvazia a garantia exatamente onde ela mais importa</strong> — e cria regime de exceção probatória incompatível com a presunção de inocência;</li>
+    <li>O ordenamento prevê instrumentos para produção de prova em contextos de intimidação (produção antecipada, medidas de proteção a testemunhas — Lei nº 9.807/99); a não utilização desses mecanismos pelo órgão acusatório não pode ser suprida pela <strong>degradação do standard probatório</strong>.</li>
+</ol>
+
+<h2>V — Dos Pedidos</h2>
+
+<p>Ante o exposto, requer o Recorrente a Vossas Excelências:</p>
+
+<ol type="a">
+    <li>O <strong>conhecimento</strong> do presente Recurso Especial, diante do preenchimento de todos os requisitos de admissibilidade;</li>
+    <li>No mérito, o <strong>provimento integral</strong> para reformar o v. acórdão recorrido e reconhecer a negativa de vigência ao artigo 155 do Código de Processo Penal, <strong>despronunciando</strong> o Recorrente (art. 414 do CPP);</li>
+    <li><strong>Subsidiariamente</strong>, a anulação do acórdão para novo julgamento com estrita observância do art. 155 do CPP;</li>
+    <li>Se cabível, o <strong>sobrestamento</strong> até a fixação de tese no Tema 1.260/STJ, ou o julgamento em conformidade com a ratio já delineada pelo Relator.</li>
+</ol>
+
+<p class="no-indent" style="text-align: center; margin-top: 1.5em;">Termos em que,<br>Pede deferimento.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 3 de junho de 2026.</p>
+    <p class="advogado">Marcelo Cabral de Vasconcelos</p>
+    <p class="oab">OAB/PE</p>
+    <br><br>
+    <p class="advogado">Ydigoras Ribeiro de Albuquerque Junior</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div class="nota-rodape no-print">
+    <h3>Fontes Verificadas</h3>
+    <ul>
+        <li><a href="https://www.stj.jus.br/sites/portalp/Paginas/Comunicacao/Noticias/2024/11062024-Repetitivo-discute-se-provas-do-inquerito-e-testemunho-indireto-sao-suficientes-para-a-pronuncia.aspx" target="_blank">STJ — Repetitivo discute pronúncia baseada em provas do inquérito (Tema 1.260)</a></li>
+        <li><a href="https://www.stj.jus.br/sites/portalp/Paginas/Comunicacao/Noticias/2026/01022026-Corte-Especial-abre-ano-judiciario-nesta-segunda-feira--2---confira-julgamentos-de-destaque-previstos-para-2026.aspx" target="_blank">STJ — Principais julgamentos previstos para 2026</a></li>
+        <li>REsp 1.916.733/MG — Info 719/STJ</li>
+        <li>REsp 1.373.356/BA — Info 603/STJ</li>
+        <li>ARE 1.067.392/CE — STF, 2ª Turma</li>
+    </ul>
+</div>
+
+</body>
+</html>
