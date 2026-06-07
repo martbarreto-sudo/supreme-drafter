@@ -1,0 +1,328 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "NEXUM API v2",
+    "description": "API soberana do Supreme Drafter V18 - Ribeiro & Tigre",
+    "version": "2.0.0",
+    "contact": {
+      "name": "Marcelo Tigre",
+      "url": "https://ribeiroetigre.org"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://ai.ribeiroetigre.org/api/v2",
+      "description": "Producao (mTLS obrigatorio)"
+    }
+  ],
+  "security": [
+    {
+      "mTLS": [],
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/revoke": {
+      "post": {
+        "summary": "DLP Kill-Switch",
+        "description": "Revoga sessao e invalida chave no Redis em <1s",
+        "tags": ["Autenticacao"],
+        "security": [{"mTLS": [], "adminCert": []}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["device_id", "reason"],
+                "properties": {
+                  "device_id": {"type": "string", "format": "uuid"},
+                  "reason": {"type": "string", "enum": ["logout", "compromise", "admin_revoke"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sessao revogada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "revoked": {"type": "boolean"},
+                    "timestamp": {"type": "string", "format": "date-time"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workspaces": {
+      "post": {
+        "summary": "Criar Workspace Isolado",
+        "description": "Cria workspace com Row-Level Security automatico",
+        "tags": ["Workspaces"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "case_type"],
+                "properties": {
+                  "name": {"type": "string", "maxLength": 100},
+                  "case_type": {"type": "string", "enum": ["criminal", "execucao", "habeas_corpus", "resp", "roc"]},
+                  "npu": {"type": "string", "pattern": "^\\d{7}-\\d{2}\\.\\d{4}\\.\\d{1}\\.\\d{2}\\.\\d{4}$"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workspace criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "workspace_id": {"type": "string", "format": "uuid"},
+                    "tenant_id": {"type": "string", "format": "uuid"},
+                    "created_at": {"type": "string", "format": "date-time"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/workspaces/{id}": {
+      "get": {
+        "summary": "Recuperar Metadados",
+        "description": "Retorna metadados do workspace com validacao de tenant",
+        "tags": ["Workspaces"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid"}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadados do workspace",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string", "format": "uuid"},
+                    "name": {"type": "string"},
+                    "case_type": {"type": "string"},
+                    "npu": {"type": "string"},
+                    "sources_count": {"type": "integer"},
+                    "last_activity": {"type": "string", "format": "date-time"}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Workspace nao encontrado (ou IDOR bloqueado)"
+          }
+        }
+      }
+    },
+    "/uploads/presign": {
+      "post": {
+        "summary": "URL Assinada S3",
+        "description": "Gera URL pre-assinada para upload direto ao bucket privado",
+        "tags": ["Upload"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["filename", "content_type", "sha256"],
+                "properties": {
+                  "filename": {"type": "string"},
+                  "content_type": {"type": "string", "enum": ["application/pdf", "image/png", "image/jpeg"]},
+                  "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+                  "workspace_id": {"type": "string", "format": "uuid"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "URL assinada gerada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "presigned_url": {"type": "string", "format": "uri"},
+                    "expires_in": {"type": "integer", "description": "Segundos ate expiracao"},
+                    "s3_key": {"type": "string"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sources": {
+      "post": {
+        "summary": "Ingestao PJe",
+        "description": "Ingere e indexa fontes do PJe apos validacao ClamAV",
+        "tags": ["Ingestao"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["s3_key", "workspace_id", "source_type"],
+                "properties": {
+                  "s3_key": {"type": "string"},
+                  "workspace_id": {"type": "string", "format": "uuid"},
+                  "source_type": {"type": "string", "enum": ["peticao", "decisao", "acordao", "laudo", "midia"]},
+                  "metadata": {
+                    "type": "object",
+                    "properties": {
+                      "npu": {"type": "string"},
+                      "tribunal": {"type": "string"},
+                      "data_documento": {"type": "string", "format": "date"}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Fonte aceita para processamento",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "source_id": {"type": "string", "format": "uuid"},
+                    "status": {"type": "string", "enum": ["queued", "processing", "indexed"]},
+                    "clamav_result": {"type": "string", "enum": ["clean", "quarantined"]}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/conversations": {
+      "post": {
+        "summary": "Inicializar RAG",
+        "description": "Inicia consulta ao RAG com isolamento de contexto",
+        "tags": ["RAG"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["workspace_id", "source_ids"],
+                "properties": {
+                  "workspace_id": {"type": "string", "format": "uuid"},
+                  "source_ids": {
+                    "type": "array",
+                    "items": {"type": "string", "format": "uuid"},
+                    "minItems": 1
+                  },
+                  "context_lock": {"type": "boolean", "default": true, "description": "Forca leitura exclusiva de fontes locais"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Conversa iniciada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "conversation_id": {"type": "string", "format": "uuid"},
+                    "sources_loaded": {"type": "integer"},
+                    "context_locked": {"type": "boolean"}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messages/stream": {
+      "get": {
+        "summary": "Streaming SSE",
+        "description": "Stream de respostas do Analista STJ via Server-Sent Events",
+        "tags": ["RAG"],
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "format": "uuid"}
+          },
+          {
+            "name": "prompt",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string", "maxLength": 4000}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Stream SSE",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "example": "event: message_chunk\\ndata: {\"text\": \"Analise em andamento...\"}\\n\\nevent: metadata_seal\\ndata: {\"vector_signature\": \"abc123\", \"compatibility_score\": 0.95}"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "mTLS": {
+        "type": "mutualTLS",
+        "description": "Certificado cliente PKCS#12"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token rt_nx_auth em cookie HttpOnly"
+      },
+      "adminCert": {
+        "type": "mutualTLS",
+        "description": "Certificado administrativo de nivel elevado"
+      }
+    }
+  }
+}
