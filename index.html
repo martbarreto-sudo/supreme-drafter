@@ -3,84 +3,566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protocolo: Supreme Drafter | Ribeiro & Tigre</title>
+    <title>War Room · Painel do CEO | Ribeiro &amp; Tigre — Nexum</title>
+    <meta name="description" content="War Room — Painel operacional do CEO. Ribeiro & Tigre · Nexum. Protocolo Supreme Drafter.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-deep: #03070e;
+            --bg: #050b14;
+            --bg-elev: #0a131f;
+            --bg-card: rgba(13, 22, 36, 0.72);
+            --gold: #d4af37;
+            --gold-soft: #e8cf86;
+            --gold-dim: rgba(212, 175, 55, 0.18);
+            --line: rgba(212, 175, 55, 0.16);
+            --line-strong: rgba(212, 175, 55, 0.38);
+            --text: #eef2f8;
+            --text-dim: #8a97a8;
+            --text-faint: #586474;
+            --green: #4ade80;
+            --serif: 'Cormorant Garamond', 'Times New Roman', serif;
+            --sans: 'Inter', system-ui, -apple-system, sans-serif;
+            --mono: 'JetBrains Mono', 'Courier New', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            background-color: #050b14;
-            color: #d4af37; /* Dourado Ribeiro & Tigre */
-            font-family: 'Courier New', Courier, monospace;
+            background:
+                radial-gradient(1200px 700px at 80% -10%, rgba(212,175,55,0.10), transparent 60%),
+                radial-gradient(900px 600px at 0% 110%, rgba(212,175,55,0.06), transparent 55%),
+                var(--bg);
+            color: var(--text);
+            font-family: var(--sans);
+            min-height: 100vh;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Subtle grid + scanline overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 64px 64px;
+            opacity: 0.35;
+            pointer-events: none;
+            z-index: 0;
+            mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 85%);
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(rgba(212,175,55,0.025) 50%, transparent 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.4;
+        }
+
+        .shell {
+            position: relative;
+            z-index: 2;
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 28px 28px 64px;
+        }
+
+        /* ---------- Top Bar ---------- */
+        .topbar {
             display: flex;
-            justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 16px 22px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(212,175,55,0.06), rgba(5,11,20,0.5));
+            backdrop-filter: blur(8px);
+        }
+        .brand { display: flex; align-items: center; gap: 14px; }
+        .crest {
+            width: 44px; height: 44px;
+            display: grid; place-items: center;
+            border: 1.5px solid var(--gold);
+            border-radius: 10px;
+            font-family: var(--serif);
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--gold);
+            letter-spacing: 1px;
+            box-shadow: inset 0 0 18px rgba(212,175,55,0.18), 0 0 18px rgba(212,175,55,0.12);
+        }
+        .brand-name {
+            font-family: var(--serif);
+            font-size: 1.32rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: var(--text);
+            line-height: 1.1;
+        }
+        .brand-name b { color: var(--gold); font-weight: 700; }
+        .brand-sub {
+            font-family: var(--mono);
+            font-size: 0.66rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--text-faint);
+        }
+        .topbar-meta {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--text-dim);
+        }
+        .topbar-meta .pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 12px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+        }
+        .dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 10px var(--green);
+            animation: pulse 2.2s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+        #clock { color: var(--gold-soft); letter-spacing: 1px; }
+
+        /* ---------- Hero ---------- */
+        .hero {
+            margin-top: 42px;
             text-align: center;
+            padding: 18px 0 8px;
         }
-        .terminal-box {
-            border: 1px solid #d4af37;
-            padding: 40px;
-            max-width: 800px;
-            background: rgba(0, 0, 0, 0.8);
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        .eyebrow {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: 0.85;
         }
-        h1 {
-            font-size: 2.5em;
+        .hero h1 {
+            font-family: var(--serif);
+            font-size: clamp(2.8rem, 7vw, 5.2rem);
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin: 10px 0 6px;
+            background: linear-gradient(180deg, #fff 0%, var(--gold-soft) 55%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(212,175,55,0.15);
+        }
+        .hero .tagline {
+            font-family: var(--sans);
+            font-weight: 300;
+            font-size: clamp(0.95rem, 2vw, 1.12rem);
+            color: var(--text-dim);
+            max-width: 640px;
+            margin: 14px auto 0;
+        }
+        .rule {
+            width: 120px; height: 1px;
+            margin: 26px auto 0;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+        }
+
+        /* ---------- Status Strip ---------- */
+        .status-strip {
+            margin-top: 38px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .stat {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 18px 20px;
+            background: var(--bg-card);
+            backdrop-filter: blur(6px);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat::before {
+            content: "";
+            position: absolute; left: 0; top: 0; bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--gold), transparent);
+        }
+        .stat .label {
+            font-family: var(--mono);
+            font-size: 0.66rem;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 10px;
+            color: var(--text-faint);
         }
-        .system-status {
-            font-size: 0.9em;
-            margin-bottom: 30px;
-            color: #a9a9a9;
+        .stat .value {
+            font-family: var(--serif);
+            font-size: 1.7rem;
+            font-weight: 600;
+            color: var(--gold-soft);
+            margin-top: 6px;
+            line-height: 1;
         }
-        .warning-panel {
-            border: 2px solid #d4af37;
-            padding: 20px;
-            margin-bottom: 40px;
-            font-size: 1.1em;
-            line-height: 1.5;
-            color: #ffffff;
+        .stat .sub { font-size: 0.74rem; color: var(--text-dim); margin-top: 6px; }
+
+        /* ---------- Section heading ---------- */
+        .section-head {
+            margin: 54px 0 22px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
-        /* BOTÃO DE REDIRECIONAMENTO AUTOMÁTICO */
-        .btn-iniciar {
-            display: inline-block;
-            background-color: transparent;
-            color: #d4af37;
-            border: 2px solid #d4af37;
-            padding: 15px 40px;
-            font-size: 1.2em;
-            font-weight: bold;
-            text-decoration: none;
+        .section-head h2 {
+            font-family: var(--mono);
+            font-size: 0.82rem;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            transition: all 0.3s ease;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+        .section-head .line { flex: 1; height: 1px; background: var(--line); }
+        .section-head .idx { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); }
+
+        /* ---------- Command Grid ---------- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 26px;
+            background: var(--bg-card);
+            backdrop-filter: blur(6px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+            position: relative;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--line-strong);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.45), 0 0 0 1px var(--gold-dim);
+        }
+        .card .tag {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gold);
+            opacity: 0.85;
+        }
+        .card h3 {
+            font-family: var(--serif);
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            letter-spacing: 0.5px;
+        }
+        .card p { font-size: 0.9rem; color: var(--text-dim); font-weight: 300; }
+        .card .meta {
+            margin-top: auto;
+            display: flex; align-items: center; justify-content: space-between;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--text-faint);
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+        .card.featured {
+            background:
+                radial-gradient(600px 200px at 100% 0%, rgba(212,175,55,0.14), transparent 60%),
+                var(--bg-card);
+            border-color: var(--line-strong);
+        }
+        .ico {
+            width: 38px; height: 38px;
+            display: grid; place-items: center;
+            border: 1px solid var(--line-strong);
+            border-radius: 9px;
+            color: var(--gold);
+        }
+
+        /* ---------- Protocol Panel ---------- */
+        .protocol {
+            margin-top: 26px;
+            border: 1px solid var(--line-strong);
+            border-radius: 16px;
+            padding: 30px 32px;
+            background:
+                repeating-linear-gradient(45deg, rgba(212,175,55,0.03) 0 2px, transparent 2px 12px),
+                var(--bg-elev);
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+        .protocol .badge {
+            font-family: var(--serif);
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: var(--gold);
+            border: 1.5px solid var(--gold);
+            border-radius: 12px;
+            width: 92px; height: 92px;
+            display: grid; place-items: center;
+            box-shadow: inset 0 0 24px rgba(212,175,55,0.2);
+        }
+        .protocol h4 {
+            font-family: var(--mono);
+            font-size: 0.78rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+        .protocol p { color: var(--text); font-weight: 300; font-size: 0.96rem; }
+        .protocol .inputs {
+            margin-top: 14px;
+            display: flex; flex-wrap: wrap; gap: 10px;
+        }
+        .protocol .chip {
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            padding: 7px 14px;
+            border: 1px solid var(--line-strong);
+            border-radius: 999px;
+            color: var(--gold-soft);
+            background: rgba(212,175,55,0.05);
+        }
+
+        /* ---------- CTA ---------- */
+        .cta-wrap { margin-top: 46px; text-align: center; }
+        .btn-iniciar {
+            display: inline-flex;
+            align-items: center;
+            gap: 14px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+            color: #050b14;
+            border: none;
+            padding: 18px 48px;
+            border-radius: 12px;
+            font-family: var(--mono);
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-decoration: none;
             cursor: pointer;
+            transition: transform .25s ease, box-shadow .25s ease;
+            box-shadow: 0 0 30px rgba(212,175,55,0.35);
         }
         .btn-iniciar:hover {
-            background-color: #d4af37;
-            color: #050b14;
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(212,175,55,0.6);
+        }
+        .btn-iniciar .arrow { transition: transform .25s ease; }
+        .btn-iniciar:hover .arrow { transform: translateX(5px); }
+        .cta-note {
+            margin-top: 16px;
+            font-family: var(--mono);
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            color: var(--text-faint);
+        }
+
+        /* ---------- Footer ---------- */
+        footer {
+            margin-top: 64px;
+            padding-top: 24px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            color: var(--text-faint);
+        }
+        footer a { color: var(--gold); text-decoration: none; }
+        footer a:hover { color: var(--gold-soft); }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 920px) {
+            .status-strip { grid-template-columns: repeat(2, 1fr); }
+            .grid { grid-template-columns: 1fr; }
+            .protocol { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+            .topbar-meta .pill.hide-sm { display: none; }
+        }
+        @media (max-width: 560px) {
+            .shell { padding: 18px 16px 48px; }
+            .topbar { flex-direction: column; align-items: flex-start; }
+            .status-strip { grid-template-columns: 1fr; }
+            .brand-sub { display: none; }
         }
     </style>
 </head>
 <body>
+    <div class="shell">
 
-    <div class="terminal-box">
-        <h1>ACESSO AO TERMINAL</h1>
-        <div class="system-status">
-            [SYSTEM CHECK COMPLETE]<br>
-            [TARGET: MARCELOTIGRE.COM INTRANET]
+        <!-- TOP BAR -->
+        <header class="topbar">
+            <div class="brand">
+                <div class="crest">R&amp;T</div>
+                <div>
+                    <div class="brand-name">RIBEIRO &amp; <b>TIGRE</b></div>
+                    <div class="brand-sub">Nexum · Inteligência Jurídica de Elite</div>
+                </div>
+            </div>
+            <div class="topbar-meta">
+                <span class="pill hide-sm"><span class="dot"></span> SISTEMA ONLINE</span>
+                <span class="pill">TIER 0</span>
+                <span id="clock" class="pill">--:--:--</span>
+            </div>
+        </header>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="eyebrow">Painel do CEO · Comando Central</div>
+            <h1>War Room</h1>
+            <p class="tagline">
+                Ambiente operacional do <strong>Supreme Drafter</strong>. Centro de comando da Ribeiro &amp; Tigre — onde estratégia, dossiês e decisões de alto impacto convergem sob o padrão Nexum.
+            </p>
+            <div class="rule"></div>
+        </section>
+
+        <!-- STATUS STRIP -->
+        <section class="status-strip">
+            <div class="stat">
+                <div class="label">Status do Sistema</div>
+                <div class="value">Operacional</div>
+                <div class="sub">System check completo</div>
+            </div>
+            <div class="stat">
+                <div class="label">Nível de Acesso</div>
+                <div class="value">Tier 0</div>
+                <div class="sub">Autorização máxima</div>
+            </div>
+            <div class="stat">
+                <div class="label">Alvo</div>
+                <div class="value">Intranet</div>
+                <div class="sub">ribeiroetigre.org</div>
+            </div>
+            <div class="stat">
+                <div class="label">Protocolo</div>
+                <div class="value">Supreme</div>
+                <div class="sub">Drafter ativo</div>
+            </div>
+        </section>
+
+        <!-- COMMAND CENTER -->
+        <div class="section-head">
+            <span class="idx">01</span>
+            <h2>Centro de Comando</h2>
+            <span class="line"></span>
         </div>
 
-        <div class="warning-panel">
-            <strong>ATENÇÃO:</strong> Você está prestes a ingressar no ambiente operacional do Supreme Drafter. A partir deste ponto, todas as interações devem seguir rigorosamente o padrão de inputs estabelecido (Dossiê + Relatório Ouro + Modo).
+        <section class="grid">
+            <article class="card featured">
+                <div class="ico">◆</div>
+                <span class="tag">Sessão Operacional</span>
+                <h3>Iniciar Sessão Tier 0</h3>
+                <p>Acesso direto ao núcleo do Supreme Drafter via NotebookLM. Ponto de partida para toda interação operacional.</p>
+                <div class="meta">
+                    <span>NOTEBOOKLM</span>
+                    <span>→ INICIAR</span>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="ico">▤</div>
+                <span class="tag">Inteligência</span>
+                <h3>Dossiês &amp; Relatórios</h3>
+                <p>Repositório estratégico de dossiês, relatórios ouro e análises de caso sob curadoria Nexum.</p>
+                <div class="meta">
+                    <span>ARQUIVO</span>
+                    <span>RESTRITO</span>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="ico">◈</div>
+                <span class="tag">Estratégia</span>
+                <h3>Modos Operacionais</h3>
+                <p>Seleção de modo de atuação — da redação técnica à formulação estratégica de alto nível.</p>
+                <div class="meta">
+                    <span>MODO</span>
+                    <span>CONFIGURÁVEL</span>
+                </div>
+            </article>
+        </section>
+
+        <!-- PROTOCOL -->
+        <div class="section-head">
+            <span class="idx">02</span>
+            <h2>Protocolo de Engajamento</h2>
+            <span class="line"></span>
         </div>
 
-        <!-- HIPERLINK INJETADO DIRETAMENTE NO BOTÃO -->
-        <a href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310" class="btn-iniciar">
-            INICIAR SESSÃO TIER 0
-        </a>
+        <section class="protocol">
+            <div class="badge">!</div>
+            <div>
+                <h4>Atenção · Padrão Obrigatório de Inputs</h4>
+                <p>
+                    A partir deste ponto, todas as interações devem seguir rigorosamente o padrão de inputs estabelecido pelo Supreme Drafter. Nenhuma operação prossegue fora deste protocolo.
+                </p>
+                <div class="inputs">
+                    <span class="chip">DOSSIÊ</span>
+                    <span class="chip">RELATÓRIO OURO</span>
+                    <span class="chip">MODO</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <div class="cta-wrap">
+            <a href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310" class="btn-iniciar">
+                Iniciar Sessão Tier 0 <span class="arrow">→</span>
+            </a>
+            <div class="cta-note">[ TARGET: RIBEIROETIGRE.ORG INTRANET · ACESSO REGISTRADO ]</div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer>
+            <span>© <span id="year">2026</span> RIBEIRO &amp; TIGRE · NEXUM</span>
+            <span>SUPREME DRAFTER · WAR ROOM v2</span>
+            <span><a href="https://www.ribeiroetigre.org/">ribeiroetigre.org</a></span>
+        </footer>
+
     </div>
 
+    <script>
+        // Live clock (UTC-3 / horário de Brasília)
+        function tick() {
+            const now = new Date();
+            const opts = { timeZone: 'America/Sao_Paulo', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('clock').textContent = new Intl.DateTimeFormat('pt-BR', opts).format(now) + ' BRT';
+        }
+        tick();
+        setInterval(tick, 1000);
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
