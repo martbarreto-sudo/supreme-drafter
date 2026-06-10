@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controladoria · Gens | Ribeiro &amp; Tigre — Nexum</title>
+    <meta name="description" content="Controladoria — Painel de auditoria dos Gens (demonstração). Ribeiro & Tigre · Nexum · V18.">
+    <meta name="theme-color" content="#090A0F">
+    <meta property="og:title" content="Controladoria · Gens — Ribeiro & Tigre">
+    <meta property="og:description" content="Painel de auditoria de conformidade processual (demonstração V18).">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'%3E%3Crect%20width='48'%20height='48'%20rx='10'%20fill='%23090A0F'/%3E%3Ctext%20x='24'%20y='32'%20font-family='Georgia,serif'%20font-size='18'%20font-weight='700'%20fill='%2310B981'%20text-anchor='middle'%3ER%26T%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .page-head { margin-top: 34px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 18px; }
+        .page-head h1 { font-size: clamp(2rem, 4.5vw, 3rem); margin-top: 6px; }
+        .demo-badge { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--amber); border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.07); border-radius: 999px; padding: 6px 14px; }
+        .status-strip { margin-top: 26px; }
+
+        /* Gens */
+        .gens { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .gen { border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; background: var(--bg-elev); position: relative; overflow: hidden; }
+        .gen::before { content: ""; position: absolute; left: 0; top: 0; right: 0; height: 2px; }
+        .gen.g-mint::before { background: linear-gradient(90deg, var(--mint), transparent); }
+        .gen.g-amber::before { background: linear-gradient(90deg, var(--amber), transparent); }
+        .gen.g-crimson::before { background: linear-gradient(90deg, var(--crimson), transparent); }
+        .gen .gname { font-family: var(--serif); font-size: 1.05rem; font-weight: 700; }
+        .gen .gref { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 1.5px; color: var(--text-faint); text-transform: uppercase; margin-top: 3px; }
+        .gen .gdesc { font-size: 0.8rem; color: var(--text-dim); margin-top: 10px; }
+        .gen .gcount { display: flex; gap: 14px; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.72rem; }
+        .gen .gcount b { font-size: 1.05rem; display: block; }
+        .c-mint { color: var(--mint); } .c-amber { color: var(--amber); } .c-crimson { color: var(--crimson); }
+
+        /* Findings table */
+        .findings { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-elev); overflow: hidden; }
+        .findings table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.76rem; }
+        .findings th { text-align: left; padding: 13px 18px; font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); border-bottom: 1px solid var(--line); font-weight: 500; }
+        .findings td { padding: 13px 18px; border-bottom: 1px solid var(--line); color: var(--text-dim); }
+        .findings tr:last-child td { border-bottom: none; }
+        .findings tr:hover td { background: rgba(16,185,129,0.03); }
+        .sig { display: inline-flex; align-items: center; gap: 7px; font-size: 0.68rem; letter-spacing: 1px; text-transform: uppercase; }
+        .sig::before { content: "●"; font-size: 0.8rem; }
+        .sig.ok { color: var(--mint); }
+        .sig.warn { color: var(--amber); }
+        .sig.crit { color: var(--crimson); }
+        .ws { color: var(--text); }
+
+        .note { margin-top: 18px; font-family: var(--mono); font-size: 0.68rem; color: var(--text-faint); letter-spacing: 0.5px; }
+
+        @media (max-width: 920px) {
+            .gens { grid-template-columns: 1fr; }
+            .findings { overflow-x: auto; }
+            .findings table { min-width: 640px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+
+        <!-- TOP BAR -->
+        <header class="topbar reveal">
+            <a class="brand" href="index.html" style="text-decoration:none;color:inherit;">
+                <svg class="crest" viewBox="0 0 48 48" role="img" aria-label="Brasão Ribeiro & Tigre">
+                    <rect class="frame" x="4" y="4" width="40" height="40" rx="9"/>
+                    <line class="stripe" x1="11" y1="13" x2="17" y2="13"/>
+                    <line class="stripe" x1="31" y1="35" x2="37" y2="35"/>
+                    <text class="mono" x="24" y="30" font-size="15" text-anchor="middle">R&amp;T</text>
+                </svg>
+                <div>
+                    <div class="brand-name">RIBEIRO &amp; <b>TIGRE</b></div>
+                    <div class="brand-sub">Nexum · Inteligência Jurídica de Elite</div>
+                </div>
+            </a>
+            <nav class="nav" aria-label="Navegação principal">
+                <a href="index.html">Início</a>
+                <a href="war-room.html">War Room</a>
+                <a href="controladoria.html" class="active">Controladoria</a>
+                <span class="pill"><span class="dot"></span></span>
+            </nav>
+        </header>
+
+        <!-- PAGE HEAD -->
+        <div class="page-head reveal d1">
+            <div>
+                <div class="eyebrow">Auditoria de Conformidade · Motores Generativos</div>
+                <h1 class="gold-title">Controladoria</h1>
+            </div>
+            <span class="demo-badge">⚠ Demonstração · dados ilustrativos</span>
+        </div>
+
+        <!-- STATUS STRIP -->
+        <section class="status-strip reveal d2" aria-label="Telemetria">
+            <div class="stat">
+                <div class="label">Gens Ativos</div>
+                <div class="value">3 / 3</div>
+                <div class="sub"><b class="ok">●</b> Custódia · Reconhecimento · Chronos</div>
+            </div>
+            <div class="stat">
+                <div class="label">Conformidades</div>
+                <div class="value c-mint">24</div>
+                <div class="sub"><b class="ok">●</b> Validadas no ciclo</div>
+            </div>
+            <div class="stat">
+                <div class="label">Prazos em Staging</div>
+                <div class="value c-amber">6</div>
+                <div class="sub"><b class="warn">●</b> Aguardando homologação</div>
+            </div>
+            <div class="stat">
+                <div class="label">Nulidades Críticas</div>
+                <div class="value c-crimson">3</div>
+                <div class="sub"><b class="crit">●</b> Ação imediata requerida</div>
+            </div>
+        </section>
+
+        <!-- GENS -->
+        <div class="section-head reveal">
+            <span class="idx">01</span>
+            <h2>Motores de Auditoria</h2>
+            <span class="line"></span>
+        </div>
+
+        <section class="gens">
+            <article class="gen g-mint reveal">
+                <h3 class="gname">Gen-Custódia</h3>
+                <div class="gref">Art. 158-A e 158-B · CPP</div>
+                <p class="gdesc">Verifica integridade de extrações forenses: hash de origem, espelhamento bit-a-bit e cadeia de custódia de mídias e laudos periciais.</p>
+                <div class="gcount">
+                    <span class="c-mint"><b>11</b> íntegras</span>
+                    <span class="c-amber"><b>2</b> pendentes</span>
+                    <span class="c-crimson"><b>1</b> quebra</span>
+                </div>
+            </article>
+            <article class="gen g-amber reveal d1">
+                <h3 class="gname">Gen-Reconhecimento</h3>
+                <div class="gref">Art. 226 · CPP / HC 598.887-SC</div>
+                <p class="gdesc">Escaneia inquéritos em busca de reconhecimentos indutivos e denúncias amparadas em testemunho de ouvir dizer (hearsay).</p>
+                <div class="gcount">
+                    <span class="c-mint"><b>8</b> regulares</span>
+                    <span class="c-amber"><b>3</b> em análise</span>
+                    <span class="c-crimson"><b>1</b> indutivo</span>
+                </div>
+            </article>
+            <article class="gen g-crimson reveal d2">
+                <h3 class="gname">Gen-Chronos</h3>
+                <div class="gref">Art. 109 e 315 §2º · CP/CPP</div>
+                <p class="gdesc">Relógio contínuo de prescrição e contemporaneidade: marcos interruptivos, watchdog de intimação e contagem regressiva de termos fatais.</p>
+                <div class="gcount">
+                    <span class="c-mint"><b>5</b> no prazo</span>
+                    <span class="c-amber"><b>1</b> 90 dias</span>
+                    <span class="c-crimson"><b>1</b> crítico</span>
+                </div>
+            </article>
+        </section>
+
+        <!-- FINDINGS -->
+        <div class="section-head reveal">
+            <span class="idx">02</span>
+            <h2>Achados do Ciclo</h2>
+            <span class="line"></span>
+        </div>
+
+        <section class="findings reveal">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sinal</th>
+                        <th>Workspace</th>
+                        <th>Gen</th>
+                        <th>Achado</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="sig crit">Nulidade</span></td>
+                        <td class="ws">WS-Alpha</td>
+                        <td>Custódia</td>
+                        <td>Extração sem hash de origem (METADATA_SOURCE_NOT_FOUND)</td>
+                        <td>Minuta de desentranhamento</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sig crit">Nulidade</span></td>
+                        <td class="ws">WS-Bravo</td>
+                        <td>Reconhecimento</td>
+                        <td>Reconhecimento fotográfico em desacordo com o Art. 226</td>
+                        <td>Preliminar de imprestabilidade</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sig crit">Prazo fatal</span></td>
+                        <td class="ws">WS-Charlie</td>
+                        <td>Chronos</td>
+                        <td>Termo prescricional em contagem regressiva</td>
+                        <td>Watchdog armado · alerta D-30</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sig warn">Staging</span></td>
+                        <td class="ws">WS-Delta</td>
+                        <td>Chronos</td>
+                        <td>Prazo recursal em curso (tribunal superior)</td>
+                        <td>Aguardando homologação HITL</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sig warn">Staging</span></td>
+                        <td class="ws">WS-Echo</td>
+                        <td>Custódia</td>
+                        <td>Laudo pericial recebido · hash em conferência</td>
+                        <td>Fila de validação</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sig ok">Conforme</span></td>
+                        <td class="ws">WS-Foxtrot</td>
+                        <td>Reconhecimento</td>
+                        <td>Rito do Art. 226 integralmente observado</td>
+                        <td>Arquivado com selo</td>
+                    </tr>
+                    <tr>
+                        <td><span class="sig ok">Conforme</span></td>
+                        <td class="ws">WS-Golf</td>
+                        <td>Custódia</td>
+                        <td>Cadeia de custódia íntegra · espelhamento validado</td>
+                        <td>Relatório selado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <p class="note">⚠ Painel de demonstração da interface V18. Todos os workspaces, contagens e achados exibidos são fictícios e ilustrativos — nenhum dado processual real é publicado nesta página.</p>
+
+        <!-- FOOTER -->
+        <footer>
+            <span>© <span id="year">2026</span> RIBEIRO &amp; TIGRE · NEXUM</span>
+            <span>SUPREME DRAFTER · CONTROLADORIA · V18</span>
+            <span><a href="index.html">← Voltar ao Comando</a></span>
+        </footer>
+
+    </div>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
