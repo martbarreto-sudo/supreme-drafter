@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 # Publica o site (Static Assets) no Cloudflare Workers em war.ribeiroetigre.org.
-# Requer o secret CLOUDFLARE_API_TOKEN (Settings -> Secrets and variables -> Actions).
-# Enquanto o secret não existir, os passos são PULADOS (job verde, sem deploy),
-# em vez de falhar — assim o CI não fica vermelho à toa.
+# Requer o secret CLOUDFLARE_API_TOKEN (Repository secret, não Environment).
+# Enquanto o secret não existir, o deploy é PULADO (job verde, sem deploy),
+# e um diagnóstico não-vazante reporta o estado do token.
 jobs:
   deploy:
     name: Wrangler deploy
@@ -17,10 +17,19 @@ jobs:
     env:
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
-      - name: Aviso se o token não estiver configurado
-        if: env.CF_TOKEN == ''
+      - name: Diagnóstico do token (não vaza o valor)
         run: |
-          echo "::notice title=Deploy pulado::CLOUDFLARE_API_TOKEN não configurado. Adicione o secret para ativar o deploy em war.ribeiroetigre.org."
+          LEN=${#CF_TOKEN}
+          echo "Comprimento do CLOUDFLARE_API_TOKEN: $LEN"
+          {
+            echo "### Diagnóstico do deploy Cloudflare"
+            if [ "$LEN" -eq 0 ]; then
+              echo "- ❌ \`CLOUDFLARE_API_TOKEN\` **ausente** (len=0). Cadastre como **Repository secret** em Settings → Secrets and variables → Actions."
+              echo "- Deploy **pulado**."
+            else
+              echo "- ✅ \`CLOUDFLARE_API_TOKEN\` presente (len=$LEN). Prosseguindo com o deploy."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Checkout
         if: env.CF_TOKEN != ''
@@ -28,6 +37,15 @@ jobs:
 
       - name: Deploy
         if: env.CF_TOKEN != ''
+        id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+
+      - name: Resumo do deploy
+        if: env.CF_TOKEN != '' && steps.deploy.outcome == 'success'
+        run: |
+          {
+            echo "- 🚀 Deploy concluído."
+            echo "- URL: https://war.ribeiroetigre.org"
+          } >> "$GITHUB_STEP_SUMMARY"
