@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ribeiroetigre",
+  "account_id": "06c3f8a01b82bd881dfb090f4bbd81ed",
+  "compatibility_date": "2025-06-01",
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+
+  // --- Produção (domínio ao vivo) ----------------------------------------
+  // Por segurança, as rotas do domínio principal estão DESLIGADAS por padrão.
+  // Sem elas, o deploy publica apenas em https://ribeiroetigre.workers.dev
+  // (preview), sem tocar no que está no ar em ribeiroetigre.org.
+  //
+  // Para apontar o domínio real, descomente o bloco abaixo e faça o deploy:
+  //
+  // ,"routes": [
+  //   { "pattern": "ribeiroetigre.org", "custom_domain": true },
+  //   { "pattern": "www.ribeiroetigre.org", "custom_domain": true }
+  // ]
+}

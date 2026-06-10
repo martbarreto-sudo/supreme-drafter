@@ -1,0 +1,25 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+# Publica o site (Static Assets) no Cloudflare Workers.
+# Requer o secret CLOUDFLARE_API_TOKEN configurado no repositório
+# (Settings -> Secrets and variables -> Actions).
+# O account_id já está fixado em wrangler.jsonc.
+jobs:
+  deploy:
+    name: Wrangler deploy
+    runs-on: ubuntu-latest
+    # Não roda em forks (sem acesso aos secrets)
+    if: github.repository == 'martbarreto-sudo/supreme-drafter'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
