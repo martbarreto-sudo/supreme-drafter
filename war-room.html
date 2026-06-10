@@ -5,198 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>War Room · Comando Operacional | Ribeiro &amp; Tigre — Nexum</title>
     <meta name="description" content="War Room — Painel de comando operacional do CEO. Ribeiro & Tigre · Nexum. Protocolo Supreme Drafter.">
+    <meta name="theme-color" content="#050b14">
+    <meta property="og:title" content="War Room · Comando Operacional — Ribeiro & Tigre">
+    <meta property="og:description" content="Painel de comando do Supreme Drafter: módulos operacionais, log e protocolo de inputs.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='10' fill='%23050b14'/%3E%3Ctext x='24' y='32' font-family='Georgia,serif' font-size='18' font-weight='700' fill='%23d4af37' text-anchor='middle'%3ER%26T%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
     <style>
-        :root {
-            --bg-deep: #03070e;
-            --bg: #050b14;
-            --bg-elev: #0a131f;
-            --bg-card: rgba(13, 22, 36, 0.72);
-            --gold: #d4af37;
-            --gold-soft: #e8cf86;
-            --gold-dim: rgba(212, 175, 55, 0.18);
-            --line: rgba(212, 175, 55, 0.16);
-            --line-strong: rgba(212, 175, 55, 0.38);
-            --text: #eef2f8;
-            --text-dim: #8a97a8;
-            --text-faint: #586474;
-            --green: #4ade80;
-            --amber: #fbbf24;
-            --red: #f87171;
-            --serif: 'Cormorant Garamond', 'Times New Roman', serif;
-            --sans: 'Inter', system-ui, -apple-system, sans-serif;
-            --mono: 'JetBrains Mono', 'Courier New', monospace;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        body {
-            background:
-                radial-gradient(1200px 700px at 80% -10%, rgba(212,175,55,0.10), transparent 60%),
-                radial-gradient(900px 600px at 0% 110%, rgba(212,175,55,0.06), transparent 55%),
-                var(--bg);
-            color: var(--text);
-            font-family: var(--sans);
-            min-height: 100vh;
-            line-height: 1.55;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
-        body::before {
-            content: "";
-            position: fixed; inset: 0;
-            background-image:
-                linear-gradient(var(--line) 1px, transparent 1px),
-                linear-gradient(90deg, var(--line) 1px, transparent 1px);
-            background-size: 64px 64px;
-            opacity: 0.30;
-            pointer-events: none; z-index: 0;
-            mask-image: radial-gradient(circle at 50% 20%, #000 0%, transparent 90%);
-        }
-
-        .shell { position: relative; z-index: 2; max-width: 1280px; margin: 0 auto; padding: 24px 28px 64px; }
-
-        /* TOP BAR */
-        .topbar {
-            display: flex; align-items: center; justify-content: space-between; gap: 24px;
-            padding: 14px 22px;
-            border: 1px solid var(--line); border-radius: 14px;
-            background: linear-gradient(180deg, rgba(212,175,55,0.06), rgba(5,11,20,0.5));
-            backdrop-filter: blur(8px);
-        }
-        .brand { display: flex; align-items: center; gap: 14px; }
-        .crest {
-            width: 42px; height: 42px; display: grid; place-items: center;
-            border: 1.5px solid var(--gold); border-radius: 10px;
-            font-family: var(--serif); font-weight: 700; font-size: 1.1rem; color: var(--gold); letter-spacing: 1px;
-            box-shadow: inset 0 0 18px rgba(212,175,55,0.18), 0 0 18px rgba(212,175,55,0.12);
-        }
-        .brand-name { font-family: var(--serif); font-size: 1.28rem; font-weight: 600; letter-spacing: 1.5px; line-height: 1.1; }
-        .brand-name b { color: var(--gold); font-weight: 700; }
-        .brand-sub { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-faint); }
-        .nav { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.72rem; }
-        .nav a { color: var(--text-dim); text-decoration: none; padding: 7px 12px; border-radius: 8px; border: 1px solid transparent; transition: .2s; }
-        .nav a:hover { color: var(--gold); border-color: var(--line); }
-        .nav a.active { color: var(--gold); border-color: var(--line-strong); background: rgba(212,175,55,0.06); }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: pulse 2.2s ease-in-out infinite; display: inline-block; }
-        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
-
-        /* HEADER */
         .page-head { margin-top: 34px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 18px; }
-        .page-head .eyebrow { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); opacity: .85; }
-        .page-head h1 {
-            font-family: var(--serif); font-size: clamp(2.4rem, 5vw, 3.6rem); font-weight: 700; letter-spacing: 3px; text-transform: uppercase; margin-top: 6px;
-            background: linear-gradient(180deg, #fff 0%, var(--gold-soft) 55%, var(--gold) 100%);
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
-        }
+        .page-head h1 { font-size: clamp(2.4rem, 5vw, 3.6rem); letter-spacing: 3px; margin-top: 6px; }
         .clockbox { text-align: right; font-family: var(--mono); }
         .clockbox #clock { font-size: 1.4rem; color: var(--gold-soft); letter-spacing: 2px; }
         .clockbox .tz { font-size: 0.64rem; color: var(--text-faint); letter-spacing: 2px; }
-
-        /* STATUS STRIP */
-        .status-strip { margin-top: 26px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-        .stat { border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; background: var(--bg-card); backdrop-filter: blur(6px); position: relative; overflow: hidden; }
-        .stat::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--gold), transparent); }
-        .stat .label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-faint); }
-        .stat .value { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--gold-soft); margin-top: 5px; line-height: 1; }
-        .stat .sub { font-size: 0.72rem; color: var(--text-dim); margin-top: 5px; }
-        .stat .sub b.ok { color: var(--green); } .stat .sub b.warn { color: var(--amber); }
-
-        /* SECTION HEAD */
-        .section-head { margin: 46px 0 20px; display: flex; align-items: center; gap: 16px; }
-        .section-head h2 { font-family: var(--mono); font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase; color: var(--text-dim); white-space: nowrap; }
-        .section-head .line { flex: 1; height: 1px; background: var(--line); }
-        .section-head .idx { font-family: var(--mono); font-size: 0.72rem; color: var(--gold); }
-
-        /* LAYOUT: main + side */
+        .status-strip { margin-top: 26px; }
         .ops-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 20px; align-items: start; }
-
-        /* MODULE CARDS */
         .modules { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .card {
-            border: 1px solid var(--line); border-radius: 16px; padding: 22px; background: var(--bg-card); backdrop-filter: blur(6px);
-            display: flex; flex-direction: column; gap: 12px; transition: transform .25s, border-color .25s, box-shadow .25s; text-decoration: none; color: inherit;
-        }
-        .card:hover { transform: translateY(-4px); border-color: var(--line-strong); box-shadow: 0 18px 40px rgba(0,0,0,.45), 0 0 0 1px var(--gold-dim); }
-        .card .ico { width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 9px; color: var(--gold); font-size: 1rem; }
-        .card .tag { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); opacity: .85; }
-        .card h3 { font-family: var(--serif); font-size: 1.35rem; font-weight: 600; }
-        .card p { font-size: 0.86rem; color: var(--text-dim); font-weight: 300; }
-        .card .meta { margin-top: auto; display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 0.68rem; color: var(--text-faint); padding-top: 12px; border-top: 1px solid var(--line); }
-        .card.featured { background: radial-gradient(600px 200px at 100% 0%, rgba(212,175,55,0.14), transparent 60%), var(--bg-card); border-color: var(--line-strong); grid-column: 1 / -1; }
-
-        /* SIDE PANEL */
+        .card.featured { grid-column: 1 / -1; }
         .side { display: flex; flex-direction: column; gap: 18px; }
-        .panel { border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; background: var(--bg-card); backdrop-filter: blur(6px); }
+        .panel { border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; background: var(--bg-card); backdrop-filter: blur(6px); }
         .panel h4 { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
-
-        /* INPUT PROTOCOL CHECKLIST */
         .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
         .checklist li { display: flex; align-items: center; gap: 12px; font-family: var(--mono); font-size: 0.8rem; color: var(--text); }
         .checklist .box { width: 18px; height: 18px; border: 1.5px solid var(--gold); border-radius: 5px; display: grid; place-items: center; color: var(--gold); font-size: 0.7rem; flex-shrink: 0; }
         .checklist .desc { color: var(--text-faint); font-size: 0.68rem; margin-left: auto; }
-
-        /* FEED / LOG */
         .feed { list-style: none; display: flex; flex-direction: column; gap: 12px; font-family: var(--mono); font-size: 0.74rem; }
         .feed li { display: grid; grid-template-columns: auto 1fr; gap: 12px; color: var(--text-dim); border-left: 1px solid var(--line); padding-left: 12px; }
         .feed .t { color: var(--gold); }
         .feed .s-ok::before { content: "●"; color: var(--green); margin-right: 6px; }
         .feed .s-warn::before { content: "●"; color: var(--amber); margin-right: 6px; }
         .feed .s-info::before { content: "●"; color: var(--text-faint); margin-right: 6px; }
-
-        /* CTA */
-        .btn-iniciar {
-            display: inline-flex; align-items: center; gap: 12px; width: 100%; justify-content: center;
-            background: linear-gradient(135deg, var(--gold), var(--gold-soft)); color: #050b14; border: none;
-            padding: 16px 28px; border-radius: 12px; font-family: var(--mono); font-size: 0.92rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; text-decoration: none; cursor: pointer;
-            transition: transform .25s, box-shadow .25s; box-shadow: 0 0 30px rgba(212,175,55,0.3);
-        }
-        .btn-iniciar:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(212,175,55,0.55); }
-        .btn-iniciar .arrow { transition: transform .25s; } .btn-iniciar:hover .arrow { transform: translateX(5px); }
-
-        /* FOOTER */
-        footer { margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 1px; color: var(--text-faint); }
-        footer a { color: var(--gold); text-decoration: none; } footer a:hover { color: var(--gold-soft); }
-
-        @media (max-width: 980px) {
-            .ops-layout { grid-template-columns: 1fr; }
-            .status-strip { grid-template-columns: repeat(2, 1fr); }
-        }
-        @media (max-width: 560px) {
-            .shell { padding: 16px 16px 48px; }
-            .topbar { flex-direction: column; align-items: flex-start; }
-            .modules { grid-template-columns: 1fr; }
-            .status-strip { grid-template-columns: 1fr; }
-            .nav { flex-wrap: wrap; }
-        }
+        .btn-iniciar { width: 100%; }
+        @media (max-width: 980px) { .ops-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 560px) { .modules { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="shell">
 
         <!-- TOP BAR -->
-        <header class="topbar">
-            <div class="brand">
-                <div class="crest">R&amp;T</div>
+        <header class="topbar reveal">
+            <a class="brand" href="index.html" style="text-decoration:none;color:inherit;">
+                <svg class="crest" viewBox="0 0 48 48" role="img" aria-label="Brasão Ribeiro & Tigre">
+                    <rect class="frame" x="4" y="4" width="40" height="40" rx="9"/>
+                    <line class="stripe" x1="11" y1="13" x2="17" y2="13"/>
+                    <line class="stripe" x1="31" y1="35" x2="37" y2="35"/>
+                    <text class="mono" x="24" y="30" font-size="15" text-anchor="middle">R&amp;T</text>
+                </svg>
                 <div>
                     <div class="brand-name">RIBEIRO &amp; <b>TIGRE</b></div>
                     <div class="brand-sub">Nexum · Inteligência Jurídica de Elite</div>
                 </div>
-            </div>
-            <nav class="nav">
+            </a>
+            <nav class="nav" aria-label="Navegação principal">
                 <a href="index.html">Início</a>
                 <a href="war-room.html" class="active">War Room</a>
                 <a href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310">Sessão Tier 0</a>
-                <span style="padding:7px 12px;"><span class="dot"></span></span>
+                <span class="pill"><span class="dot"></span></span>
             </nav>
         </header>
 
         <!-- PAGE HEAD -->
-        <div class="page-head">
+        <div class="page-head reveal d1">
             <div>
                 <div class="eyebrow">Comando Operacional · Painel do CEO</div>
-                <h1>War Room</h1>
+                <h1 class="gold-title">War Room</h1>
             </div>
             <div class="clockbox">
                 <div id="clock">--:--:--</div>
@@ -205,7 +80,7 @@
         </div>
 
         <!-- STATUS STRIP -->
-        <section class="status-strip">
+        <section class="status-strip reveal d2" aria-label="Status operacional">
             <div class="stat">
                 <div class="label">Sistema</div>
                 <div class="value">Operacional</div>
@@ -229,44 +104,43 @@
         </section>
 
         <!-- OPS LAYOUT -->
-        <div class="section-head">
+        <div class="section-head reveal">
             <span class="idx">01</span>
             <h2>Módulos Operacionais</h2>
             <span class="line"></span>
         </div>
 
         <div class="ops-layout">
-            <!-- MAIN MODULES -->
             <section class="modules">
-                <a class="card featured" href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310">
+                <a class="card featured reveal" href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310">
                     <div class="ico">◆</div>
                     <span class="tag">Núcleo · Sessão</span>
                     <h3>Iniciar Sessão Tier 0</h3>
                     <p>Acesso direto ao núcleo do Supreme Drafter via NotebookLM. Ponto de entrada de toda operação de alto impacto.</p>
                     <div class="meta"><span>NOTEBOOKLM</span><span>→ INICIAR</span></div>
                 </a>
-                <div class="card">
+                <div class="card reveal d1">
                     <div class="ico">▤</div>
                     <span class="tag">Inteligência</span>
                     <h3>Dossiês</h3>
                     <p>Curadoria estratégica de dossiês e relatórios ouro sob padrão Nexum.</p>
                     <div class="meta"><span>ARQUIVO</span><span>RESTRITO</span></div>
                 </div>
-                <div class="card">
+                <div class="card reveal d2">
                     <div class="ico">◈</div>
                     <span class="tag">Estratégia</span>
                     <h3>Modos</h3>
                     <p>Seleção do modo de atuação — da redação técnica à formulação estratégica.</p>
                     <div class="meta"><span>MODO</span><span>CONFIGURÁVEL</span></div>
                 </div>
-                <div class="card">
+                <div class="card reveal d3">
                     <div class="ico">⛨</div>
                     <span class="tag">Defesa</span>
                     <h3>Linha de Frente</h3>
                     <p>Coordenação de teses, prazos e movimentações táticas em tempo real.</p>
                     <div class="meta"><span>TÁTICO</span><span>ATIVO</span></div>
                 </div>
-                <div class="card">
+                <div class="card reveal d4">
                     <div class="ico">◎</div>
                     <span class="tag">Monitor</span>
                     <h3>Radar de Casos</h3>
@@ -275,9 +149,8 @@
                 </div>
             </section>
 
-            <!-- SIDE PANEL -->
             <aside class="side">
-                <div class="panel">
+                <div class="panel reveal d1">
                     <h4><span class="dot"></span> Protocolo de Inputs</h4>
                     <ul class="checklist">
                         <li><span class="box">✓</span> Dossiê <span class="desc">obrigatório</span></li>
@@ -289,7 +162,7 @@
                     </p>
                 </div>
 
-                <div class="panel">
+                <div class="panel reveal d2">
                     <h4>Log Operacional</h4>
                     <ul class="feed">
                         <li><span class="t">08:42</span><span class="s-ok">System check completo — todos os módulos online</span></li>
@@ -299,7 +172,7 @@
                     </ul>
                 </div>
 
-                <a href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310" class="btn-iniciar">
+                <a href="https://notebooklm.google.com/notebook/6a9d47db-b418-48f8-bcbc-8c688b940310" class="btn-iniciar reveal d3">
                     Entrar no Comando <span class="arrow">→</span>
                 </a>
             </aside>
@@ -316,9 +189,8 @@
 
     <script>
         function tick() {
-            const now = new Date();
             const opts = { timeZone: 'America/Sao_Paulo', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            document.getElementById('clock').textContent = new Intl.DateTimeFormat('pt-BR', opts).format(now);
+            document.getElementById('clock').textContent = new Intl.DateTimeFormat('pt-BR', opts).format(new Date());
         }
         tick(); setInterval(tick, 1000);
         document.getElementById('year').textContent = new Date().getFullYear();
