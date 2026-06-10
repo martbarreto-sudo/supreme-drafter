@@ -1,0 +1,526 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NEXUM API v2 — Especificação Ilustrativa",
+    "version": "2.0.0",
+    "description": "Contratos genéricos das rotas soberanas NEXUM v2. Demonstração — nenhum segredo, chave ou dado real. Transporte sob mTLS (TLS 1.3); sessão via cookie JWT HttpOnly.",
+    "contact": {
+      "name": "Ribeiro & Tigre",
+      "url": "https://www.ribeiroetigre.org/"
+    },
+    "license": {
+      "name": "Proprietário · Nexum"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.exemplo.nexum/v2",
+      "description": "Endpoint ilustrativo (mTLS obrigatório)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Sessão e revogação (DLP kill-switch)"
+    },
+    {
+      "name": "Workspaces",
+      "description": "Isolamento de tenant e metadados"
+    },
+    {
+      "name": "Uploads",
+      "description": "Emissão de URL assinada para S3 privado"
+    },
+    {
+      "name": "Sources",
+      "description": "Ingestão e indexação de fontes"
+    },
+    {
+      "name": "RAG",
+      "description": "Consulta e streaming de análise"
+    }
+  ],
+  "security": [
+    {
+      "mutualTLS": [],
+      "cookieAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/revoke": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "revokeSession",
+        "summary": "Revogação de sessão (DLP Kill-Switch)",
+        "description": "Invalida a chave de sessão de um dispositivo, forçando logout na ponta em < 1s.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sessão revogada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/workspaces": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "operationId": "createWorkspace",
+        "summary": "Criação de workspace isolado",
+        "description": "Cria um workspace com tenant_id injetado via claim do JWT (RLS aplicada no banco).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workspace criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/workspaces/{id}": {
+      "get": {
+        "tags": [
+          "Workspaces"
+        ],
+        "operationId": "getWorkspace",
+        "summary": "Metadados do workspace",
+        "description": "Recupera metadados. Acesso a id de outro tenant (IDOR) é desviado silenciosamente (404).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/uploads/presign": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "operationId": "presignUpload",
+        "summary": "URL assinada para o S3 privado",
+        "description": "Exige hash SHA-256 gerado localmente. Deposita no bucket privado, sem trafegar o arquivo bruto pelo backend.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "URL assinada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/sources": {
+      "post": {
+        "tags": [
+          "Sources"
+        ],
+        "operationId": "ingestSource",
+        "summary": "Ingestão e indexação de fonte",
+        "description": "Arquivo do staging passa por ClamAV e higienização Unicode (NFC) antes da indexação.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Aceito para triagem",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/conversations": {
+      "post": {
+        "tags": [
+          "RAG"
+        ],
+        "operationId": "startConversation",
+        "summary": "Inicializa consulta ao RAG",
+        "description": "Valida a propriedade de cada source_id. context_lock isola a inferência às fontes locais.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Conversa criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/messages/stream": {
+      "get": {
+        "tags": [
+          "RAG"
+        ],
+        "operationId": "streamMessages",
+        "summary": "Streaming de análise (SSE)",
+        "description": "Server-Sent Events. Buffers de conversação são volateis e purgados da RAM ao encerrar o stream.",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "prompt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fluxo de eventos",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Eventos: message_chunk, metadata_seal (HMAC-SHA256)"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "mutualTLS": {
+        "type": "mutualTLS",
+        "description": "Certificado de cliente PKCS#12 (TLS 1.3)"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "rt_nx_auth",
+        "description": "JWT em cookie HttpOnly; Secure; SameSite=Strict"
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Não autenticado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Não encontrado (ou desvio por IDOR)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unprocessable": {
+        "description": "Entidade não processável",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "RevokeRequest": {
+        "type": "object",
+        "required": [
+          "device_id"
+        ],
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "description": "ID do dispositivo a revogar"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo (auditoria)"
+          }
+        }
+      },
+      "RevokeResponse": {
+        "type": "object",
+        "properties": {
+          "revoked": {
+            "type": "boolean"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "WorkspaceCreate": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "Workspace": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PresignRequest": {
+        "type": "object",
+        "required": [
+          "filename",
+          "sha256"
+        ],
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Hash gerado localmente pelo scrubber"
+          }
+        }
+      },
+      "PresignResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "segundos"
+          }
+        }
+      },
+      "SourceCreate": {
+        "type": "object",
+        "required": [
+          "staging_key"
+        ],
+        "properties": {
+          "staging_key": {
+            "type": "string",
+            "description": "Chave do objeto no staging"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "SourceStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "scanning",
+              "indexing",
+              "ready",
+              "rejected"
+            ]
+          }
+        }
+      },
+      "ConversationCreate": {
+        "type": "object",
+        "required": [
+          "source_ids"
+        ],
+        "properties": {
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "context_lock": {
+            "type": "boolean",
+            "default": true,
+            "description": "Isola a inferência às fontes locais"
+          }
+        }
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "context_lock": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
