@@ -1,0 +1,28 @@
+name: CI — Validate HTML
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate HTML & CSS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install html5validator
+        run: pip install html5validator
+      # CSS errors are filtered: the vnu CSS parser rejects valid modern CSS
+      # (backdrop-filter, var() in background shorthand)
+      - name: Validate
+        run: html5validator --root . --ignore-re 'CSS:' --log INFO

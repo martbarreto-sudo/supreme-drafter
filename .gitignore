@@ -1,0 +1,12 @@
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Node
+node_modules/
+
+# Downloads / artifacts
+*.tar.gz
+*.zip
+*.jar
+*.log
