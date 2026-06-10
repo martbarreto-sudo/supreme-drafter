@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API NEXUM v2 · OpenAPI 3.1 | Ribeiro &amp; Tigre — Nexum</title>
+    <meta name="description" content="Viewer OpenAPI 3.1 das rotas NEXUM v2 (demonstração). Contratos genéricos sob mTLS. Ribeiro & Tigre · Nexum · V18.">
+    <meta name="theme-color" content="#090A0F">
+    <meta property="og:title" content="API NEXUM v2 · OpenAPI 3.1 — Ribeiro & Tigre">
+    <meta property="og:description" content="Especificação ilustrativa das rotas soberanas NEXUM v2.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'%3E%3Crect%20width='48'%20height='48'%20rx='10'%20fill='%23090A0F'/%3E%3Ctext%20x='24'%20y='32'%20font-family='Georgia,serif'%20font-size='18'%20font-weight='700'%20fill='%2310B981'%20text-anchor='middle'%3ER%26T%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .page-head { margin-top: 34px; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 18px; }
+        .page-head h1 { font-size: clamp(1.9rem, 4.5vw, 2.8rem); margin-top: 6px; }
+        .api-meta { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim); }
+        .api-meta .chip { border: 1px solid var(--line-strong); border-radius: 999px; padding: 6px 12px; color: var(--gold-soft); }
+        .api-meta a.dl { color: var(--mint); text-decoration: none; border: 1px solid var(--mint); border-radius: 8px; padding: 6px 12px; }
+        .api-meta a.dl:hover { background: rgba(16,185,129,0.08); }
+
+        .taggroup { margin-top: 30px; }
+        .taggroup > h2 { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px; }
+        .taggroup > .tdesc { font-size: 0.78rem; color: var(--text-faint); margin: -6px 0 14px; }
+
+        .op { border: 1px solid var(--line); border-radius: 11px; background: var(--bg-elev); margin-bottom: 10px; overflow: hidden; }
+        .op-head { display: flex; align-items: center; gap: 14px; padding: 14px 18px; cursor: pointer; user-select: none; }
+        .op-head:hover { background: rgba(16,185,129,0.03); }
+        .verb { font-family: var(--mono); font-size: 0.64rem; font-weight: 700; letter-spacing: 1px; padding: 4px 10px; border-radius: 6px; color: #04130d; flex-shrink: 0; min-width: 52px; text-align: center; }
+        .v-get { background: #10B981; } .v-post { background: #F59E0B; } .v-put { background: #6FD6AC; } .v-delete { background: #EF4444; color: #fff; }
+        .op-path { font-family: var(--mono); font-size: 0.84rem; color: var(--text); }
+        .op-sum { font-size: 0.78rem; color: var(--text-dim); margin-left: auto; text-align: right; }
+        .op-body { display: none; padding: 0 18px 18px; border-top: 1px solid var(--line); }
+        .op.open .op-body { display: block; }
+        .op-desc { font-size: 0.84rem; color: var(--text-dim); margin: 16px 0; line-height: 1.5; }
+        .sub { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 2px; text-transform: uppercase; color: var(--mint); margin: 16px 0 8px; }
+        .kv { font-family: var(--mono); font-size: 0.74rem; }
+        .schema { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+        .schema .prop { display: grid; grid-template-columns: 180px 100px 1fr; gap: 12px; padding: 9px 14px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 0.72rem; }
+        .schema .prop:last-child { border-bottom: none; }
+        .schema .pk { color: var(--text); } .schema .pk .req { color: var(--crimson); }
+        .schema .pt { color: var(--mint); }
+        .schema .pd { color: var(--text-dim); }
+        .resp { display: flex; align-items: baseline; gap: 12px; padding: 8px 0; font-family: var(--mono); font-size: 0.74rem; border-bottom: 1px solid var(--line); }
+        .resp:last-child { border-bottom: none; }
+        .resp .code { font-weight: 700; min-width: 44px; }
+        .c2 { color: var(--mint); } .c4 { color: var(--amber); } .c5 { color: var(--crimson); }
+        .resp .rd { color: var(--text-dim); }
+        .secline { font-family: var(--mono); font-size: 0.7rem; color: var(--text-faint); margin-top: 8px; }
+        .note { margin-top: 22px; font-family: var(--mono); font-size: 0.66rem; color: var(--text-faint); letter-spacing: 0.4px; }
+        @media (max-width: 640px) { .schema .prop { grid-template-columns: 1fr; gap: 2px; } .op-sum { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="shell">
+
+        <header class="topbar reveal">
+            <a class="brand" href="index.html" style="text-decoration:none;color:inherit;">
+                <svg class="crest" viewBox="0 0 48 48" role="img" aria-label="Brasão Ribeiro & Tigre">
+                    <rect class="frame" x="4" y="4" width="40" height="40" rx="9"/>
+                    <line class="stripe" x1="11" y1="13" x2="17" y2="13"/>
+                    <line class="stripe" x1="31" y1="35" x2="37" y2="35"/>
+                    <text class="mono" x="24" y="30" font-size="15" text-anchor="middle">R&amp;T</text>
+                </svg>
+                <div>
+                    <div class="brand-name">RIBEIRO &amp; <b>TIGRE</b></div>
+                    <div class="brand-sub">Nexum · Inteligência Jurídica de Elite</div>
+                </div>
+            </a>
+            <nav class="nav" aria-label="Navegação principal">
+                <a href="index.html">Início</a>
+                <a href="nexum.html">NEXUM</a>
+                <a href="war-room.html">War Room</a>
+                <a href="controladoria.html">Controladoria</a>
+                <a href="grafo.html">Grafo</a>
+                <a href="api.html" class="active">API</a>
+                <a href="planos.html">Planos</a>
+            </nav>
+        </header>
+
+        <div class="page-head reveal d1">
+            <div>
+                <div class="eyebrow">Especificação · OpenAPI 3.1</div>
+                <h1 class="gold-title">API NEXUM v2</h1>
+            </div>
+            <span class="demo-badge" style="font-family:var(--mono);font-size:0.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);border:1px solid rgba(245,158,11,0.4);background:rgba(245,158,11,0.07);border-radius:999px;padding:6px 14px;">⚠ Demonstração · contratos ilustrativos</span>
+        </div>
+
+        <div class="api-meta reveal d2">
+            <span class="chip" id="m-version">v—</span>
+            <span class="chip">mTLS · TLS 1.3</span>
+            <span class="chip">cookie JWT · rt_nx_auth</span>
+            <a class="dl" href="openapi.json" download>↓ openapi.json</a>
+        </div>
+
+        <div id="api-root" class="reveal d3"></div>
+
+        <p class="note">⚠ Especificação ilustrativa da camada de API do V18. URLs, esquemas e exemplos são genéricos e fictícios — nenhum segredo, chave de acesso ou dado real é exposto.</p>
+
+        <footer>
+            <span>© <span id="year">2026</span> RIBEIRO &amp; TIGRE · NEXUM</span>
+            <span>NEXUM API v2 · OPENAPI 3.1 · V18</span>
+            <span><a href="index.html">← Voltar ao Comando</a></span>
+        </footer>
+    </div>
+
+    <script type="application/json" id="openapi-spec">{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NEXUM API v2 — Especificação Ilustrativa",
+    "version": "2.0.0",
+    "description": "Contratos genéricos das rotas soberanas NEXUM v2. Demonstração — nenhum segredo, chave ou dado real. Transporte sob mTLS (TLS 1.3); sessão via cookie JWT HttpOnly.",
+    "contact": {
+      "name": "Ribeiro & Tigre",
+      "url": "https://www.ribeiroetigre.org/"
+    },
+    "license": {
+      "name": "Proprietário · Nexum"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.exemplo.nexum/v2",
+      "description": "Endpoint ilustrativo (mTLS obrigatório)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Sessão e revogação (DLP kill-switch)"
+    },
+    {
+      "name": "Workspaces",
+      "description": "Isolamento de tenant e metadados"
+    },
+    {
+      "name": "Uploads",
+      "description": "Emissão de URL assinada para S3 privado"
+    },
+    {
+      "name": "Sources",
+      "description": "Ingestão e indexação de fontes"
+    },
+    {
+      "name": "RAG",
+      "description": "Consulta e streaming de análise"
+    }
+  ],
+  "security": [
+    {
+      "mutualTLS": [],
+      "cookieAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/revoke": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "operationId": "revokeSession",
+        "summary": "Revogação de sessão (DLP Kill-Switch)",
+        "description": "Invalida a chave de sessão de um dispositivo, forçando logout na ponta em < 1s.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sessão revogada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RevokeResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/workspaces": {
+      "post": {
+        "tags": [
+          "Workspaces"
+        ],
+        "operationId": "createWorkspace",
+        "summary": "Criação de workspace isolado",
+        "description": "Cria um workspace com tenant_id injetado via claim do JWT (RLS aplicada no banco).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WorkspaceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workspace criado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/workspaces/{id}": {
+      "get": {
+        "tags": [
+          "Workspaces"
+        ],
+        "operationId": "getWorkspace",
+        "summary": "Metadados do workspace",
+        "description": "Recupera metadados. Acesso a id de outro tenant (IDOR) é desviado silenciosamente (404).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Workspace"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/uploads/presign": {
+      "post": {
+        "tags": [
+          "Uploads"
+        ],
+        "operationId": "presignUpload",
+        "summary": "URL assinada para o S3 privado",
+        "description": "Exige hash SHA-256 gerado localmente. Deposita no bucket privado, sem trafegar o arquivo bruto pelo backend.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "URL assinada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/sources": {
+      "post": {
+        "tags": [
+          "Sources"
+        ],
+        "operationId": "ingestSource",
+        "summary": "Ingestão e indexação de fonte",
+        "description": "Arquivo do staging passa por ClamAV e higienização Unicode (NFC) antes da indexação.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SourceCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Aceito para triagem",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SourceStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          }
+        }
+      }
+    },
+    "/conversations": {
+      "post": {
+        "tags": [
+          "RAG"
+        ],
+        "operationId": "startConversation",
+        "summary": "Inicializa consulta ao RAG",
+        "description": "Valida a propriedade de cada source_id. context_lock isola a inferência às fontes locais.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Conversa criada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/messages/stream": {
+      "get": {
+        "tags": [
+          "RAG"
+        ],
+        "operationId": "streamMessages",
+        "summary": "Streaming de análise (SSE)",
+        "description": "Server-Sent Events. Buffers de conversação são volateis e purgados da RAM ao encerrar o stream.",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "prompt",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Fluxo de eventos",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "description": "Eventos: message_chunk, metadata_seal (HMAC-SHA256)"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "mutualTLS": {
+        "type": "mutualTLS",
+        "description": "Certificado de cliente PKCS#12 (TLS 1.3)"
+      },
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "rt_nx_auth",
+        "description": "JWT em cookie HttpOnly; Secure; SameSite=Strict"
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "Não autenticado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Não encontrado (ou desvio por IDOR)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unprocessable": {
+        "description": "Entidade não processável",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "RevokeRequest": {
+        "type": "object",
+        "required": [
+          "device_id"
+        ],
+        "properties": {
+          "device_id": {
+            "type": "string",
+            "description": "ID do dispositivo a revogar"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo (auditoria)"
+          }
+        }
+      },
+      "RevokeResponse": {
+        "type": "object",
+        "properties": {
+          "revoked": {
+            "type": "boolean"
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "WorkspaceCreate": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "Workspace": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "readOnly": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PresignRequest": {
+        "type": "object",
+        "required": [
+          "filename",
+          "sha256"
+        ],
+        "properties": {
+          "filename": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "description": "Hash gerado localmente pelo scrubber"
+          }
+        }
+      },
+      "PresignResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri"
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "segundos"
+          }
+        }
+      },
+      "SourceCreate": {
+        "type": "object",
+        "required": [
+          "staging_key"
+        ],
+        "properties": {
+          "staging_key": {
+            "type": "string",
+            "description": "Chave do objeto no staging"
+          },
+          "workspace_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "SourceStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "queued",
+              "scanning",
+              "indexing",
+              "ready",
+              "rejected"
+            ]
+          }
+        }
+      },
+      "ConversationCreate": {
+        "type": "object",
+        "required": [
+          "source_ids"
+        ],
+        "properties": {
+          "source_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "context_lock": {
+            "type": "boolean",
+            "default": true,
+            "description": "Isola a inferência às fontes locais"
+          }
+        }
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "context_lock": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}</script>
+    <script>
+    (function () {
+        var spec = JSON.parse(document.getElementById("openapi-spec").textContent);
+        document.getElementById("year").textContent = new Date().getFullYear();
+        document.getElementById("m-version").textContent = "v" + spec.info.version;
+
+        function resolve(ref) {
+            if (!ref) return null;
+            var parts = ref.replace("#/", "").split("/");
+            var cur = spec;
+            for (var i = 0; i < parts.length; i++) cur = cur[parts[i]];
+            return cur;
+        }
+        function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c]; }); }
+
+        function schemaTable(schema) {
+            if (schema && schema.$ref) schema = resolve(schema.$ref);
+            if (!schema || !schema.properties) return "";
+            var req = schema.required || [];
+            var html = '<div class="schema">';
+            Object.keys(schema.properties).forEach(function (k) {
+                var p = schema.properties[k];
+                var type = p.type || (p.$ref ? "object" : "");
+                if (p.type === "array" && p.items) type = "array<" + (p.items.type || "object") + ">";
+                if (p.format) type += " · " + p.format;
+                if (p.enum) type = "enum";
+                var isReq = req.indexOf(k) >= 0 ? '<span class="req"> *</span>' : "";
+                var desc = p.description || (p.enum ? p.enum.join(" | ") : "");
+                html += '<div class="prop"><span class="pk">' + esc(k) + isReq + '</span>' +
+                        '<span class="pt">' + esc(type) + '</span>' +
+                        '<span class="pd">' + esc(desc) + '</span></div>';
+            });
+            return html + "</div>";
+        }
+
+        function opBlock(path, method, op) {
+            var div = document.createElement("div"); div.className = "op";
+            var verb = method.toUpperCase();
+            var head = document.createElement("div"); head.className = "op-head";
+            head.innerHTML = '<span class="verb v-' + method + '">' + verb + '</span>' +
+                             '<span class="op-path">' + esc(path) + '</span>' +
+                             '<span class="op-sum">' + esc(op.summary || "") + '</span>';
+            var body = document.createElement("div"); body.className = "op-body";
+            var html = "";
+            if (op.description) html += '<p class="op-desc">' + esc(op.description) + '</p>';
+
+            // security
+            html += '<div class="secline">🔒 mTLS + cookie JWT (rt_nx_auth)</div>';
+
+            // parameters
+            if (op.parameters && op.parameters.length) {
+                html += '<div class="sub">Parâmetros</div><div class="schema">';
+                op.parameters.forEach(function (pr) {
+                    var t = (pr.schema && pr.schema.type) || "string";
+                    if (pr.schema && pr.schema.format) t += " · " + pr.schema.format;
+                    var rq = pr.required ? '<span class="req"> *</span>' : "";
+                    html += '<div class="prop"><span class="pk">' + esc(pr.name) + rq + '</span>' +
+                            '<span class="pt">' + esc(pr["in"]) + " · " + esc(t) + '</span>' +
+                            '<span class="pd">' + esc(pr.description || "") + '</span></div>';
+                });
+                html += '</div>';
+            }
+
+            // request body
+            if (op.requestBody) {
+                var ct = op.requestBody.content["application/json"];
+                if (ct) { html += '<div class="sub">Request · application/json</div>' + schemaTable(ct.schema); }
+            }
+
+            // responses
+            html += '<div class="sub">Respostas</div>';
+            Object.keys(op.responses).forEach(function (code) {
+                var r = op.responses[code];
+                if (r.$ref) r = resolve(r.$ref);
+                var cls = code[0] === "2" ? "c2" : (code[0] === "4" ? "c4" : "c5");
+                html += '<div class="resp"><span class="code ' + cls + '">' + esc(code) + '</span>' +
+                        '<span class="rd">' + esc(r.description || "") + '</span></div>';
+            });
+
+            body.innerHTML = html;
+            head.addEventListener("click", function () { div.classList.toggle("open"); });
+            div.appendChild(head); div.appendChild(body);
+            return div;
+        }
+
+        var root = document.getElementById("api-root");
+        var order = (spec.tags || []).map(function (t) { return t.name; });
+        var tagDesc = {}; (spec.tags || []).forEach(function (t) { tagDesc[t.name] = t.description || ""; });
+
+        // group ops by tag preserving spec order
+        var groups = {};
+        Object.keys(spec.paths).forEach(function (path) {
+            var methods = spec.paths[path];
+            Object.keys(methods).forEach(function (m) {
+                var op = methods[m];
+                var tag = (op.tags && op.tags[0]) || "Outros";
+                (groups[tag] = groups[tag] || []).push({ path: path, method: m, op: op });
+            });
+        });
+        var allTags = order.concat(Object.keys(groups).filter(function (t) { return order.indexOf(t) < 0; }));
+        allTags.forEach(function (tag) {
+            if (!groups[tag]) return;
+            var g = document.createElement("div"); g.className = "taggroup";
+            g.innerHTML = '<h2># ' + esc(tag) + '</h2>' + (tagDesc[tag] ? '<div class="tdesc">' + esc(tagDesc[tag]) + '</div>' : "");
+            groups[tag].forEach(function (o) { g.appendChild(opBlock(o.path, o.method, o.op)); });
+            root.appendChild(g);
+        });
+    })();
+    </script>
+</body>
+</html>
