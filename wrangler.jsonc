@@ -7,17 +7,18 @@
     "directory": "./public",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
-  }
+  },
 
-  // --- Produção (domínio ao vivo) ----------------------------------------
-  // Por segurança, as rotas do domínio principal estão DESLIGADAS por padrão.
-  // Sem elas, o deploy publica apenas em https://ribeiroetigre.workers.dev
-  // (preview), sem tocar no que está no ar em ribeiroetigre.org.
-  //
-  // Para apontar o domínio real, descomente o bloco abaixo e faça o deploy:
-  //
-  // ,"routes": [
+  // --- Produção -----------------------------------------------------------
+  // A War Room é servida num subdomínio DEDICADO da marca, sem tocar no
+  // site principal (apex). O Cloudflare cria o registro DNS automaticamente
+  // no primeiro deploy. Para reverter, basta remover esta rota e re-deployar.
+  "routes": [
+    { "pattern": "war.ribeiroetigre.org", "custom_domain": true }
+  ]
+
+  // Para, mais tarde, assumir TAMBÉM o domínio principal (substitui o que
+  // estiver no ar em ribeiroetigre.org), adicione ao array acima:
   //   { "pattern": "ribeiroetigre.org", "custom_domain": true },
   //   { "pattern": "www.ribeiroetigre.org", "custom_domain": true }
-  // ]
 }
