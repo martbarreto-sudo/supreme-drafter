@@ -22,10 +22,10 @@
 
     /* Compat: tokens antigos remapeados para a paleta V18 (accent = menta) */
     --gold:        #10B981;
-    --gold-soft:   #4ade9f;
-    --gold-bright: #8af0c4;
+    --gold-soft:   #3CC28E;
+    --gold-bright: #6FD6AC;
     --gold-deep:   #0e9c6e;
-    --gold-dim:    rgba(16, 185, 129, 0.16);
+    --gold-dim:    rgba(16, 185, 129, 0.12);
     --green:       #10B981;
 
     /* ---- Texto ---- */
@@ -50,8 +50,8 @@ html { scroll-behavior: smooth; }
 
 body {
     background:
-        radial-gradient(1100px 640px at 82% -12%, rgba(16,185,129,0.07), transparent 60%),
-        radial-gradient(820px 540px at 0% 112%, rgba(16,185,129,0.04), transparent 55%),
+        radial-gradient(1100px 640px at 82% -12%, rgba(16,185,129,0.05), transparent 60%),
+        radial-gradient(820px 540px at 0% 112%, rgba(16,185,129,0.03), transparent 55%),
         var(--bg);
     color: var(--text);
     font-family: var(--sans);
@@ -114,7 +114,7 @@ a:focus-visible, button:focus-visible {
 .nav a:hover { color: var(--mint); border-color: var(--line); }
 .nav a.active { color: var(--mint); border-color: var(--line-strong); background: rgba(16,185,129,0.06); }
 
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 10px var(--mint); animation: pulse 2.2s ease-in-out infinite; display: inline-block; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 7px var(--mint); animation: pulse 2.2s ease-in-out infinite; display: inline-block; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 #clock { color: var(--gold-soft); letter-spacing: 1px; }
 
@@ -154,7 +154,7 @@ a:focus-visible, button:focus-visible {
 .card h3 { font-family: var(--serif); font-size: 1.18rem; font-weight: 700; letter-spacing: 0.3px; }
 .card p { font-size: 0.86rem; color: var(--text-dim); font-weight: 400; }
 .card .meta { margin-top: auto; display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 0.68rem; color: var(--text-faint); padding-top: 13px; border-top: 1px solid var(--line); }
-.card.featured { background: radial-gradient(560px 190px at 100% 0%, rgba(16,185,129,0.10), transparent 60%), var(--bg-elev); border-color: var(--line-strong); }
+.card.featured { background: radial-gradient(560px 190px at 100% 0%, rgba(16,185,129,0.07), transparent 60%), var(--bg-elev); border-color: var(--line-strong); }
 .ico { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line-strong); border-radius: 9px; color: var(--mint); font-size: 1rem; }
 
 /* ---------- Buttons ---------- */
@@ -165,9 +165,9 @@ a:focus-visible, button:focus-visible {
     font-family: var(--mono); font-size: 0.9rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
     text-decoration: none; cursor: pointer;
     transition: transform .25s var(--ease), box-shadow .25s var(--ease);
-    box-shadow: 0 0 28px rgba(16,185,129,0.28);
+    box-shadow: 0 0 20px rgba(16,185,129,0.20);
 }
-.btn-iniciar:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(16,185,129,0.5); }
+.btn-iniciar:hover { transform: translateY(-3px); box-shadow: 0 0 36px rgba(16,185,129,0.35); }
 .btn-iniciar .arrow { transition: transform .25s var(--ease); }
 .btn-iniciar:hover .arrow { transform: translateX(5px); }
 
