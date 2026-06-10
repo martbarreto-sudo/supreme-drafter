@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos · NEXUM SaaS | Ribeiro &amp; Tigre — Nexum</title>
+    <meta name="description" content="Planos NEXUM by Tigre — Core Boutique, Enterprise Engine e Sovereign Corporate. Inteligência jurídica local-first sob o padrão Nexum.">
+    <meta name="theme-color" content="#090A0F">
+    <meta property="og:title" content="Planos · NEXUM SaaS — Ribeiro & Tigre">
+    <meta property="og:description" content="Core Boutique, Enterprise Engine e Sovereign Corporate — inteligência jurídica local-first.">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'%3E%3Crect%20width='48'%20height='48'%20rx='10'%20fill='%23090A0F'/%3E%3Ctext%20x='24'%20y='32'%20font-family='Georgia,serif'%20font-size='18'%20font-weight='700'%20fill='%2310B981'%20text-anchor='middle'%3ER%26T%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/styles.css">
+    <style>
+        .hero { margin-top: 40px; text-align: center; }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 3.4rem); margin: 8px 0 6px; }
+        .hero p { color: var(--text-dim); max-width: 600px; margin: 12px auto 0; font-size: 0.95rem; }
+
+        .plans { margin-top: 44px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; }
+        .plan { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-elev); padding: 28px 24px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .plan.featured { border-color: var(--mint); box-shadow: 0 0 0 1px var(--gold-dim); }
+        .plan.featured::before { content: "RECOMENDADO"; position: absolute; top: 14px; right: -34px; transform: rotate(45deg); background: var(--mint); color: #04130d; font-family: var(--mono); font-size: 0.56rem; letter-spacing: 1.5px; padding: 4px 40px; font-weight: 600; }
+        .plan .pname { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; }
+        .plan .ptag { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--mint); margin-top: 4px; }
+        .plan .price { margin: 20px 0 4px; font-family: var(--serif); font-size: 2.1rem; font-weight: 700; color: var(--text); line-height: 1; }
+        .plan .price small { font-family: var(--mono); font-size: 0.7rem; color: var(--text-faint); font-weight: 400; letter-spacing: 0.5px; }
+        .plan .pscope { font-family: var(--mono); font-size: 0.68rem; color: var(--text-dim); margin-bottom: 18px; }
+        .plan ul { list-style: none; display: flex; flex-direction: column; gap: 11px; margin-bottom: 22px; }
+        .plan li { display: flex; gap: 10px; font-size: 0.82rem; color: var(--text-dim); line-height: 1.45; }
+        .plan li::before { content: "▸"; color: var(--mint); flex-shrink: 0; }
+        .plan .cta { margin-top: auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 13px 20px; border-radius: 10px; font-family: var(--mono); font-size: 0.74rem; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; cursor: pointer; transition: .2s var(--ease); }
+        .plan .cta.ghost { border: 1px solid var(--line-strong); color: var(--text); }
+        .plan .cta.ghost:hover { border-color: var(--mint); color: var(--mint); }
+        .plan .cta.solid { background: linear-gradient(135deg, var(--gold-deep), var(--mint)); color: #04130d; font-weight: 600; }
+        .plan .cta.solid:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(16,185,129,0.3); }
+
+        .econ { margin-top: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .econ .ecard { border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; background: var(--bg-elev); }
+        .econ .eval { font-family: var(--serif); font-size: 1.5rem; font-weight: 700; color: var(--mint); line-height: 1; }
+        .econ .elabel { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); margin-top: 8px; }
+
+        .note { margin-top: 22px; font-family: var(--mono); font-size: 0.66rem; color: var(--text-faint); letter-spacing: 0.4px; }
+
+        @media (max-width: 920px) { .plans { grid-template-columns: 1fr; } .econ { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 520px) { .econ { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="shell">
+
+        <!-- TOP BAR -->
+        <header class="topbar reveal">
+            <a class="brand" href="index.html" style="text-decoration:none;color:inherit;">
+                <svg class="crest" viewBox="0 0 48 48" role="img" aria-label="Brasão Ribeiro & Tigre">
+                    <rect class="frame" x="4" y="4" width="40" height="40" rx="9"/>
+                    <line class="stripe" x1="11" y1="13" x2="17" y2="13"/>
+                    <line class="stripe" x1="31" y1="35" x2="37" y2="35"/>
+                    <text class="mono" x="24" y="30" font-size="15" text-anchor="middle">R&amp;T</text>
+                </svg>
+                <div>
+                    <div class="brand-name">RIBEIRO &amp; <b>TIGRE</b></div>
+                    <div class="brand-sub">Nexum · Inteligência Jurídica de Elite</div>
+                </div>
+            </a>
+            <nav class="nav" aria-label="Navegação principal">
+                <a href="index.html">Início</a>
+                <a href="war-room.html">War Room</a>
+                <a href="controladoria.html">Controladoria</a>
+                <a href="planos.html" class="active">Planos</a>
+                <span class="pill"><span class="dot"></span></span>
+            </nav>
+        </header>
+
+        <!-- HERO -->
+        <section class="hero reveal d1">
+            <div class="eyebrow">NEXUM SaaS · Local-First</div>
+            <h1 class="gold-title">Planos</h1>
+            <p>Inteligência jurídica verticalizada para o contencioso de alta complexidade. Processamento local-first, geração de minutas de nulidades e auditoria de conformidade sob o padrão Nexum.</p>
+        </section>
+
+        <!-- PLANS -->
+        <section class="plans">
+            <article class="plan reveal d1">
+                <div class="pname">Core Boutique</div>
+                <div class="ptag">Tier 01</div>
+                <div class="price">R$ 1.800<small> / mês</small></div>
+                <div class="pscope">Até 30 NPUs processadas / mês</div>
+                <ul>
+                    <li>RAG local-first sobre o acervo da banca</li>
+                    <li>Geração de minutas de nulidades</li>
+                    <li>Higienização de PII e metadados (local)</li>
+                    <li>Auditoria de conformidade dos Gens</li>
+                </ul>
+                <a href="#contato" class="cta ghost">Falar com a banca</a>
+            </article>
+
+            <article class="plan featured reveal d2">
+                <div class="pname">Enterprise Engine</div>
+                <div class="ptag">Tier 02</div>
+                <div class="price">R$ 5.500<small> / mês</small></div>
+                <div class="pscope">Até 150 NPUs · excedente R$ 50 / processo</div>
+                <ul>
+                    <li>Tudo do Core Boutique</li>
+                    <li>Integração ao barramento MNI dos tribunais</li>
+                    <li>Esteira síncrona de andamentos para a equipe</li>
+                    <li>Watchdog de prazos prescricionais (Gen-Chronos)</li>
+                    <li>Suporte prioritário</li>
+                </ul>
+                <a href="#contato" class="cta solid">Começar agora</a>
+            </article>
+
+            <article class="plan reveal d3">
+                <div class="pname">Sovereign Corporate</div>
+                <div class="ptag">Tier 03</div>
+                <div class="price">Sob consulta</div>
+                <div class="pscope">Volume ilimitado de NPUs</div>
+                <ul>
+                    <li>Ingestão de carteira em lote</li>
+                    <li>Armazenamento imutável em S3 privado (Object Lock)</li>
+                    <li>Fixo de infraestrutura + % de êxito sobre a redução do passivo</li>
+                    <li>Isolamento de tenant dedicado (RLS)</li>
+                </ul>
+                <a href="#contato" class="cta ghost">Solicitar proposta</a>
+            </article>
+        </section>
+
+        <!-- UNIT ECONOMICS -->
+        <div class="section-head reveal">
+            <span class="idx">01</span>
+            <h2>Fundamentos do Modelo</h2>
+            <span class="line"></span>
+        </div>
+
+        <section class="econ reveal">
+            <div class="ecard"><div class="eval">92%</div><div class="elabel">Margem bruta (local-first)</div></div>
+            <div class="ecard"><div class="eval">&gt;110%</div><div class="elabel">Net Revenue Retention</div></div>
+            <div class="ecard"><div class="eval">Rule&nbsp;of&nbsp;40</div><div class="elabel">Crescimento + margem</div></div>
+            <div class="ecard"><div class="eval">6.2–12×</div><div class="elabel">Múltiplo de ARR (alvo)</div></div>
+        </section>
+
+        <p class="note" id="contato">Valores de referência da arquitetura NEXUM SaaS. Para contratação, integração ou proposta Sovereign, fale com a Ribeiro &amp; Tigre em <a href="https://www.ribeiroetigre.org/" style="color:var(--mint)">ribeiroetigre.org</a>.</p>
+
+        <!-- FOOTER -->
+        <footer>
+            <span>© <span id="year">2026</span> RIBEIRO &amp; TIGRE · NEXUM</span>
+            <span>NEXUM SAAS · PLANOS · V18</span>
+            <span><a href="index.html">← Voltar ao Comando</a></span>
+        </footer>
+
+    </div>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>
