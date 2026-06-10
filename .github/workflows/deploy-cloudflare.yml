@@ -16,18 +16,27 @@ jobs:
     if: github.repository == 'martbarreto-sudo/supreme-drafter'
     env:
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_TOKEN_VAR: ${{ vars.CLOUDFLARE_API_TOKEN }}
     steps:
       - name: Diagnóstico do token (não vaza o valor)
         run: |
-          LEN=${#CF_TOKEN}
-          echo "Comprimento do CLOUDFLARE_API_TOKEN: $LEN"
+          LEN_SECRET=${#CF_TOKEN}
+          LEN_VAR=${#CF_TOKEN_VAR}
+          echo "secrets.CLOUDFLARE_API_TOKEN -> len=$LEN_SECRET"
+          echo "vars.CLOUDFLARE_API_TOKEN    -> len=$LEN_VAR"
           {
             echo "### Diagnóstico do deploy Cloudflare"
-            if [ "$LEN" -eq 0 ]; then
-              echo "- ❌ \`CLOUDFLARE_API_TOKEN\` **ausente** (len=0). Cadastre como **Repository secret** em Settings → Secrets and variables → Actions."
-              echo "- Deploy **pulado**."
+            echo "| Origem | Comprimento |"
+            echo "| --- | --- |"
+            echo "| \`secrets.CLOUDFLARE_API_TOKEN\` | $LEN_SECRET |"
+            echo "| \`vars.CLOUDFLARE_API_TOKEN\` | $LEN_VAR |"
+            echo ""
+            if [ "$LEN_SECRET" -gt 0 ]; then
+              echo "- ✅ Token presente em **Secrets**. Prosseguindo com o deploy."
+            elif [ "$LEN_VAR" -gt 0 ]; then
+              echo "- ⚠️ Token foi cadastrado em **Variables**, não em **Secrets**. Mova-o para a aba *Secrets* (Repository secret)."
             else
-              echo "- ✅ \`CLOUDFLARE_API_TOKEN\` presente (len=$LEN). Prosseguindo com o deploy."
+              echo "- ❌ Token **ausente** em ambas as abas deste repositório. Cadastre como **Repository secret** em Settings → Secrets and variables → Actions."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
