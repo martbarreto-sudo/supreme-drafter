@@ -1,4 +1,4 @@
-name: CI & Publish to GitHub Pages
+name: CI & Deploy to GitHub Pages
 
 on:
   push:
@@ -9,6 +9,12 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   validate:
@@ -28,23 +34,25 @@ jobs:
       - name: Validate
         run: html5validator --root . --ignore-re 'CSS:' --log INFO
 
-  publish:
-    name: Publish public/ to gh-pages
+  deploy:
+    name: Deploy to GitHub Pages
     needs: validate
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Pages esta em modo "branch" (gh-pages). Sincroniza public/ para la
-      # usando apenas o GITHUB_TOKEN interno -- sem nenhum secret externo.
-      - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup Pages (auto-enable)
+        uses: actions/configure-pages@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages
-          enable_jekyll: false
-          commit_message: "Publish ${{ github.sha }} to GitHub Pages"
+          enablement: true
+      - name: Upload artifact (public/)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './public'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
