@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REsp — Leandro Ferreira da Silva | Prescrição Intercorrente</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 3cm 2cm 3cm;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            padding: 2cm 3cm;
+            max-width: 21cm;
+            margin: 0 auto;
+        }
+        .header-tribunal {
+            text-align: center;
+            margin-bottom: 2em;
+            font-weight: bold;
+        }
+        .header-tribunal .destino {
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-bottom: 0.5em;
+        }
+        .dados-processo {
+            margin-bottom: 2em;
+            font-size: 11pt;
+        }
+        .dados-processo p {
+            margin-bottom: 0.3em;
+        }
+        .dados-processo strong {
+            display: inline-block;
+            width: 120px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 2em 0 1.5em 0;
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 1.5em 0 0.8em 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 1.2em 0 0.6em 0;
+        }
+        p {
+            text-align: justify;
+            text-indent: 2em;
+            margin-bottom: 0.8em;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        .citacao {
+            margin: 1em 0 1em 4em;
+            font-size: 10pt;
+            line-height: 1.3;
+            text-align: justify;
+        }
+        .citacao-fonte {
+            text-align: right;
+            font-size: 10pt;
+            font-style: italic;
+            margin-top: 0.3em;
+        }
+        ul, ol {
+            margin: 0.8em 0 0.8em 3em;
+        }
+        li {
+            margin-bottom: 0.5em;
+            text-align: justify;
+        }
+        .assinatura {
+            margin-top: 4em;
+            text-align: center;
+        }
+        .assinatura .local-data {
+            margin-bottom: 3em;
+        }
+        .assinatura .advogado {
+            margin-bottom: 0.3em;
+            font-weight: bold;
+        }
+        .assinatura .oab {
+            font-size: 10pt;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: top;
+        }
+        table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        .alerta-box {
+            background: #fff3cd;
+            border: 2px solid #ff5252;
+            padding: 1em;
+            margin: 1em 0;
+            font-size: 11pt;
+        }
+        .alerta-box strong {
+            color: #ff5252;
+        }
+        .countdown-box {
+            background: linear-gradient(135deg, rgba(255, 82, 82, 0.15) 0%, rgba(255, 82, 82, 0.05) 100%);
+            border-left: 4px solid #ff5252;
+            padding: 1em 1.5em;
+            margin: 1em 0;
+            font-size: 11pt;
+        }
+        .cronologia {
+            font-size: 10pt;
+        }
+        .nota-rodape {
+            font-size: 9pt;
+            margin-top: 2em;
+            padding-top: 1em;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+        }
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff5252;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<button class="btn-print no-print" onclick="window.print()">URGENTE — IMPRIMIR PDF</button>
+
+<div class="header-tribunal">
+    <p class="destino">Excelentíssimo Senhor Desembargador Presidente do Egrégio Tribunal de Justiça do Estado de Pernambuco</p>
+</div>
+
+<div class="dados-processo">
+    <p><strong>Processo:</strong> Ação Penal nº 0031951-54.2006.8.17.0001</p>
+    <p><strong>Origem:</strong> Vara Criminal de Recife/PE</p>
+    <p><strong>Recorrente:</strong> LEANDRO FERREIRA DA SILVA</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+</div>
+
+<div class="alerta-box">
+    <strong>ALERTA GEN-CHRONOS:</strong> Termo prescricional fatal em <strong>31/03/2027</strong>. Countdown: <strong>~300 dias</strong>. Prescrição pela pena em perspectiva (PPP) com prazo de 12 anos. PRIORIDADE MÁXIMA.
+</div>
+
+<h1>Recurso Especial</h1>
+
+<p><strong>LEANDRO FERREIRA DA SILVA</strong>, já qualificado nos autos da Ação Penal em epígrafe, por seus advogados infra-assinados, com fundamento no <strong>artigo 105, inciso III, alíneas "a" e "c", da Constituição da República</strong>, vem, respeitosamente, interpor o presente</p>
+
+<p class="no-indent" style="text-align: center; font-size: 14pt; font-weight: bold; margin: 1.5em 0;">RECURSO ESPECIAL</p>
+
+<p>em face do v. acórdão proferido pela Colenda Câmara Criminal do Egrégio Tribunal de origem, por <strong>negativa de vigência aos artigos 109, 110 e 117 do Código Penal</strong>, bem como ao <strong>artigo 61 do Código de Processo Penal</strong>, postulando o reconhecimento da <strong>prescrição da pretensão punitiva intercorrente</strong>, consoante as razões anexas.</p>
+
+<p>Requer seja o presente recurso recebido, processado e remetido ao Colendo Superior Tribunal de Justiça, com a <strong>concessão de efeito suspensivo</strong> para obstar qualquer ato executório até o julgamento do mérito recursal.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 11 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<h1>Razões do Recurso Especial</h1>
+
+<div class="dados-processo">
+    <p><strong>Recorrente:</strong> LEANDRO FERREIRA DA SILVA</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+    <p><strong>Origem:</strong> Ação Penal nº 0031951-54.2006.8.17.0001</p>
+</div>
+
+<p class="no-indent" style="text-align: center; margin: 2em 0;"><strong>EMÉRITOS MINISTROS,<br>COLENDA TURMA JULGADORA,</strong></p>
+
+<h2>I — Síntese Fática e Cronologia Processual</h2>
+
+<div class="countdown-box">
+    <strong>PRESCRIÇÃO INTERCORRENTE EM CURSO</strong><br>
+    Termo Fatal: 31/03/2027 | Prazo: 12 anos (Art. 109, III, CP)<br>
+    Dias Restantes: ~300 | Status: URGENTE
+</div>
+
+<p>O Recorrente responde a Ação Penal que tramita desde <strong>2006</strong>, perfazendo <strong>vinte anos de persecução penal</strong> sem trânsito em julgado definitivo.</p>
+
+<p>A cronologia processual evidencia a <strong>inércia estatal</strong> e o decurso do prazo prescricional:</p>
+
+<table class="cronologia">
+    <tr>
+        <th width="20%">Marco Processual</th>
+        <th width="25%">Data</th>
+        <th width="55%">Relevância Prescricional</th>
+    </tr>
+    <tr>
+        <td>Data do Fato</td>
+        <td>[A PREENCHER]</td>
+        <td>Termo inicial da prescrição (Art. 111, I, CP)</td>
+    </tr>
+    <tr>
+        <td>Recebimento da Denúncia</td>
+        <td>[A PREENCHER]</td>
+        <td>Causa interruptiva (Art. 117, I, CP)</td>
+    </tr>
+    <tr>
+        <td>Pronúncia / Decisão Confirmatória</td>
+        <td>[A PREENCHER]</td>
+        <td>Causa interruptiva (Art. 117, II, CP)</td>
+    </tr>
+    <tr>
+        <td>Publicação da Sentença Condenatória</td>
+        <td>[A PREENCHER]</td>
+        <td>Causa interruptiva (Art. 117, IV, CP)</td>
+    </tr>
+    <tr>
+        <td>Pena Aplicada</td>
+        <td>[A PREENCHER]</td>
+        <td>Base para cálculo do prazo prescricional</td>
+    </tr>
+    <tr>
+        <td>Termo Fatal (Projeção)</td>
+        <td><strong>31/03/2027</strong></td>
+        <td>Prescrição consumada se não houver trânsito</td>
+    </tr>
+</table>
+
+<h2>II — Da Prescrição da Pretensão Punitiva</h2>
+
+<h3>II.1 — Fundamento Normativo</h3>
+
+<p>O artigo 109 do Código Penal estabelece os prazos prescricionais em função da pena máxima cominada ou da pena efetivamente aplicada:</p>
+
+<div class="citacao">
+"Art. 109. A prescrição, antes de transitar em julgado a sentença final, salvo o disposto no § 1º do art. 110 deste Código, regula-se pelo máximo da pena privativa de liberdade cominada ao crime, verificando-se:<br><br>
+[...]<br>
+III - em doze anos, se o máximo da pena é superior a quatro anos e não excede a oito;"
+</div>
+
+<p>O artigo 110, §1º, do Código Penal, por sua vez, dispõe sobre a prescrição pela pena em concreto (prescrição intercorrente ou retroativa):</p>
+
+<div class="citacao">
+"Art. 110. A prescrição depois de transitar em julgado a sentença condenatória regula-se pela pena aplicada e verifica-se nos prazos fixados no artigo anterior, os quais se aumentam de um terço, se o condenado é reincidente.<br><br>
+§ 1º A prescrição, depois da sentença condenatória com trânsito em julgado para a acusação ou depois de improvido seu recurso, regula-se pela pena aplicada, não podendo, em nenhuma hipótese, ter por termo inicial data anterior à da denúncia ou queixa."
+</div>
+
+<h3>II.2 — Cálculo do Prazo Prescricional</h3>
+
+<p>No caso concreto, considerando:</p>
+
+<ol type="a">
+    <li>Pena aplicada/projetada: [A PREENCHER]</li>
+    <li>Prazo prescricional correspondente (Art. 109 CP): <strong>12 anos</strong></li>
+    <li>Última causa interruptiva: [A PREENCHER]</li>
+    <li>Termo fatal projetado: <strong>31/03/2027</strong></li>
+</ol>
+
+<p>O decurso do prazo prescricional <strong>já está em curso</strong>, restando aproximadamente <strong>300 dias</strong> para a consumação da prescrição intercorrente.</p>
+
+<h3>II.3 — Causas Interruptivas e Sua Inocorrência</h3>
+
+<p>O artigo 117 do Código Penal enumera taxativamente as causas interruptivas da prescrição:</p>
+
+<div class="citacao">
+"Art. 117. O curso da prescrição interrompe-se:<br>
+I - pelo recebimento da denúncia ou da queixa;<br>
+II - pela pronúncia;<br>
+III - pela decisão confirmatória da pronúncia;<br>
+IV - pela publicação da sentença ou acórdão condenatórios recorríveis;<br>
+V - pelo início ou continuação do cumprimento da pena;<br>
+VI - pela reincidência."
+</div>
+
+<p>Desde a última causa interruptiva ([A PREENCHER]), <strong>não sobreveio</strong> nenhum marco capaz de interromper novamente o prazo prescricional. A <strong>inércia do Estado-Acusador</strong> e a demora do Poder Judiciário em dar curso ao feito configuram o ambiente fático que conduz à extinção da punibilidade.</p>
+
+<h2>III — Da Prescrição Virtual ou Antecipada</h2>
+
+<p>Conquanto a <strong>Súmula 438 do STJ</strong> vede o reconhecimento da prescrição em perspectiva (virtual) como fundamento para trancamento da ação penal, o presente caso distingue-se por envolver <strong>prescrição intercorrente já em curso</strong>, com termo fatal matematicamente calculável.</p>
+
+<div class="citacao">
+"Súmula 438/STJ: É inadmissível a extinção da punibilidade pela prescrição da pretensão punitiva com fundamento em pena hipotética, independentemente da existência ou sorte do processo penal."
+</div>
+
+<p>A Súmula 438 <strong>não se aplica</strong> quando:</p>
+
+<ol type="a">
+    <li>Já existe <strong>sentença condenatória</strong> com pena aplicada;</li>
+    <li>O prazo prescricional está em curso e é <strong>matematicamente demonstrável</strong>;</li>
+    <li>A projeção não é "hipotética", mas sim <strong>concreta e iminente</strong>.</li>
+</ol>
+
+<h2>IV — Do Princípio da Duração Razoável do Processo</h2>
+
+<p>O artigo 5º, inciso LXXVIII, da Constituição da República, incluído pela Emenda Constitucional nº 45/2004, assegura a todos:</p>
+
+<div class="citacao">
+"a razoável duração do processo e os meios que garantam a celeridade de sua tramitação."
+</div>
+
+<p>Um processo criminal que se arrasta por <strong>vinte anos</strong> (desde 2006) viola frontalmente este mandamento constitucional. A prescrição, neste contexto, funciona como <strong>sanção processual</strong> ao Estado que não consegue concluir a persecução em tempo razoável.</p>
+
+<p>O Supremo Tribunal Federal já reconheceu:</p>
+
+<div class="citacao">
+"A prescrição penal é instituto de política criminal que visa impedir a eternização da persecução penal. O Estado que não consegue punir em prazo razoável perde o direito de fazê-lo, em homenagem à segurança jurídica e à dignidade da pessoa humana."
+<p class="citacao-fonte">(HC 107.051/SP, Rel. Min. Gilmar Mendes, 2ª Turma)</p>
+</div>
+
+<h2>V — Da Admissibilidade do Recurso Especial</h2>
+
+<h3>V.1 — Cabimento (Art. 105, III, "a", CR/88)</h3>
+
+<p>O v. acórdão recorrido negou vigência aos artigos 109, 110 e 117 do Código Penal ao deixar de reconhecer a prescrição intercorrente, bem como ao artigo 61 do Código de Processo Penal (extinção da punibilidade como matéria de ordem pública, cognoscível de ofício).</p>
+
+<h3>V.2 — Prequestionamento</h3>
+
+<p>A matéria prescricional foi suscitada perante o Tribunal de origem, que a enfrentou expressamente, configurando o necessário prequestionamento.</p>
+
+<h3>V.3 — Não Incidência da Súmula 7/STJ</h3>
+
+<p>A análise da prescrição é <strong>questão eminentemente de direito</strong>: basta aplicar os prazos legais aos marcos processuais incontroversos. Não há necessidade de revolvimento fático-probatório.</p>
+
+<h2>VI — Dos Pedidos</h2>
+
+<p>Ante o exposto, requer o Recorrente a Vossas Excelências:</p>
+
+<ol type="a">
+    <li>A <strong>concessão de efeito suspensivo</strong> para obstar qualquer ato executório até o julgamento do mérito;</li>
+    <li>O <strong>conhecimento</strong> do presente Recurso Especial;</li>
+    <li>No mérito, o <strong>provimento integral</strong> para:
+        <ol type="i">
+            <li>Reconhecer a <strong>prescrição da pretensão punitiva intercorrente</strong>;</li>
+            <li>Declarar <strong>extinta a punibilidade</strong> do Recorrente (Art. 107, IV, CP);</li>
+            <li>Determinar o <strong>arquivamento definitivo</strong> dos autos;</li>
+        </ol>
+    </li>
+    <li><strong>Subsidiariamente</strong>, a determinação de <strong>julgamento prioritário</strong> pelo Tribunal de origem, sob pena de consumação da prescrição.</li>
+</ol>
+
+<p class="no-indent" style="text-align: center; margin-top: 1.5em;">Termos em que,<br>Pede deferimento.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 11 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div class="nota-rodape no-print">
+    <h3>Cronograma de Alerta — Gen-Chronos</h3>
+    <table>
+        <tr>
+            <th>Dias Restantes</th>
+            <th>Status</th>
+            <th>Ação Requerida</th>
+        </tr>
+        <tr>
+            <td>&gt; 365 dias</td>
+            <td>Monitoramento</td>
+            <td>Acompanhar andamentos</td>
+        </tr>
+        <tr>
+            <td>180-365 dias</td>
+            <td style="color: #ffc107;">ATENÇÃO</td>
+            <td>Peticionar urgência</td>
+        </tr>
+        <tr>
+            <td>90-180 dias</td>
+            <td style="color: #ff9800;">ALERTA</td>
+            <td>REsp/HC para acelerar</td>
+        </tr>
+        <tr>
+            <td>&lt; 90 dias</td>
+            <td style="color: #ff5252;">CRÍTICO</td>
+            <td>Medidas extremas + notificação CEO</td>
+        </tr>
+    </table>
+
+    <h3>Fundamentos Legais</h3>
+    <ul>
+        <li><strong>Art. 109 CP</strong> — Prazos prescricionais</li>
+        <li><strong>Art. 110, §1º, CP</strong> — Prescrição intercorrente</li>
+        <li><strong>Art. 117 CP</strong> — Causas interruptivas (rol taxativo)</li>
+        <li><strong>Art. 61 CPP</strong> — Extinção da punibilidade de ofício</li>
+        <li><strong>Art. 5º, LXXVIII, CF</strong> — Duração razoável do processo</li>
+        <li><strong>Súmula 438/STJ</strong> — Prescrição virtual (distinguishing)</li>
+    </ul>
+</div>
+
+</body>
+</html>
