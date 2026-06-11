@@ -13,6 +13,10 @@ jobs:
   deploy:
     name: Wrangler deploy
     runs-on: ubuntu-latest
+    # Vincula o job ao Environment 'github-pages' para que os Environment secrets
+    # (incl. CLOUDFLARE_API_TOKEN) sejam injetados no contexto secrets.*.
+    # Sem esta linha, o runner ignora Environment secrets e retorna len=0.
+    environment: github-pages
     if: github.repository == 'martbarreto-sudo/supreme-drafter'
     env:
       CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
