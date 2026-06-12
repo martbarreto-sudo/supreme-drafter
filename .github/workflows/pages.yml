@@ -38,9 +38,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Pages está em modo "branch" (gh-pages). Sincroniza public/ (inclui o
-      # CNAME do domínio advocaciaproativa.com.br) para a branch gh-pages,
-      # usando apenas o GITHUB_TOKEN interno — sem nenhum secret externo.
+      # Pages está em modo "branch" (gh-pages). Sincroniza public/ para a branch
+      # gh-pages (espelho secundário em github.io), usando apenas o GITHUB_TOKEN
+      # interno — sem nenhum secret externo. O domínio canônico é servido pelo
+      # Cloudflare (war.ribeiroetigre.org); ver deploy-cloudflare.yml.
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:

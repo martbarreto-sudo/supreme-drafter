@@ -25,9 +25,8 @@ rotulados como demonstração.
 Push em `master` → workflow [`pages.yml`](.github/workflows/pages.yml):
 1. **validate** — `html5validator` (Nu/W3C) em todo o repositório (erros de CSS filtrados)
 2. **publish** — sincroniza `public/` → branch `gh-pages` via `peaceiris/actions-gh-pages`
-   (somente o `GITHUB_TOKEN` interno, sem secrets); o GitHub Pages (modo branch) publica.
-   O `public/CNAME`, quando presente, fixa o domínio próprio **`advocaciaproativa.com.br`**;
-   durante o cutover de DNS ele fica ausente para manter o `github.io` no ar.
+   (somente o `GITHUB_TOKEN` interno, sem secrets); o GitHub Pages (modo branch) publica
+   em `github.io` — espelho secundário do site.
 
 ### 📄 PDFs do site (artefato de build)
 
@@ -36,20 +35,22 @@ as páginas em PDF com Chrome headless (gerador versionado em [`tools/pdf/`](too
 Puppeteer + pdf-lib) e publica o conjunto como artefato **`nexum-pdfs`** (7 páginas + o
 combinado `00-NEXUM-completo.pdf`). Esteira independente — não interfere no deploy do site.
 
-## 🌍 Domínio próprio — cutover pendente de DNS
+## ☁️ Deploy primário — Cloudflare (`war.ribeiroetigre.org`)
 
-O domínio canônico do site é **`advocaciaproativa.com.br`** (canonical, og:url,
-sitemap e robots já apontam para ele). O site permanece servido em
-`martbarreto-sudo.github.io/supreme-drafter` até a virada do DNS.
+O **domínio canônico** do site é **`war.ribeiroetigre.org`** (canonical, og:url,
+sitemap e robots apontam para ele), servido via **Cloudflare Workers (Static
+Assets)** por [`deploy-cloudflare.yml`](.github/workflows/deploy-cloudflare.yml) +
+[`wrangler.jsonc`](wrangler.jsonc) — subdomínio dedicado, sem tocar o apex. O
+GitHub Pages (`github.io`) permanece como espelho secundário.
 
-**Critério de virada** (quando o DNS do domínio apontar para o GitHub Pages —
-registros `A` em `185.199.108.153` … `185.199.111.153`):
-1. Restaurar `public/CNAME` com o conteúdo `advocaciaproativa.com.br`;
-2. Push em `master` → o publish leva o CNAME à `gh-pages` e o Pages assume o domínio.
-
-> ℹ️ O antigo caminho Cloudflare (`deploy-cloudflare.yml` + `wrangler.jsonc`,
-> domínio `war.ribeiroetigre.org`) foi **aposentado** — nunca ativado (secret
-> ausente) e conflitante com o domínio canônico. Recuperável no histórico git.
+O deploy Cloudflare só executa quando existir o **Repository secret
+`CLOUDFLARE_API_TOKEN`** (Settings → Secrets and variables → Actions →
+*Repository secrets* — **não** *Environment*, **não** a aba *Variables*). Sem o
+secret, o job **pula em verde** e o diagnóstico imprime `len=0`; o workflow lê o
+token via `${{ secrets.CLOUDFLARE_API_TOKEN }}` no escopo do job, sem declarar
+`environment:`, então um **Repository secret** é exatamente o que ele consome.
+Após cadastrá-lo, dispare por **Actions → "Run workflow"** (ou um novo push) —
+como o job pula (não falha) sem o secret, "Re-run failed jobs" não se aplica.
 
 ## 🗺️ Onde fica o trabalho real (fora deste repo)
 
@@ -66,6 +67,7 @@ public/            ← tudo que vai ao ar (e somente isso)
   assets/styles.css  ← design system V18 compartilhado
   assets/app.js      ← comportamentos compartilhados (relógio · ano), com guardas
   *.html · openapi.json · robots.txt · sitemap.xml
-.github/workflows/ ← CI + publicação (pages.yml · pdf.yml)
+.github/workflows/ ← CI + publicação (pages.yml · pdf.yml · deploy-cloudflare.yml)
 tools/pdf/         ← gerador dos PDFs do site (Puppeteer + pdf-lib)
+wrangler.jsonc     ← config Cloudflare Workers (Static Assets · war.ribeiroetigre.org)
 ```

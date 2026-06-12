@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://advocaciaproativa.com.br/sitemap.xml
+Sitemap: https://war.ribeiroetigre.org/sitemap.xml
