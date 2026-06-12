@@ -23,9 +23,18 @@ rotulados como demonstração.
 ## 🔁 Publicação (automática)
 
 Push em `master` → workflow [`pages.yml`](.github/workflows/pages.yml):
-1. **validate** — `html5validator` (Nu/W3C) em todo o `public/`
-2. **publish** — sincroniza `public/` → branch `gh-pages` (token interno, sem secrets)
-3. GitHub Pages (modo branch) publica.
+1. **validate** — `html5validator` (Nu/W3C) em todo o repositório (erros de CSS filtrados)
+2. **publish** — sincroniza `public/` → branch `gh-pages` via `peaceiris/actions-gh-pages`
+   (somente o `GITHUB_TOKEN` interno, sem secrets); o GitHub Pages (modo branch) publica.
+   O `public/CNAME`, quando presente, fixa o domínio próprio **`advocaciaproativa.com.br`**;
+   durante o cutover de DNS ele fica ausente para manter o `github.io` no ar.
+
+### 📄 PDFs do site (artefato de build)
+
+Push em `master` (ou disparo manual) → [`pdf.yml`](.github/workflows/pdf.yml) renderiza
+as páginas em PDF com Chrome headless (gerador versionado em [`tools/pdf/`](tools/pdf/),
+Puppeteer + pdf-lib) e publica o conjunto como artefato **`nexum-pdfs`** (7 páginas + o
+combinado `00-NEXUM-completo.pdf`). Esteira independente — não interfere no deploy do site.
 
 ## ☁️ Cloudflare (pendente de 1 secret)
 
@@ -49,7 +58,9 @@ Sem o secret, o job pula em verde e o diagnóstico imprime `len=0`.
 ```
 public/            ← tudo que vai ao ar (e somente isso)
   assets/styles.css  ← design system V18 compartilhado
+  assets/app.js      ← comportamentos compartilhados (relógio · ano), com guardas
   *.html · openapi.json · robots.txt · sitemap.xml
-.github/workflows/ ← CI + publicação
+.github/workflows/ ← CI + publicação (pages.yml · pdf.yml · deploy-cloudflare.yml)
+tools/pdf/         ← gerador dos PDFs do site (Puppeteer + pdf-lib)
 wrangler.jsonc     ← config Cloudflare Workers (Static Assets)
 ```
