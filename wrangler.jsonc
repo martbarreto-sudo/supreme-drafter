@@ -1,0 +1,24 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ribeiroetigre",
+  "account_id": "06c3f8a01b82bd881dfb090f4bbd81ed",
+  "compatibility_date": "2025-06-01",
+  "assets": {
+    "directory": "./public",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+
+  // --- Produção -----------------------------------------------------------
+  // A War Room é servida num subdomínio DEDICADO da marca, sem tocar no
+  // site principal (apex). O Cloudflare cria o registro DNS automaticamente
+  // no primeiro deploy. Para reverter, basta remover esta rota e re-deployar.
+  "routes": [
+    { "pattern": "war.ribeiroetigre.org", "custom_domain": true }
+  ]
+
+  // Para, mais tarde, assumir TAMBÉM o domínio principal (substitui o que
+  // estiver no ar em ribeiroetigre.org), adicione ao array acima:
+  //   { "pattern": "ribeiroetigre.org", "custom_domain": true },
+  //   { "pattern": "www.ribeiroetigre.org", "custom_domain": true }
+}
