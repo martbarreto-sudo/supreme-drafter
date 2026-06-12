@@ -24,8 +24,10 @@ rotulados como demonstração.
 
 Push em `master` → workflow [`pages.yml`](.github/workflows/pages.yml):
 1. **validate** — `html5validator` (Nu/W3C) em todo o repositório (erros de CSS filtrados)
-2. **deploy** — empacota `public/` como artefato e publica pelo **fluxo oficial do
-   GitHub Pages via Actions** (`upload-pages-artifact` + `deploy-pages`).
+2. **publish** — sincroniza `public/` → branch `gh-pages` via `peaceiris/actions-gh-pages`
+   (somente o `GITHUB_TOKEN` interno, sem secrets); o GitHub Pages (modo branch) publica.
+   O `public/CNAME`, quando presente, fixa o domínio próprio **`advocaciaproativa.com.br`**;
+   durante o cutover de DNS ele fica ausente para manter o `github.io` no ar.
 
 ### 📄 PDFs do site (artefato de build)
 
