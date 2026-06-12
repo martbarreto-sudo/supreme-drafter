@@ -36,14 +36,20 @@ as páginas em PDF com Chrome headless (gerador versionado em [`tools/pdf/`](too
 Puppeteer + pdf-lib) e publica o conjunto como artefato **`nexum-pdfs`** (7 páginas + o
 combinado `00-NEXUM-completo.pdf`). Esteira independente — não interfere no deploy do site.
 
-## ☁️ Cloudflare (pendente de 1 secret)
+## 🌍 Domínio próprio — cutover pendente de DNS
 
-[`deploy-cloudflare.yml`](.github/workflows/deploy-cloudflare.yml) +
-[`wrangler.jsonc`](wrangler.jsonc) já apontam para **`war.ribeiroetigre.org`**
-(subdomínio; não toca o apex). O deploy só roda quando existir o
-**Repository secret `CLOUDFLARE_API_TOKEN`**
-(Settings → Secrets and variables → Actions → *Repository secrets*).
-Sem o secret, o job pula em verde e o diagnóstico imprime `len=0`.
+O domínio canônico do site é **`advocaciaproativa.com.br`** (canonical, og:url,
+sitemap e robots já apontam para ele). O site permanece servido em
+`martbarreto-sudo.github.io/supreme-drafter` até a virada do DNS.
+
+**Critério de virada** (quando o DNS do domínio apontar para o GitHub Pages —
+registros `A` em `185.199.108.153` … `185.199.111.153`):
+1. Restaurar `public/CNAME` com o conteúdo `advocaciaproativa.com.br`;
+2. Push em `master` → o publish leva o CNAME à `gh-pages` e o Pages assume o domínio.
+
+> ℹ️ O antigo caminho Cloudflare (`deploy-cloudflare.yml` + `wrangler.jsonc`,
+> domínio `war.ribeiroetigre.org`) foi **aposentado** — nunca ativado (secret
+> ausente) e conflitante com o domínio canônico. Recuperável no histórico git.
 
 ## 🗺️ Onde fica o trabalho real (fora deste repo)
 
@@ -60,7 +66,6 @@ public/            ← tudo que vai ao ar (e somente isso)
   assets/styles.css  ← design system V18 compartilhado
   assets/app.js      ← comportamentos compartilhados (relógio · ano), com guardas
   *.html · openapi.json · robots.txt · sitemap.xml
-.github/workflows/ ← CI + publicação (pages.yml · pdf.yml · deploy-cloudflare.yml)
+.github/workflows/ ← CI + publicação (pages.yml · pdf.yml)
 tools/pdf/         ← gerador dos PDFs do site (Puppeteer + pdf-lib)
-wrangler.jsonc     ← config Cloudflare Workers (Static Assets)
 ```
