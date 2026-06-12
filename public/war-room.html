@@ -192,13 +192,6 @@
 
     </div>
 
-    <script>
-        function tick() {
-            const opts = { timeZone: 'America/Sao_Paulo', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            document.getElementById('clock').textContent = new Intl.DateTimeFormat('pt-BR', opts).format(new Date());
-        }
-        tick(); setInterval(tick, 1000);
-        document.getElementById('year').textContent = new Date().getFullYear();
-    </script>
+    <script src="assets/app.js"></script>
 </body>
 </html>

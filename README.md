@@ -49,6 +49,7 @@ Sem o secret, o job pula em verde e o diagnóstico imprime `len=0`.
 ```
 public/            ← tudo que vai ao ar (e somente isso)
   assets/styles.css  ← design system V18 compartilhado
+  assets/app.js      ← comportamentos compartilhados (relógio · ano), com guardas
   *.html · openapi.json · robots.txt · sitemap.xml
 .github/workflows/ ← CI + publicação
 wrangler.jsonc     ← config Cloudflare Workers (Static Assets)

@@ -14,6 +14,7 @@ node_modules/
 # PDF generation (build artifacts, regeneráveis)
 .pdfbuild/
 dist-pdf/
+dist-shots/
 
 # Material sigiloso de clientes — NUNCA versionar (sigilo profissional / LGPD)
 .peca/

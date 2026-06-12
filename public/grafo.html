@@ -34,7 +34,7 @@
 
         /* Side panel */
         .panel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-elev); padding: 22px; }
-        .panel h3 { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; }
+        .panel h2 { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; }
         .panel .ptype { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
         .panel .pdesc { font-size: 0.84rem; color: var(--text-dim); margin: 12px 0 18px; line-height: 1.5; }
         .panel .phint { font-size: 0.78rem; color: var(--text-faint); }
@@ -109,7 +109,7 @@
             </div>
 
             <aside class="panel reveal d3" id="panel" aria-live="polite">
-                <h3 id="p-title">Selecione um nó</h3>
+                <h2 id="p-title">Selecione um nó</h2>
                 <div class="ptype" id="p-type" style="color:var(--text-faint)">— · —</div>
                 <p class="pdesc" id="p-desc">O painel de explicabilidade exibirá a contribuição de cada fator para a conclusão lógica do nó selecionado.</p>
                 <div id="p-shap-wrap" style="display:none">
@@ -263,10 +263,10 @@
             }
         }
 
-        document.getElementById("year").textContent = new Date().getFullYear();
         // Seleção inicial: a conclusão
         select("C1");
     })();
     </script>
+    <script src="assets/app.js"></script>
 </body>
 </html>
