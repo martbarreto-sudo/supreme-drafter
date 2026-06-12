@@ -9,6 +9,8 @@
     <meta property="og:title" content="Grafo de Evidência Lógica · XAI — Ribeiro & Tigre">
     <meta property="og:description" content="Visualização forense interativa com explicabilidade (demonstração V18).">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://advocaciaproativa.com.br/grafo.html">
+    <link rel="canonical" href="https://advocaciaproativa.com.br/grafo.html">
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'%3E%3Crect%20width='48'%20height='48'%20rx='10'%20fill='%23090A0F'/%3E%3Ctext%20x='24'%20y='32'%20font-family='Georgia,serif'%20font-size='18'%20font-weight='700'%20fill='%2310B981'%20text-anchor='middle'%3ER%26T%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +36,7 @@
 
         /* Side panel */
         .panel { border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-elev); padding: 22px; }
-        .panel h3 { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; }
+        .panel h2 { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; }
         .panel .ptype { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
         .panel .pdesc { font-size: 0.84rem; color: var(--text-dim); margin: 12px 0 18px; line-height: 1.5; }
         .panel .phint { font-size: 0.78rem; color: var(--text-faint); }
@@ -109,7 +111,7 @@
             </div>
 
             <aside class="panel reveal d3" id="panel" aria-live="polite">
-                <h3 id="p-title">Selecione um nó</h3>
+                <h2 id="p-title">Selecione um nó</h2>
                 <div class="ptype" id="p-type" style="color:var(--text-faint)">— · —</div>
                 <p class="pdesc" id="p-desc">O painel de explicabilidade exibirá a contribuição de cada fator para a conclusão lógica do nó selecionado.</p>
                 <div id="p-shap-wrap" style="display:none">
@@ -263,10 +265,10 @@
             }
         }
 
-        document.getElementById("year").textContent = new Date().getFullYear();
         // Seleção inicial: a conclusão
         select("C1");
     })();
     </script>
+    <script src="assets/app.js"></script>
 </body>
 </html>
