@@ -1,0 +1,14 @@
+{
+  "name": "nexum-pdf-tools",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Geração automática dos PDFs das páginas públicas do site NEXUM by Tigre (renderização fiel via Chrome headless).",
+  "type": "commonjs",
+  "scripts": {
+    "build": "node generate.js"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "puppeteer": "^23.0.0"
+  }
+}
