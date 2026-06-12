@@ -1,0 +1,48 @@
+name: Gerar PDFs do site (NEXUM)
+
+# Renderiza as páginas públicas em PDF (Chrome headless) e publica como
+# artefato de build, baixável em cada execução. Não toca no deploy do site.
+on:
+  push:
+    branches: ["master"]
+    paths:
+      - "public/**"
+      - "tools/pdf/**"
+      - ".github/workflows/pdf.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pdf:
+    name: Render PDFs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        working-directory: tools/pdf
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium (Puppeteer)
+        working-directory: tools/pdf
+        run: npx puppeteer browsers install chrome
+
+      - name: Generate PDFs
+        working-directory: tools/pdf
+        run: node generate.js
+
+      - name: Upload PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: nexum-pdfs
+          path: tools/pdf/dist-pdf/*.pdf
+          if-no-files-found: error
+          retention-days: 30

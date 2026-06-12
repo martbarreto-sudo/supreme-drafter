@@ -9,6 +9,8 @@
     <meta property="og:title" content="API NEXUM v2 · OpenAPI 3.1 — Ribeiro & Tigre">
     <meta property="og:description" content="Especificação ilustrativa das rotas soberanas NEXUM v2.">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://advocaciaproativa.com.br/api.html">
+    <link rel="canonical" href="https://advocaciaproativa.com.br/api.html">
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'%3E%3Crect%20width='48'%20height='48'%20rx='10'%20fill='%23090A0F'/%3E%3Ctext%20x='24'%20y='32'%20font-family='Georgia,serif'%20font-size='18'%20font-weight='700'%20fill='%2310B981'%20text-anchor='middle'%3ER%26T%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -636,7 +638,6 @@
     <script>
     (function () {
         var spec = JSON.parse(document.getElementById("openapi-spec").textContent);
-        document.getElementById("year").textContent = new Date().getFullYear();
         document.getElementById("m-version").textContent = "v" + spec.info.version;
 
         function resolve(ref) {
@@ -742,5 +743,6 @@
         });
     })();
     </script>
+    <script src="assets/app.js"></script>
 </body>
 </html>
