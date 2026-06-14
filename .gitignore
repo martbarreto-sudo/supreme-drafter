@@ -15,3 +15,7 @@ dist-shots/
 # Material sigiloso de clientes — NUNCA versionar (sigilo profissional / LGPD)
 .peca/
 dist-peca/
+
+# Python
+__pycache__/
+*.pyc
