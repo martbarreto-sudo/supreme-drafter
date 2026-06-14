@@ -35,22 +35,25 @@ as páginas em PDF com Chrome headless (gerador versionado em [`tools/pdf/`](too
 Puppeteer + pdf-lib) e publica o conjunto como artefato **`nexum-pdfs`** (7 páginas + o
 combinado `00-NEXUM-completo.pdf`). Esteira independente — não interfere no deploy do site.
 
-## ☁️ Deploy primário — Cloudflare (`war.ribeiroetigre.org`)
+## 🌍 Domínio próprio — `war.ribeiroetigre.org` (GitHub Pages)
 
 O **domínio canônico** do site é **`war.ribeiroetigre.org`** (canonical, og:url,
-sitemap e robots apontam para ele), servido via **Cloudflare Workers (Static
-Assets)** por [`deploy-cloudflare.yml`](.github/workflows/deploy-cloudflare.yml) +
-[`wrangler.jsonc`](wrangler.jsonc) — subdomínio dedicado, sem tocar o apex. O
-GitHub Pages (`github.io`) permanece como espelho secundário.
+sitemap e robots apontam para ele). Por ser uma **vitrine 100% estática**, o
+próprio **GitHub Pages** serve o domínio próprio — com HTTPS gratuito, sem
+segundo pipeline e sem nenhum secret. Não há mais deploy via Cloudflare Workers
+(o caminho `wrangler` foi aposentado por ser desnecessário a um site estático).
 
-O deploy Cloudflare só executa quando existir o **Repository secret
-`CLOUDFLARE_API_TOKEN`** (Settings → Secrets and variables → Actions →
-*Repository secrets* — **não** *Environment*, **não** a aba *Variables*). Sem o
-secret, o job **pula em verde** e o diagnóstico imprime `len=0`; o workflow lê o
-token via `${{ secrets.CLOUDFLARE_API_TOKEN }}` no escopo do job, sem declarar
-`environment:`, então um **Repository secret** é exatamente o que ele consome.
-Após cadastrá-lo, dispare por **Actions → "Run workflow"** (ou um novo push) —
-como o job pula (não falha) sem o secret, "Re-run failed jobs" não se aplica.
+**Estado atual:** o site está no ar em `martbarreto-sudo.github.io/supreme-drafter`.
+O DNS de `war.ribeiroetigre.org` ainda **não resolve** (NXDOMAIN); por isso o
+`public/CNAME` está **ausente** de propósito, mantendo o `github.io` no ar
+(o Pages redireciona para o domínio próprio assim que o CNAME existir).
+
+**Virada (cutover), quando quiser ativar o domínio próprio:**
+1. No DNS (gerenciado na Cloudflare — apex já está lá): criar registro
+   **`CNAME war → martbarreto-sudo.github.io`**, em modo **DNS only** (nuvem
+   cinza, sem proxy) para o GitHub emitir o certificado.
+2. Adicionar `public/CNAME` com o conteúdo `war.ribeiroetigre.org` e dar push em
+   `master` → o publish leva o CNAME à `gh-pages` e o Pages assume o domínio.
 
 ## 🗺️ Onde fica o trabalho real (fora deste repo)
 
@@ -67,7 +70,6 @@ public/            ← tudo que vai ao ar (e somente isso)
   assets/styles.css  ← design system V18 compartilhado
   assets/app.js      ← comportamentos compartilhados (relógio · ano), com guardas
   *.html · openapi.json · robots.txt · sitemap.xml
-.github/workflows/ ← CI + publicação (pages.yml · pdf.yml · deploy-cloudflare.yml)
+.github/workflows/ ← CI + publicação (pages.yml · pdf.yml)
 tools/pdf/         ← gerador dos PDFs do site (Puppeteer + pdf-lib)
-wrangler.jsonc     ← config Cloudflare Workers (Static Assets · war.ribeiroetigre.org)
 ```

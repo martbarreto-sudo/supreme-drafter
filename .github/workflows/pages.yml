@@ -39,9 +39,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       # Pages está em modo "branch" (gh-pages). Sincroniza public/ para a branch
-      # gh-pages (espelho secundário em github.io), usando apenas o GITHUB_TOKEN
-      # interno — sem nenhum secret externo. O domínio canônico é servido pelo
-      # Cloudflare (war.ribeiroetigre.org); ver deploy-cloudflare.yml.
+      # gh-pages usando apenas o GITHUB_TOKEN interno — sem nenhum secret externo.
+      # Serve em github.io e, quando public/CNAME existir, no domínio próprio
+      # war.ribeiroetigre.org (cutover descrito no README).
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
