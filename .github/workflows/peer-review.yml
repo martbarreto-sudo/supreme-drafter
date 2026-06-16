@@ -1,0 +1,332 @@
+# =============================================================================
+# peer-review.yml — Peer-review automatizado dual-provider NEXUM TIER 0
+# Ribeiro & Tigre Advocacia Criminal · Recife/PE · OAB/PE 27.543
+#
+# Audita cada PR em DOIS provedores independentes e consolida o veredito:
+#   - Job 1 (claude-opus-review): Claude Opus 4.8 via Anthropic API (Repository secret)
+#   - Job 2 (gemini-pro-review):  Gemini 3 Pro via run-gemini-cli + Workload
+#                                 Identity Federation (ZERO secret no repositório)
+#   - Job 3 (consolidation):      Consolidador TIER 0 (convergências/divergências,
+#                                 score médio ponderado, gate >= 97)
+#
+# Roteamento automático por tipo de mudança:
+#   - PR toca pecas/*.pdf            -> pipeline jurídico (XML in + JSON out)
+#   - PR toca engine/*.py |
+#               nexum_engine/*.py    -> pipeline de security review técnico
+#   - ambos                          -> roda os dois
+#
+# Setup necessário (UMA vez, pelo Dr. Marcelo — ver docs/peer-review-workflow.md):
+#   - Repository secret:    ANTHROPIC_API_KEY
+#   - Repository variables: GCP_WIF_PROVIDER, GCP_SERVICE_ACCOUNT
+#                           (opcional) TIER0_GATE_SCORE  (default 97)
+#   - WIF GCP (uma vez, fora do agente):
+#       scripts/setup_workload_identity.sh \
+#         --repo "martbarreto-sudo/supreme-drafter" --project "[PROJECT_ID]"
+# =============================================================================
+
+name: Peer-Review TIER 0 (Claude Opus 4.8 + Gemini 3 Pro)
+
+on:
+  # Dispara em toda movimentação relevante do PR.
+  pull_request:
+    types: [opened, synchronize, reopened]
+  # Botão manual na aba Actions, com número do PR como entrada.
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "Número do PR a revisar (modo manual)"
+        required: true
+        type: string
+  # Delegação ao Google CLI: comentar "@gemini-cli /review" dispara a revisão.
+  issue_comment:
+    types: [created]
+
+# Princípio do menor privilégio (canon R&T). O workflow só precisa:
+#   - ler o conteúdo do repositório
+#   - escrever comentários no PR (pull-requests: write)
+#   - emitir token OIDC para a Federação de Identidade do Google (id-token: write)
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+  issues: read
+
+# Evita runs duplicados concorrentes no mesmo PR (economiza minutos de Actions).
+concurrency:
+  group: peer-review-${{ github.event.pull_request.number || github.event.inputs.pr_number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  # ===========================================================================
+  # PORTÃO DE ENTRADA — só prossegue se for PR, dispatch manual, OU comentário
+  # contendo exatamente o gatilho "@gemini-cli /review".
+  # ===========================================================================
+  gate:
+    name: Portão de entrada
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      prosseguir: ${{ steps.decisao.outputs.prosseguir }}
+      pr_number: ${{ steps.decisao.outputs.pr_number }}
+    steps:
+      - name: Decidir se roda
+        id: decisao
+        env:
+          EVENTO: ${{ github.event_name }}
+          CORPO_COMENTARIO: ${{ github.event.comment.body }}
+          PR_DISPATCH: ${{ github.event.inputs.pr_number }}
+          PR_EVENTO: ${{ github.event.pull_request.number }}
+          PR_ISSUE: ${{ github.event.issue.number }}
+        run: |
+          # Comentário precisa conter o gatilho de delegação ao Google CLI.
+          prosseguir="false"
+          pr=""
+          if [ "$EVENTO" = "pull_request" ]; then
+            prosseguir="true"; pr="$PR_EVENTO"
+          elif [ "$EVENTO" = "workflow_dispatch" ]; then
+            prosseguir="true"; pr="$PR_DISPATCH"
+          elif [ "$EVENTO" = "issue_comment" ]; then
+            # Filtra para o gatilho exato e exige que seja um PR (não issue comum).
+            if echo "$CORPO_COMENTARIO" | grep -qi "@gemini-cli /review"; then
+              prosseguir="true"; pr="$PR_ISSUE"
+            fi
+          fi
+          echo "prosseguir=$prosseguir" >> "$GITHUB_OUTPUT"
+          echo "pr_number=$pr" >> "$GITHUB_OUTPUT"
+          echo "Evento=$EVENTO prosseguir=$prosseguir pr=$pr"
+
+  # ===========================================================================
+  # JOB 1 — Claude Opus 4.8 (Anthropic API via Repository secret tradicional)
+  # ===========================================================================
+  claude-opus-review:
+    name: Revisão Claude Opus 4.8
+    needs: gate
+    if: needs.gate.outputs.prosseguir == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Peer-review dual exige que um provedor possa falhar sem derrubar o outro.
+    continue-on-error: true
+    steps:
+      - name: Checkout do PR
+        uses: actions/checkout@v4
+        with:
+          # Em comentário/dispatch, faz checkout do head do PR informado.
+          ref: ${{ needs.gate.outputs.pr_number && format('refs/pull/{0}/head', needs.gate.outputs.pr_number) || github.ref }}
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install --no-cache-dir -r .github/scripts/requirements.txt
+
+      - name: Detectar arquivos alterados e rotear pipeline
+        id: rota
+        env:
+          PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Lista os arquivos do PR e roteia (pecas/*.pdf x engine/*.py).
+          gh pr diff "$PR_NUMBER" --name-only > arquivos.txt || git diff --name-only HEAD~1 > arquivos.txt
+          echo "Arquivos do PR:"; cat arquivos.txt
+          python .github/scripts/peer_review_orchestrator.py rotear < arquivos.txt > rota.json
+          cat rota.json
+
+      - name: Executar auditoria Claude Opus 4.8
+        env:
+          # Repository secret tradicional — mascarado nos logs.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+        run: |
+          # Falha cedo e claramente se o secret não estiver cadastrado (anti-len=0).
+          if [ -z "${ANTHROPIC_API_KEY}" ]; then
+            echo "::error::ANTHROPIC_API_KEY ausente. Cadastre em Settings > Secrets and variables > Actions > Repository secrets."
+            exit 1
+          fi
+          # O orquestrador extrai o(s) PDF(s) de pecas/, aplica LGPD e audita.
+          # Em PR sem pecas/*.pdf, o pipeline jurídico é pulado e gera JSON neutro.
+          python .github/scripts/run_claude_review.py \
+            --rota rota.json --out review_claude.json --pr "$PR_NUMBER"
+
+      - name: Comentar resultado no PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+        run: |
+          # Gera o comentário markdown com selo TIER 0 e posta via gh pr comment.
+          python .github/scripts/render_comment.py \
+            --provedor "Claude Opus 4.8" --modelo "claude-opus-4-8" \
+            --json review_claude.json --out comentario_claude.md || true
+          if [ -f comentario_claude.md ]; then
+            gh pr comment "$PR_NUMBER" --body-file comentario_claude.md || true
+          fi
+
+      - name: Publicar artefato JSON (Claude)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-claude
+          path: review_claude.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  # ===========================================================================
+  # JOB 2 — Gemini 3 Pro (run-gemini-cli + Workload Identity Federation)
+  #          ZERO secret no repositório: autenticação via OIDC -> GCP WIF.
+  # ===========================================================================
+  gemini-pro-review:
+    name: Revisão Gemini 3 Pro (WIF)
+    needs: gate
+    if: needs.gate.outputs.prosseguir == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    steps:
+      - name: Checkout do PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.gate.outputs.pr_number && format('refs/pull/{0}/head', needs.gate.outputs.pr_number) || github.ref }}
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install --no-cache-dir -r .github/scripts/requirements.txt
+
+      # ---- Autenticação por Workload Identity Federation (sem secret) --------
+      # Usa o token OIDC do GitHub (id-token: write) para assumir a service
+      # account no GCP. Provider e SA vêm de VARIABLES (texto claro, não sensível).
+      - name: Autenticar no Google Cloud (WIF)
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+
+      - name: Detectar arquivos alterados e rotear pipeline
+        id: rota
+        env:
+          PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr diff "$PR_NUMBER" --name-only > arquivos.txt || git diff --name-only HEAD~1 > arquivos.txt
+          python .github/scripts/peer_review_orchestrator.py rotear < arquivos.txt > rota.json
+          cat rota.json
+
+      - name: Executar auditoria Gemini 3 Pro (run-gemini-cli)
+        # A action oficial expõe o gemini-cli já autenticado por ADC (via WIF).
+        uses: google-github-actions/run-gemini-cli@v0
+        with:
+          # Modelo mais avançado disponível no run-gemini-cli (14/06/2026).
+          gemini_model: gemini-3-pro
+          # Prompt em modo headless: roda o orquestrador, que monta o XML,
+          # aplica LGPD e grava review_gemini.json.
+          prompt: |
+            Execute o pipeline de auditoria recursal NEXUM TIER 0 deste PR.
+            Rode: python .github/scripts/run_gemini_review.py \
+              --rota rota.json --out review_gemini.json --pr "${{ needs.gate.outputs.pr_number }}"
+            Retorne SOMENTE o JSON conforme o schema institucional R&T.
+
+      - name: Comentar resultado no PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
+        run: |
+          python .github/scripts/render_comment.py \
+            --provedor "Gemini 3 Pro" --modelo "gemini-3-pro" \
+            --json review_gemini.json --out comentario_gemini.md || true
+          if [ -f comentario_gemini.md ]; then
+            gh pr comment "$PR_NUMBER" --body-file comentario_gemini.md || true
+          fi
+
+      - name: Publicar artefato JSON (Gemini)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-gemini
+          path: review_gemini.json
+          if-no-files-found: warn
+          retention-days: 30
+
+  # ===========================================================================
+  # JOB 3 — Consolidação TIER 0. Roda mesmo se um dos provedores falhar
+  #          (if: always()), graças ao continue-on-error nos jobs anteriores.
+  # ===========================================================================
+  consolidation:
+    name: Consolidação TIER 0
+    needs: [gate, claude-opus-review, gemini-pro-review]
+    if: always() && needs.gate.outputs.prosseguir == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Baixar artefato Claude
+        uses: actions/download-artifact@v4
+        with:
+          name: review-claude
+          path: artefatos/claude
+        continue-on-error: true
+
+      - name: Baixar artefato Gemini
+        uses: actions/download-artifact@v4
+        with:
+          name: review-gemini
+          path: artefatos/gemini
+        continue-on-error: true
+
+      - name: Normalizar JSONs ausentes
+        run: |
+          # Se um provedor falhou, cria um JSON neutro para não quebrar o merge
+          # dos dois lados (o consolidador registra a ausência no relatório).
+          mkdir -p artefatos/claude artefatos/gemini
+          neutro='{"tipo_peca":"outro","risco_rejeicao":0,"vicios_formais":[],"preliminares_ausentes":[],"fundamentos_fragilizados":[],"jurisprudencia_omitida":[],"veredito_tier0":"reprovado_<97","score":0,"recomendacoes":["Provedor indisponível neste run."]}'
+          [ -f artefatos/claude/review_claude.json ] || echo "$neutro" > artefatos/claude/review_claude.json
+          [ -f artefatos/gemini/review_gemini.json ] || echo "$neutro" > artefatos/gemini/review_gemini.json
+
+      - name: Consolidar e aplicar o gate TIER 0
+        id: consolidar
+        env:
+          # Gate configurável; default 97 (padrão TIER 0).
+          TIER0_GATE_SCORE: ${{ vars.TIER0_GATE_SCORE || '97' }}
+        run: |
+          # O exit code != 0 quando reprovado FALHA o job (gate de qualidade).
+          python .github/scripts/peer_review_orchestrator.py consolidar \
+            --claude artefatos/claude/review_claude.json \
+            --gemini artefatos/gemini/review_gemini.json \
+            --out relatorio_consolidado.md \
+            --gate "$TIER0_GATE_SCORE"
+
+      - name: Comentar relatório executivo no PR
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }}
+        run: |
+          if [ -f relatorio_consolidado.md ]; then
+            gh pr comment "$PR_NUMBER" --body-file relatorio_consolidado.md || true
+          fi
+
+      - name: Publicar relatório consolidado
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-consolidado-tier0
+          path: relatorio_consolidado.md
+          if-no-files-found: warn
+          retention-days: 30
