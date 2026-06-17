@@ -14,16 +14,18 @@ from pathlib import Path
 from peer_review_orchestrator import GeminiReviewer, PecaExtractor
 
 
-def _peca_neutra(motivo: str) -> dict:
+def _nao_aplicavel(motivo: str) -> dict:
+    # Sem peça: o gate não se aplica → passa (score alto, não reprova).
     return {
-        "tipo_peca": "outro",
+        "tipo_peca": "nao_aplicavel",
+        "disponivel": True,
         "risco_rejeicao": 0,
         "vicios_formais": [],
         "preliminares_ausentes": [],
         "fundamentos_fragilizados": [],
         "jurisprudencia_omitida": [],
-        "veredito_tier0": "reprovado_<97",
-        "score": 0,
+        "veredito_tier0": "nao_aplicavel",
+        "score": 100,
         "recomendacoes": [motivo],
     }
 
@@ -38,7 +40,7 @@ def main() -> int:
     rota = json.loads(Path(args.rota).read_text(encoding="utf-8"))
 
     if not rota.get("roda_pipeline_juridico"):
-        resultado = _peca_neutra("PR sem pecas/*.pdf — pipeline jurídico não aplicável.")
+        resultado = _nao_aplicavel("PR sem pecas/*.pdf — pipeline jurídico não aplicável.")
         Path(args.out).write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding="utf-8")
         return 0
 
