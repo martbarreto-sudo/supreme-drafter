@@ -5,6 +5,9 @@ Vitrine pública da plataforma **NEXUM by Tigre**, no padrão de design **V18**
 tipografia mono). **Sem dados reais**: todos os painéis usam dados fictícios
 rotulados como demonstração.
 
+> 📘 **Comece pelo [Manual da Plataforma NEXUM](docs/MANUAL-NEXUM.md)** — guia
+> único para operadores (uso diário) e admin (runbook de configuração).
+
 ## 🌐 No ar (GitHub Pages)
 
 **https://martbarreto-sudo.github.io/supreme-drafter/**
