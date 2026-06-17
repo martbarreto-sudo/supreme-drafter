@@ -23,9 +23,21 @@ relatório consolidado é gerado (registrando a ausência) — o peer-review nun
 fica refém de um único provedor.
 
 ### Gatilhos
-- `pull_request: [opened, synchronize, reopened]`
+- `pull_request: [opened, synchronize, reopened]` — **apenas** quando o PR toca
+  `pecas/**`, `engine/**` ou `nexum_engine/**`. PRs de site/ferramenta/documentação
+  **não** acionam o gate (não há peça a auditar).
 - `workflow_dispatch` com input `pr_number` (botão manual na aba Actions)
 - `issue_comment` filtrado para o texto **`@gemini-cli /review`** (delegação Google CLI)
+
+### Estados do gate (calibração de honestidade)
+O gate distingue três situações — "sem peça" e "provedor ausente" **nunca** são
+tratados como peça reprovada:
+
+| Situação | Veredito | Job |
+|---|---|---|
+| PR sem peça jurídica | ⚪ **NÃO APLICÁVEL** | passa (exit 0) |
+| Peça presente, provedor(es) não configurado(s) | ⚪ **INCONCLUSIVO** (configurar) | bloqueia (exit 1) |
+| Peça presente e auditada | 🟢 ≥97 / 🔴 <97 | passa / bloqueia |
 
 ### Roteamento automático por tipo de mudança
 - PR toca `pecas/*.pdf` → **pipeline jurídico** (XML semântico in + JSON de auditoria recursal out)
