@@ -600,6 +600,42 @@ def main(argv: Optional[list[str]] = None) -> int:
     if args.cmd == "consolidar":
         rev_claude = _carregar_json(args.claude)
         rev_gemini = _carregar_json(args.gemini)
+
+        # Classificação honesta antes do gate:
+        #   - "nao_aplicavel": PR sem peça jurídica → o gate não se aplica (passa).
+        #   - "indisponivel": provedor não configurado (sem ANTHROPIC_API_KEY/WIF)
+        #     → inconclusivo (configurar), NUNCA "peça reprovada".
+        def _is_na(r: dict[str, Any]) -> bool:
+            return r.get("tipo_peca") == "nao_aplicavel"
+
+        def _is_indis(r: dict[str, Any]) -> bool:
+            return r.get("disponivel") is False or r.get("tipo_peca") == "indisponivel"
+
+        reais = [r for r in (rev_claude, rev_gemini) if not _is_na(r) and not _is_indis(r)]
+        if not reais:
+            rodape = (
+                "\n\n---\n_Ribeiro & Tigre Advocacia Criminal · NEXUM TIER 0_"
+            )
+            if _is_indis(rev_claude) or _is_indis(rev_gemini):
+                Path(args.out).write_text(
+                    "## 🛡️ Peer-Review TIER 0 — ⚪ INCONCLUSIVO\n\n"
+                    "Provedor(es) de revisão não configurado(s) "
+                    "(`ANTHROPIC_API_KEY` e/ou WIF do Gemini). "
+                    "A peça **não** foi reprovada — apenas não pôde ser auditada. "
+                    "Configure os provedores (ver `docs/peer-review-workflow.md`)." + rodape,
+                    encoding="utf-8",
+                )
+                print("GATE TIER 0 INCONCLUSIVO: provedores não configurados.")
+                return 1
+            Path(args.out).write_text(
+                "## 🛡️ Peer-Review TIER 0 — ⚪ NÃO APLICÁVEL\n\n"
+                "PR sem peça jurídica (`pecas/*.pdf`). O gate de auditoria "
+                "recursal não se aplica a mudanças de site/ferramenta/documentação." + rodape,
+                encoding="utf-8",
+            )
+            print("GATE TIER 0 NÃO APLICÁVEL: PR sem peça jurídica.")
+            return 0
+
         cons = TIER0Consolidator(gate_score=args.gate)
         res = cons.consolidar(rev_claude, rev_gemini)
         Path(args.out).write_text(res.markdown, encoding="utf-8")

@@ -27,9 +27,16 @@
 name: Peer-Review TIER 0 (Claude Opus 4.8 + Gemini 3 Pro)
 
 on:
-  # Dispara em toda movimentação relevante do PR.
+  # Dispara apenas quando o PR toca conteúdo auditável (peça jurídica ou código
+  # de engine). PRs de site/ferramenta/documentação NÃO acionam o gate — evita
+  # falso "REPROVADO" onde não há peça a revisar. Revisão sob demanda continua
+  # disponível por workflow_dispatch e pelo comentário "@gemini-cli /review".
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - "pecas/**"
+      - "engine/**"
+      - "nexum_engine/**"
   # Botão manual na aba Actions, com número do PR como entrada.
   workflow_dispatch:
     inputs:
@@ -141,13 +148,11 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           PR_NUMBER: ${{ needs.gate.outputs.pr_number }}
         run: |
-          # Falha cedo e claramente se o secret não estiver cadastrado (anti-len=0).
-          if [ -z "${ANTHROPIC_API_KEY}" ]; then
-            echo "::error::ANTHROPIC_API_KEY ausente. Cadastre em Settings > Secrets and variables > Actions > Repository secrets."
-            exit 1
-          fi
-          # O orquestrador extrai o(s) PDF(s) de pecas/, aplica LGPD e audita.
-          # Em PR sem pecas/*.pdf, o pipeline jurídico é pulado e gera JSON neutro.
+          # O runner trata graciosamente, sem derrubar o job:
+          #   - PR sem pecas/*.pdf            -> "nao_aplicavel" (gate não se aplica)
+          #   - peça presente, sem chave      -> "indisponivel" (inconclusivo, configurar)
+          #   - peça presente, com chave      -> auditoria real
+          # A consolidação reporta o estado com honestidade (nunca "reprovado" à toa).
           python .github/scripts/run_claude_review.py \
             --rota rota.json --out review_claude.json --pr "$PR_NUMBER"
 
@@ -295,7 +300,9 @@ jobs:
           # Se um provedor falhou, cria um JSON neutro para não quebrar o merge
           # dos dois lados (o consolidador registra a ausência no relatório).
           mkdir -p artefatos/claude artefatos/gemini
-          neutro='{"tipo_peca":"outro","risco_rejeicao":0,"vicios_formais":[],"preliminares_ausentes":[],"fundamentos_fragilizados":[],"jurisprudencia_omitida":[],"veredito_tier0":"reprovado_<97","score":0,"recomendacoes":["Provedor indisponível neste run."]}'
+          # Provedor ausente = INCONCLUSIVO (não "reprovado"): a consolidação
+          # distingue inconclusivo de peça-reprovada e não falsa-reprova.
+          neutro='{"tipo_peca":"indisponivel","disponivel":false,"risco_rejeicao":0,"vicios_formais":[],"preliminares_ausentes":[],"fundamentos_fragilizados":[],"jurisprudencia_omitida":[],"veredito_tier0":"inconclusivo","score":0,"recomendacoes":["Provedor indisponível neste run."]}'
           [ -f artefatos/claude/review_claude.json ] || echo "$neutro" > artefatos/claude/review_claude.json
           [ -f artefatos/gemini/review_gemini.json ] || echo "$neutro" > artefatos/gemini/review_gemini.json
 
