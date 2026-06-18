@@ -133,13 +133,16 @@ GET /api/v2/messages/stream
 |------|------|---------|---------|
 | 04/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 41 KB |
 | 04/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 42 KB |
+| 07/06/2026 | Diagnostico Tigre | [PECA_OMITIDA] | 46 KB |
+| 11/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 34 KB |
+| 11/06/2026 | Conglobado V18 | NEXUM_Conglobado_V18.pdf | 40 KB |
 
 ---
 
 ## Proximos na Fila
 
-1. **[NOME_OMITIDO]** - Prescricao intercorrente (URGENTE)
-2. **[NOME_OMITIDO]** - Abuso de autoridade Art. 13, III
+1. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE
+2. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Abuso de autoridade Art. 13, III)
 3. **[NOME_OMITIDO]** - Impronuncia hearsay
 4. **[NOME_OMITIDO]** - Consuncao + 9mm uso restrito
 5. **[NOME_OMITIDO]** - Cadeia de custodia [NOME_OMITIDO]
