@@ -133,13 +133,16 @@ GET /api/v2/messages/stream
 |------|------|---------|---------|
 | 04/06/2026 | Leandro Vidal | REsp_Leandro_Vidal_Art155_Hearsay.pdf | 41 KB |
 | 04/06/2026 | Joao Marcos | REsp_Joao_Marcos_Inclusao_Federal.pdf | 42 KB |
+| 07/06/2026 | Diagnostico Tigre | REsp_Diagnostico_Tigre_Usurpacao_Competencia.pdf | 46 KB |
+| 11/06/2026 | Leandro Ferreira | REsp_Leandro_Ferreira_Prescricao_Intercorrente.pdf | 34 KB |
+| 11/06/2026 | Conglobado V18 | NEXUM_Conglobado_V18.pdf | 40 KB |
 
 ---
 
 ## Proximos na Fila
 
-1. **Leandro Ferreira** - Prescricao intercorrente (URGENTE)
-2. **Frederico Xavier** - Abuso de autoridade Art. 13, III
+1. ~~Leandro Ferreira~~ - ✓ ENTREGUE
+2. ~~Frederico Xavier~~ - ✓ ENTREGUE (Abuso de autoridade Art. 13, III)
 3. **Raphael Lopes** - Impronuncia hearsay
 4. **Henrique de Moraes** - Consuncao + 9mm uso restrito
 5. **Osnir Cabeca** - Cadeia de custodia Bambam
