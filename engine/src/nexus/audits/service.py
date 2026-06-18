@@ -23,6 +23,10 @@ class MinutaNaoEncontrada(Exception):
     pass
 
 
+class RomaneioNaoEncontrado(Exception):
+    pass
+
+
 def _base_dir() -> Path:
     raw = os.getenv("CASO_DATA_DIR")
     if not raw:
@@ -69,8 +73,27 @@ async def gravar_audit(
     return audit
 
 
+def gravar_romaneio(audit: Audit, romaneio_texto: str) -> None:
+    """Escreve o romaneio como par da minuta: `{audit_id}.romaneio.md`.
+    Caller chama APÓS gravar_audit (precisa de audit.id e minuta_path).
+    """
+    from pathlib import Path
+
+    romaneio_path = Path(audit.minuta_path).with_suffix(".romaneio.md")
+    romaneio_path.write_text(romaneio_texto, encoding="utf-8")
+
+
 def ler_minuta(audit: Audit) -> str:
     path = Path(audit.minuta_path)
     if not path.exists():
         raise MinutaNaoEncontrada(audit.minuta_path)
     return path.read_text(encoding="utf-8")
+
+
+def ler_romaneio(audit: Audit) -> str:
+    """Romaneio vive em `{minuta_path sem .md}.romaneio.md`."""
+    minuta_path = Path(audit.minuta_path)
+    romaneio_path = minuta_path.with_suffix(".romaneio.md")
+    if not romaneio_path.exists():
+        raise RomaneioNaoEncontrado(str(romaneio_path))
+    return romaneio_path.read_text(encoding="utf-8")
