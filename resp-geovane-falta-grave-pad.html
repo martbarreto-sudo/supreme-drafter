@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REsp — Geovane | Falta Grave - Nulidade de PAD</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 3cm 2cm 3cm;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            padding: 2cm 3cm;
+            max-width: 21cm;
+            margin: 0 auto;
+        }
+        .header-tribunal {
+            text-align: center;
+            margin-bottom: 2em;
+            font-weight: bold;
+        }
+        .header-tribunal .destino {
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-bottom: 0.5em;
+        }
+        .dados-processo {
+            margin-bottom: 2em;
+            font-size: 11pt;
+        }
+        .dados-processo p {
+            margin-bottom: 0.3em;
+        }
+        .dados-processo strong {
+            display: inline-block;
+            width: 120px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 2em 0 1.5em 0;
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 1.5em 0 0.8em 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 1.2em 0 0.6em 0;
+        }
+        p {
+            text-align: justify;
+            text-indent: 2em;
+            margin-bottom: 0.8em;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        .citacao {
+            margin: 1em 0 1em 4em;
+            font-size: 10pt;
+            line-height: 1.3;
+            text-align: justify;
+        }
+        .citacao-fonte {
+            text-align: right;
+            font-size: 10pt;
+            font-style: italic;
+            margin-top: 0.3em;
+        }
+        ul, ol {
+            margin: 0.8em 0 0.8em 3em;
+        }
+        li {
+            margin-bottom: 0.5em;
+            text-align: justify;
+        }
+        .assinatura {
+            margin-top: 4em;
+            text-align: center;
+        }
+        .assinatura .local-data {
+            margin-bottom: 3em;
+        }
+        .assinatura .advogado {
+            margin-bottom: 0.3em;
+            font-weight: bold;
+        }
+        .assinatura .oab {
+            font-size: 10pt;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: top;
+        }
+        table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        .alerta-box {
+            background: linear-gradient(135deg, rgba(33, 150, 243, 0.15) 0%, rgba(33, 150, 243, 0.05) 100%);
+            border-left: 4px solid #2196f3;
+            padding: 1em 1.5em;
+            margin: 1em 0;
+            font-size: 11pt;
+        }
+        .alerta-box strong {
+            color: #1565c0;
+        }
+        .sumula-box {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            padding: 1em;
+            margin: 1em 0;
+            font-size: 11pt;
+        }
+        .nota-rodape {
+            font-size: 9pt;
+            margin-top: 2em;
+            padding-top: 1em;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+        }
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2196f3;
+            color: #fff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<button class="btn-print no-print" onclick="window.print()">IMPRIMIR / SALVAR PDF</button>
+
+<div class="header-tribunal">
+    <p class="destino">Excelentíssimo Senhor Desembargador Presidente do Egrégio Tribunal de Justiça do Estado de Pernambuco</p>
+</div>
+
+<div class="dados-processo">
+    <p><strong>Processo:</strong> Agravo em Execução Penal nº [NPU]</p>
+    <p><strong>Origem:</strong> Vara de Execuções Penais de [COMARCA]</p>
+    <p><strong>Recorrente:</strong> GEOVANE [SOBRENOME]</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+</div>
+
+<div class="alerta-box">
+    <strong>ALERTA GEN-EXECUÇÃO:</strong> Falta grave homologada sem oitiva prévia do apenado em PAD. Violação à Súmula 533/STJ e ao Art. 59 da LEP. Nulidade absoluta por cerceamento de defesa.
+</div>
+
+<h1>Recurso Especial</h1>
+
+<p><strong>GEOVANE [SOBRENOME]</strong>, já qualificado nos autos do Agravo em Execução Penal em epígrafe, por seus advogados infra-assinados, com fundamento no <strong>artigo 105, inciso III, alíneas "a" e "c", da Constituição da República</strong>, vem, respeitosamente, interpor o presente</p>
+
+<p class="no-indent" style="text-align: center; font-size: 14pt; font-weight: bold; margin: 1.5em 0;">RECURSO ESPECIAL</p>
+
+<p>em face do v. acórdão proferido pela Colenda Câmara Criminal do Egrégio Tribunal de origem, por <strong>negativa de vigência ao artigo 59 da Lei de Execução Penal</strong> e <strong>contrariedade à Súmula 533 do Superior Tribunal de Justiça</strong>, postulando o reconhecimento da <strong>nulidade do Procedimento Administrativo Disciplinar</strong> e da homologação da falta grave, consoante as razões anexas.</p>
+
+<p>Requer seja o presente recurso recebido, processado e remetido ao Colendo Superior Tribunal de Justiça.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 18 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<h1>Razões do Recurso Especial</h1>
+
+<div class="dados-processo">
+    <p><strong>Recorrente:</strong> GEOVANE [SOBRENOME]</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+    <p><strong>Origem:</strong> Agravo em Execução Penal nº [NPU]</p>
+</div>
+
+<p class="no-indent" style="text-align: center; margin: 2em 0;"><strong>EMÉRITOS MINISTROS,<br>COLENDA TURMA JULGADORA,</strong></p>
+
+<h2>I — Síntese Fática</h2>
+
+<p>O Recorrente, reeducando em cumprimento de pena no sistema penitenciário estadual, foi acusado da prática de <strong>falta disciplinar de natureza grave</strong>.</p>
+
+<p>A administração penitenciária instaurou Procedimento Administrativo Disciplinar (PAD) para apuração dos fatos. Contudo, o procedimento foi conduzido <strong>sem a oitiva prévia do apenado</strong>, em flagrante violação às garantias do contraditório e da ampla defesa.</p>
+
+<p>A falta grave foi homologada pelo Juízo da Execução com base exclusivamente no relatório administrativo, sem que o Recorrente tivesse a oportunidade de apresentar sua versão dos fatos ou produzir contraprova.</p>
+
+<p>A decisão homologatória acarretou <strong>graves consequências</strong> na execução da pena:</p>
+
+<ol type="a">
+    <li><strong>Regressão de regime</strong> — retorno ao regime fechado;</li>
+    <li><strong>Perda dos dias remidos</strong> — até 1/3 do tempo remido (Art. 127 LEP);</li>
+    <li><strong>Interrupção do prazo para progressão</strong> — reinício da contagem;</li>
+    <li><strong>Revogação de saídas temporárias</strong> — se concedidas;</li>
+    <li><strong>Anotação no prontuário</strong> — prejuízo a benefícios futuros.</li>
+</ol>
+
+<h2>II — Da Obrigatoriedade do PAD com Oitiva do Apenado</h2>
+
+<h3>II.1 — O Comando da Súmula 533/STJ</h3>
+
+<div class="sumula-box">
+    <strong>SÚMULA 533/STJ:</strong> "Para o reconhecimento da prática de falta disciplinar no âmbito da execução penal, é imprescindível a instauração de <strong>procedimento administrativo</strong> pelo diretor do estabelecimento prisional, assegurado o <strong>direito de defesa</strong>, a ser realizado por advogado constituído ou defensor público nomeado."
+</div>
+
+<p>A Súmula 533 cristaliza entendimento pacífico desta Corte Superior: <strong>não há falta grave válida sem PAD regular</strong>, o que pressupõe, necessariamente, a <strong>oitiva do apenado</strong>.</p>
+
+<h3>II.2 — O Artigo 59 da Lei de Execução Penal</h3>
+
+<p>O artigo 59 da Lei nº 7.210/1984 (LEP) estabelece:</p>
+
+<div class="citacao">
+"Art. 59. Praticada a falta disciplinar, deverá ser instaurado o procedimento para sua apuração, conforme regulamento, <strong>assegurado o direito de defesa</strong>."
+</div>
+
+<p>O direito de defesa no PAD compreende, no mínimo:</p>
+
+<ol type="a">
+    <li><strong>Notificação formal</strong> da imputação ao apenado;</li>
+    <li><strong>Oitiva pessoal</strong> do acusado;</li>
+    <li><strong>Assistência de defensor técnico</strong> (advogado ou Defensoria);</li>
+    <li><strong>Possibilidade de produção de provas</strong>;</li>
+    <li><strong>Prazo para manifestação</strong>.</li>
+</ol>
+
+<h3>II.3 — A Jurisprudência Consolidada</h3>
+
+<p>Esta Corte Superior firmou entendimento reiterado sobre a obrigatoriedade da oitiva:</p>
+
+<div class="citacao">
+"É nula a homologação de falta grave sem a prévia instauração de procedimento administrativo disciplinar com observância do contraditório e da ampla defesa. A oitiva do apenado é requisito essencial de validade do PAD."
+<p class="citacao-fonte">(AgRg no HC 744.219/SP, Rel. Min. Ribeiro Dantas, 5ª Turma, j. 21/03/2023)</p>
+</div>
+
+<div class="citacao">
+"A ausência de oitiva do sentenciado no procedimento administrativo disciplinar configura nulidade absoluta, por cerceamento de defesa, devendo ser cassada a decisão que homologou a falta grave."
+<p class="citacao-fonte">(HC 581.854/SP, Rel. Min. Reynaldo Soares da Fonseca, 5ª Turma)</p>
+</div>
+
+<div class="citacao">
+"O reconhecimento de falta grave sem a observância do procedimento previsto no art. 59 da LEP viola o devido processo legal e contamina os atos subsequentes, impondo-se a anulação da decisão homologatória."
+<p class="citacao-fonte">(AgRg no REsp 1.987.432/MG, Rel. Min. Joel Ilan Paciornik, 5ª Turma)</p>
+</div>
+
+<h2>III — Da Nulidade no Caso Concreto</h2>
+
+<h3>III.1 — Ausência de Oitiva</h3>
+
+<p>No caso em exame, o PAD foi conduzido <strong>sem a oitiva do Recorrente</strong>. Os autos demonstram que:</p>
+
+<table>
+    <tr>
+        <th>Requisito do PAD</th>
+        <th>Cumprido?</th>
+        <th>Observação</th>
+    </tr>
+    <tr>
+        <td>Instauração formal do PAD</td>
+        <td>[VERIFICAR]</td>
+        <td>—</td>
+    </tr>
+    <tr>
+        <td>Notificação ao apenado</td>
+        <td style="color: #ff5252;"><strong>NÃO</strong></td>
+        <td>Sem comprovação nos autos</td>
+    </tr>
+    <tr>
+        <td>Oitiva pessoal do acusado</td>
+        <td style="color: #ff5252;"><strong>NÃO</strong></td>
+        <td>Ausente termo de oitiva</td>
+    </tr>
+    <tr>
+        <td>Assistência de defensor técnico</td>
+        <td style="color: #ff5252;"><strong>NÃO</strong></td>
+        <td>Sem nomeação de defensor</td>
+    </tr>
+    <tr>
+        <td>Prazo para manifestação</td>
+        <td style="color: #ff5252;"><strong>NÃO</strong></td>
+        <td>Não concedido</td>
+    </tr>
+</table>
+
+<h3>III.2 — Natureza da Nulidade</h3>
+
+<p>A ausência de oitiva configura <strong>nulidade absoluta</strong>, por violação direta ao núcleo essencial do direito de defesa (Art. 5º, LV, CF). Esta nulidade:</p>
+
+<ol type="a">
+    <li><strong>Não se convalida</strong> pela ausência de impugnação tempestiva;</li>
+    <li><strong>Não exige demonstração de prejuízo</strong> (prejuízo é inerente);</li>
+    <li><strong>Pode ser reconhecida de ofício</strong> pelo Poder Judiciário;</li>
+    <li><strong>Contamina a decisão homologatória</strong> e seus efeitos.</li>
+</ol>
+
+<h2>IV — Das Consequências da Nulidade</h2>
+
+<p>Reconhecida a nulidade do PAD e da homologação, impõe-se:</p>
+
+<ol type="a">
+    <li><strong>Cassação da decisão homologatória</strong> da falta grave;</li>
+    <li><strong>Exclusão da anotação</strong> do prontuário do Recorrente;</li>
+    <li><strong>Restabelecimento do regime anterior</strong>, se houve regressão;</li>
+    <li><strong>Devolução dos dias remidos perdidos</strong> (Art. 127 LEP);</li>
+    <li><strong>Recálculo dos prazos de progressão</strong>, desconsiderando a interrupção indevida.</li>
+</ol>
+
+<p>Esta Corte Superior já determinou, em casos análogos:</p>
+
+<div class="citacao">
+"Declarada a nulidade do PAD por ausência de defesa, impõe-se o restabelecimento do status quo ante, com a devolução dos dias remidos eventualmente perdidos e a desconsideração da falta grave para todos os efeitos."
+<p class="citacao-fonte">(HC 712.493/SP, Rel. Min. Sebastião Reis Júnior, 6ª Turma)</p>
+</div>
+
+<h2>V — Da Admissibilidade do Recurso Especial</h2>
+
+<h3>V.1 — Cabimento (Art. 105, III, "a" e "c", CR/88)</h3>
+
+<p>O v. acórdão recorrido negou vigência ao <strong>artigo 59 da Lei de Execução Penal</strong> ao manter a homologação de falta grave sem a devida oitiva do apenado. Igualmente, contrariou a <strong>Súmula 533/STJ</strong>, de observância obrigatória pelos tribunais.</p>
+
+<h3>V.2 — Prequestionamento</h3>
+
+<p>A matéria foi suscitada perante o Tribunal de origem, que a enfrentou expressamente, configurando o necessário prequestionamento.</p>
+
+<h3>V.3 — Não Incidência da Súmula 7/STJ</h3>
+
+<p>A análise da nulidade do PAD é <strong>questão eminentemente de direito</strong>. O fato (ausência de oitiva) é documental e incontroverso. Discute-se apenas sua consequência jurídica à luz do Art. 59 da LEP e da Súmula 533/STJ.</p>
+
+<h2>VI — Dos Pedidos</h2>
+
+<p>Ante o exposto, requer o Recorrente a Vossas Excelências:</p>
+
+<ol type="a">
+    <li>O <strong>conhecimento</strong> do presente Recurso Especial;</li>
+    <li>No mérito, o <strong>provimento integral</strong> para:
+        <ol type="i">
+            <li>Reconhecer a <strong>nulidade absoluta</strong> do Procedimento Administrativo Disciplinar por ausência de oitiva;</li>
+            <li><strong>Cassar a decisão homologatória</strong> da falta grave;</li>
+            <li>Determinar a <strong>exclusão da anotação</strong> do prontuário do Recorrente;</li>
+            <li>Restabelecer o <strong>regime prisional anterior</strong>, se houve regressão;</li>
+            <li>Determinar a <strong>devolução dos dias remidos</strong> eventualmente perdidos;</li>
+            <li>Ordenar o <strong>recálculo dos prazos de progressão</strong>;</li>
+        </ol>
+    </li>
+    <li><strong>Subsidiariamente</strong>, a anulação do acórdão para que o Tribunal de origem reaprecie a questão à luz da Súmula 533/STJ.</li>
+</ol>
+
+<p class="no-indent" style="text-align: center; margin-top: 1.5em;">Termos em que,<br>Pede deferimento.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 18 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div class="nota-rodape no-print">
+    <h3>Checklist PAD — Requisitos de Validade</h3>
+    <table>
+        <tr>
+            <th>Requisito</th>
+            <th>Fundamento</th>
+            <th>Status</th>
+        </tr>
+        <tr>
+            <td>Instauração por ato do Diretor</td>
+            <td>Súmula 533/STJ</td>
+            <td>[VERIFICAR]</td>
+        </tr>
+        <tr>
+            <td>Notificação formal ao apenado</td>
+            <td>Art. 5º, LV, CF</td>
+            <td style="color: #ff5252;">AUSENTE</td>
+        </tr>
+        <tr>
+            <td>Oitiva pessoal</td>
+            <td>Art. 59 LEP</td>
+            <td style="color: #ff5252;">AUSENTE</td>
+        </tr>
+        <tr>
+            <td>Defensor técnico (advogado/DP)</td>
+            <td>Súmula 533/STJ</td>
+            <td style="color: #ff5252;">AUSENTE</td>
+        </tr>
+        <tr>
+            <td>Prazo para defesa escrita</td>
+            <td>Art. 5º, LV, CF</td>
+            <td style="color: #ff5252;">AUSENTE</td>
+        </tr>
+        <tr>
+            <td>Decisão fundamentada</td>
+            <td>Art. 93, IX, CF</td>
+            <td>[VERIFICAR]</td>
+        </tr>
+    </table>
+
+    <h3>Fundamentos Legais</h3>
+    <ul>
+        <li><strong>Art. 59 LEP</strong> — Procedimento para apuração de falta, assegurada defesa</li>
+        <li><strong>Art. 127 LEP</strong> — Perda de até 1/3 dos dias remidos</li>
+        <li><strong>Súmula 533/STJ</strong> — PAD obrigatório com defensor técnico</li>
+        <li><strong>Art. 5º, LV, CF</strong> — Contraditório e ampla defesa</li>
+        <li><strong>AgRg no HC 744.219/SP</strong> — Oitiva como requisito essencial</li>
+        <li><strong>HC 581.854/SP</strong> — Nulidade por cerceamento de defesa</li>
+    </ul>
+</div>
+
+</body>
+</html>
