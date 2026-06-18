@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.responses import PlainTextResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +12,7 @@ from nexus.db.models import Audit, User
 from nexus.db.session import get_session
 
 from .schemas import AuditDetail, AuditSummary
-from .service import MinutaNaoEncontrada, ler_minuta
+from .service import MinutaNaoEncontrada, RomaneioNaoEncontrado, ler_minuta, ler_romaneio
 
 router = APIRouter(prefix="/user/audits", tags=["audits"])
 
@@ -76,3 +77,32 @@ async def get_audit(
             "output_tokens": audit.output_tokens,
         },
     )
+
+
+@router.get(
+    "/{audit_id}/romaneio",
+    response_class=PlainTextResponse,
+    responses={200: {"content": {"text/markdown": {}}}},
+)
+async def get_audit_romaneio(
+    audit_id: str,
+    user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+) -> PlainTextResponse:
+    """Romaneio de Revisão — formato canônico do HITL gate do TIER 0.
+
+    Retorna o markdown classificando a peça como [NIVEL 1 — DISPARAR] ou
+    [NIVEL 2 — CONDICIONADA] com as condições a fechar antes do protocolo.
+    Gerado em /draft/llm e persistido em disco lado-a-lado com a minuta.
+    """
+    audit = await session.get(Audit, audit_id)
+    if audit is None or audit.user_id != user.id:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Auditoria não encontrada")
+    try:
+        texto = ler_romaneio(audit)
+    except RomaneioNaoEncontrado:
+        raise HTTPException(
+            status.HTTP_404_NOT_FOUND,
+            "Romaneio não gerado para esta auditoria (gerado a partir da Fase F)",
+        )
+    return PlainTextResponse(content=texto, media_type="text/markdown; charset=utf-8")

@@ -11,8 +11,9 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from slowapi.errors import RateLimitExceeded
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from .audits.romaneio import compor_romaneio
 from .audits.routes import router as audits_router
-from .audits.service import CasoDataDirAusente, gravar_audit
+from .audits.service import CasoDataDirAusente, gravar_audit, gravar_romaneio
 from .auditor import auditar_adversarial
 from .user_data.routes import router as user_data_router
 from .auth.deps import get_current_user
@@ -218,6 +219,20 @@ async def draft_llm(
             output_tokens=minuta.output_tokens,
         )
         audit_id = audit.id
+        # Romaneio de Revisão — par com a minuta. Composto APÓS gravar_audit
+        # porque depende do audit.id (referencia na cabeçalho a peça-alvo
+        # pelo ID que o operador hit no endpoint /user/audits/{id}/romaneio).
+        romaneio_texto = compor_romaneio(
+            audit_id=audit.id,
+            feito=feito,
+            peca_tipo=req.peca_tipo,
+            modelo=minuta.modelo,
+            quality=qualidade,
+            auditor=parecer_adversarial,
+            assertions_falhas=falhas,
+            data_iso=data_iso,
+        )
+        gravar_romaneio(audit, romaneio_texto)
     except CasoDataDirAusente:
         pass  # sem CASO_DATA_DIR, segue sem persistir; resposta inclui audit_id=None
 
