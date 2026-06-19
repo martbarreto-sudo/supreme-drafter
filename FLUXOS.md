@@ -136,6 +136,12 @@ GET /api/v2/messages/stream
 | 07/06/2026 | Diagnostico Tigre | REsp_Diagnostico_Tigre_Usurpacao_Competencia.pdf | 46 KB |
 | 11/06/2026 | Leandro Ferreira | REsp_Leandro_Ferreira_Prescricao_Intercorrente.pdf | 34 KB |
 | 11/06/2026 | Conglobado V18 | NEXUM_Conglobado_V18.pdf | 40 KB |
+| 19/06/2026 | Frederico Xavier | REsp_Frederico_Xavier_Abuso_Autoridade.pdf | 35 KB |
+| 19/06/2026 | Geovane | REsp_Geovane_Falta_Grave_PAD.pdf | 36 KB |
+| 19/06/2026 | Raphael Lopes | REsp_Raphael_Lopes_Impronuncia_Hearsay.pdf | 31 KB |
+| 19/06/2026 | Henrique Moraes | RHC_Henrique_Moraes_Consuncao_9mm.pdf | 30 KB |
+| 19/06/2026 | Osnir Cabeca | REsp_Osnir_Cabeca_Cadeia_Custodia.pdf | 34 KB |
+| 19/06/2026 | Brunno Sena | Agravo_Brunno_Sena_Falta_Grave.pdf | 30 KB |
 
 ---
 
@@ -143,10 +149,12 @@ GET /api/v2/messages/stream
 
 1. ~~Leandro Ferreira~~ - ✓ ENTREGUE
 2. ~~Frederico Xavier~~ - ✓ ENTREGUE (Abuso de autoridade Art. 13, III)
-3. **Raphael Lopes** - Impronuncia hearsay
-4. **Henrique de Moraes** - Consuncao + 9mm uso restrito
-5. **Osnir Cabeca** - Cadeia de custodia Bambam
-6. **Brunno de Sena** - Falta grave sem apreensao
+3. ~~Raphael Lopes~~ - ✓ ENTREGUE (Impronuncia hearsay Tema 1.260)
+4. ~~Henrique de Moraes~~ - ✓ ENTREGUE (Consuncao + 9mm afastar hediondez)
+5. ~~Osnir Cabeca~~ - ✓ ENTREGUE (Cadeia custodia Bambam/Kefale)
+6. ~~Brunno de Sena~~ - ✓ ENTREGUE (Falta grave sem apreensao)
+
+**BACKLOG TRELLO: ZERADO**
 
 ---
 
