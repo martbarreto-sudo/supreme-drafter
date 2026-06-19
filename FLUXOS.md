@@ -136,6 +136,12 @@ GET /api/v2/messages/stream
 | 07/06/2026 | Diagnostico Tigre | [PECA_OMITIDA] | 46 KB |
 | 11/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 34 KB |
 | 11/06/2026 | Conglobado V18 | NEXUM_Conglobado_V18.pdf | 40 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 35 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 36 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 31 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 30 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 34 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 30 KB |
 
 ---
 
@@ -143,10 +149,12 @@ GET /api/v2/messages/stream
 
 1. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE
 2. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Abuso de autoridade Art. 13, III)
-3. **[NOME_OMITIDO]** - Impronuncia hearsay
-4. **[NOME_OMITIDO]** - Consuncao + 9mm uso restrito
-5. **[NOME_OMITIDO]** - Cadeia de custodia [NOME_OMITIDO]
-6. **[NOME_OMITIDO]** - Falta grave sem apreensao
+3. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Impronuncia hearsay Tema 1.260)
+4. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Consuncao + 9mm afastar hediondez)
+5. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Cadeia custodia [NOME_OMITIDO]/[OPERACAO_OMITIDA])
+6. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Falta grave sem apreensao)
+
+**BACKLOG TRELLO: ZERADO**
 
 ---
 
