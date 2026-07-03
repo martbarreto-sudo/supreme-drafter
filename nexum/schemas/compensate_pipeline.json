@@ -1,0 +1,18 @@
+{
+  "specversion": "1.0",
+  "id": "1d8823aa-9b76-4c74-8841-a159bf4bc988",
+  "source": "urn:nexum:artifact-pipeline:gateway",
+  "type": "br.nexum.artifact.compensate.v1",
+  "subject": "art_1102983c-66bc-4fae-990a-c112dfbaee34",
+  "time": "2026-07-02T03:37:45Z",
+  "datacontenttype": "application/json",
+  "correlationid": "22bcda11-447e-412e-a342-eeef982c7a91",
+  "idempotencykey": "art_1102983c-66bc-4fae-990a-c112dfbaee34:COMPENSATED",
+  "isreplay": false,
+  "operatorid": "system",
+  "data": {
+    "artifact_id": "art_1102983c-66bc-4fae-990a-c112dfbaee34",
+    "compensation_trigger": "Timeout persistente (504 Gateway) no Sanitizer Service apos esgotadas as 5 tentativas operacionais de retentativa.",
+    "active_locks_applied": ["INTEGRITY_FREEZE"]
+  }
+}
