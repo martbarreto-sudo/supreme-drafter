@@ -70,6 +70,54 @@ Os testes usam apenas *fakes* — nao ha dependencia de rede, Postgres, Redis ou
 Pub/Sub. `psycopg` e `google-cloud-pubsub` sao carregados via importacao tardia
 apenas quando o relay/consumidor rodam como processos reais.
 
+## Rodar localmente (docker-compose)
+
+Um `docker-compose.yml` na raiz do repositorio sobe o pipeline ponta-a-ponta.
+A imagem unica (`nexum/Dockerfile`) roda tanto o consumidor quanto o relay.
+
+```bash
+make up      # docker compose up -d --build
+make logs    # acompanha os logs de todos os servicos
+make down    # derruba tudo e remove volumes (-v)
+```
+
+### Servicos e portas
+
+| Servico    | Imagem                                            | Porta host | Papel |
+|------------|---------------------------------------------------|:----------:|-------|
+| `postgres` | postgres:16-alpine                                | 5432       | Transactional Outbox; carrega `nexum/infra/schema.sql` (DDL + seeds) no boot |
+| `redis`    | redis:7-alpine                                    | 6379       | Dedup `SET NX` (idempotencykey) |
+| `pubsub`   | cloud-sdk:emulators                               | 8085       | Emulador Google Pub/Sub (`--project=nexum-local`) |
+| `consumer` | build `nexum/Dockerfile`                          | 8000       | FastAPI `POST /events` / `GET /healthz` (uvicorn `nexum.consumer.asgi:app`) |
+| `relay`    | build `nexum/Dockerfile`                          | —          | `python -m nexum.relay.worker` drenando a outbox |
+
+### Fluxo end-to-end
+
+```
+schema.sql (seeds)                            ┌─ SIEM  (todos)
+   │ INSERT em transactional_outbox           │
+   ▼                                          │
+postgres ──SELECT..FOR UPDATE SKIP LOCKED──► relay ──publish──► pubsub (emulador)
+                                                                    │
+                                                                    ▼
+                                              consumer (FastAPI) ──SET NX (redis)──► dispatcher P1 ─┴─ PagerDuty (P1)
+```
+
+O relay le `NEXUM_OUTBOX_DSN` e `NEXUM_PUBSUB_TOPIC` do ambiente (definidos no
+compose) e publica no emulador via `PUBSUB_EMULATOR_HOST`.
+
+### Testes
+
+```bash
+make test              # unitarios (fakes, sem infra): -m "not integration"
+make test-integration  # integracao: requer `make up` (senao SKIP)
+make psql              # abre psql no container postgres
+```
+
+O smoke test (`nexum/infra/smoke_test.py`) e marcado com `@pytest.mark.integration`
+e faz `pytest.skip("infra not up")` quando Postgres/Redis nao estao acessiveis,
+de modo que `make test` nunca falha por ausencia de infra.
+
 ## Garantia de Entrega
 
 > **at-least-once no transporte + SETNX no Redis = effectively-once**
