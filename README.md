@@ -7,9 +7,14 @@ Plataforma NEXUM de produção de minutas penais assistida por IA (Gen-Custódia
 ```
 .
 ├── index.html              # Landing / acesso ao Terminal Tier 0
+├── docker-compose.yml      # Stack dev: postgres + redis + pub/sub + consumer + relay
+├── Makefile                # up / down / logs / test / test-integration / psql
 ├── minutas/                # Peças jurídicas produzidas
 │   ├── html/               # Fontes HTML editáveis
 │   └── pdf/                # Entregas finais (protocoláveis)
+├── nexum/                  # Pipeline forense CloudEvents v1.0 (Tier 0)
+│   ├── infra/              # schema.sql (outbox + seeds) + smoke_test.py
+│   └── Dockerfile          # Imagem única (consumer via uvicorn / relay via -m)
 ├── docs/                   # Documentação da plataforma
 │   ├── FLUXOS.md           # Fluxos de produção + rotas API v2
 │   ├── NEXUM_CONGLOBADO_V18.md / .pdf
@@ -18,6 +23,9 @@ Plataforma NEXUM de produção de minutas penais assistida por IA (Gen-Custódia
 │   └── api-spec.json       # Especificação NEXUM API v2
 └── .github/                # CI (claude-integration workflow)
 ```
+
+Para rodar o pipeline NEXUM localmente (Postgres + Redis + emulador Pub/Sub),
+veja [`nexum/README.md`](nexum/README.md#rodar-localmente-docker-compose) (`make up`).
 
 ## Minutas Entregues
 

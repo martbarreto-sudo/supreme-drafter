@@ -1,0 +1,80 @@
+# NEXUM TIER 0 — stack de desenvolvimento local (outbox -> relay -> pub/sub -> consumidor).
+#
+# Fluxo: o relay drena `transactional_outbox` (postgres), publica no emulador
+# Pub/Sub e o consumidor (FastAPI) deduplica via Redis. Apenas para dev.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: nexum
+      POSTGRES_PASSWORD: nexum
+      POSTGRES_DB: nexum
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Carrega o DDL + seeds na primeira inicializacao do cluster.
+      - ./nexum/infra/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nexum -d nexum"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  pubsub:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
+    command: >
+      gcloud beta emulators pubsub start
+      --host-port=0.0.0.0:8085
+      --project=nexum-local
+    ports:
+      - "8085:8085"
+    environment:
+      CLOUDSDK_CORE_PROJECT: nexum-local
+
+  consumer:
+    build:
+      context: .
+      dockerfile: nexum/Dockerfile
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+
+  relay:
+    build:
+      context: .
+      dockerfile: nexum/Dockerfile
+    command: ["python", "-m", "nexum.relay.worker"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pubsub:
+        condition: service_started
+    environment:
+      # Nome de env lido por nexum/relay/worker.py (argparse default).
+      NEXUM_OUTBOX_DSN: postgresql://nexum:nexum@postgres:5432/nexum
+      # O cliente pubsub_v1 publica no caminho completo do topico.
+      NEXUM_PUBSUB_TOPIC: projects/nexum-local/topics/nexum.artifact-events
+      NEXUM_POLL_INTERVAL: "1.0"
+      # Direciona o cliente google-cloud-pubsub ao emulador.
+      PUBSUB_EMULATOR_HOST: pubsub:8085
+      PUBSUB_PROJECT: nexum-local
+      PUBSUB_TOPIC: nexum.artifact-events
+
+volumes:
+  pgdata:
