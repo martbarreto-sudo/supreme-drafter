@@ -15,6 +15,7 @@ conexão**: os contratos vivem em `ports.py`, as implementações em
 | `adapters/anthropic_adapters.py` | `AnthropicVertexAdapter` (consolidador, Opus 4.8) e `DirectAPIAdapter` (agentes paralelos, Sonnet 4.6) |
 | `verdade/` | **Loop de verdade**: `Precedente`, `FonteDePrecedentes` (JSON local-first e Supabase) e `auditar_citacoes()` — o portão `zero_tolerance` do auditor |
 | `schema/precedentes.sql` | DDL do Supabase (`precedentes_verificados`): quarentena, CHECKs de fonte, RLS leitura-só-citável, GIN em tags, pgvector reservado p/ fase 2 |
+| `verdade/exportar_sql.py` | Carga MINDJUS → SQL: manifesto idempotente de INSERTs (dedupe por número normalizado, órfãos sem fonte entram quarentenados) |
 | `tests/` | Suíte isolada (fakes; zero credenciais) + `TestModelStringRegression` |
 
 ## Cânone de modelos
@@ -70,10 +71,22 @@ nem no JSON, nem no SQL (filtro na própria query + RLS no banco). Para o
 Supabase, troque por `FonteSupabase(AsyncpgAdapter(pool))` após aplicar
 `schema/precedentes.sql`.
 
+Para povoar o banco (passo do operador, uma vez):
+
+```bash
+python -m nexum_engine.verdade.exportar_sql caminho/para/mindjus_data -o seed.sql
+# revisar o seed.sql e executá-lo como OWNER/service role no SQL Editor
+# (a RLS nega escrita aos papéis da engine de propósito)
+```
+
+O manifesto é determinístico e idempotente; registros legítimos sem
+`fonte_verificacao` entram JÁ EM QUARENTENA com motivo automático — nunca
+quebram os CHECKs nem viram citáveis por acidente.
+
 ## Testes
 
 ```bash
-pytest -q nexum_engine/   # 48 testes; sem rede, sem credenciais
+pytest -q nexum_engine/   # 57 testes; sem rede, sem credenciais
 ```
 
 CI: `.github/workflows/nexum-engine-tests.yml` roda a suíte em todo
