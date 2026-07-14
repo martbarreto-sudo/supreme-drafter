@@ -13,6 +13,8 @@ conexão**: os contratos vivem em `ports.py`, as implementações em
 | `adapters/asyncpg_adapter.py` | `AsyncpgAdapter` — PostgreSQL/Supabase sobre `asyncpg.Pool` injetado |
 | `adapters/vertex_embed_adapter.py` | `VertexEmbedAdapter` — embeddings sobre cliente Vertex injetado |
 | `adapters/anthropic_adapters.py` | `AnthropicVertexAdapter` (consolidador, Opus 4.8) e `DirectAPIAdapter` (agentes paralelos, Sonnet 4.6) |
+| `verdade/` | **Loop de verdade**: `Precedente`, `FonteDePrecedentes` (JSON local-first e Supabase) e `auditar_citacoes()` — o portão `zero_tolerance` do auditor |
+| `schema/precedentes.sql` | DDL do Supabase (`precedentes_verificados`): quarentena, CHECKs de fonte, RLS leitura-só-citável, GIN em tags, pgvector reservado p/ fase 2 |
 | `tests/` | Suíte isolada (fakes; zero credenciais) + `TestModelStringRegression` |
 
 ## Cânone de modelos
@@ -50,10 +52,28 @@ agente = DirectAPIAdapter(AsyncAnthropic())
 Sem a injeção, qualquer chamada falha com um erro que aponta o passo
 pendente (`*NaoInjetadoError`) — nunca com falha silenciosa.
 
+## Loop de verdade (auditoria de citações)
+
+```python
+from nexum_engine.verdade import FonteJsonVerificada, auditar_citacoes
+
+# Local-first: aponta para a base MINDJUS verificada (warroom-tigre)
+fonte = FonteJsonVerificada("caminho/para/mindjus_data")
+relatorio = await auditar_citacoes(texto_da_minuta, fonte)
+relatorio.veredito          # "PROTOCOLAVEL" | "NAO_PROTOCOLAVEL"
+relatorio.nao_verificadas   # citações bloqueantes (zero_tolerance)
+```
+
+Regras invioláveis das fontes: precedente **em quarentena**
+(`verificacao_pendente`) ou **sem fonte de verificação** nunca é retornado —
+nem no JSON, nem no SQL (filtro na própria query + RLS no banco). Para o
+Supabase, troque por `FonteSupabase(AsyncpgAdapter(pool))` após aplicar
+`schema/precedentes.sql`.
+
 ## Testes
 
 ```bash
-pytest -q nexum_engine/   # 31 testes; sem rede, sem credenciais
+pytest -q nexum_engine/   # 48 testes; sem rede, sem credenciais
 ```
 
 CI: `.github/workflows/nexum-engine-tests.yml` roda a suíte em todo
