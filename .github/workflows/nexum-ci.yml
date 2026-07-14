@@ -1,0 +1,82 @@
+name: "NEXUM CI"
+
+on:
+  push:
+    paths:
+      - "nexum/**"
+      - "docker-compose.yml"
+      - "Makefile"
+      - ".github/workflows/nexum-ci.yml"
+  pull_request:
+    paths:
+      - "nexum/**"
+      - "docker-compose.yml"
+      - "Makefile"
+      - ".github/workflows/nexum-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nexum-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: nexum
+          POSTGRES_PASSWORD: nexum
+          POSTGRES_DB: nexum
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: nexum/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r nexum/requirements.txt
+
+      - name: Load outbox schema into Postgres
+        env:
+          PGPASSWORD: nexum
+        run: psql -h localhost -U nexum -d nexum -f nexum/infra/schema.sql
+
+      - name: Run unit tests
+        run: python -m pytest nexum -q -m "not integration"
+
+      - name: Run integration tests
+        env:
+          NEXUM_OUTBOX_DSN: postgresql://nexum:nexum@localhost:5432/nexum
+          REDIS_URL: redis://localhost:6379/0
+          NEXUM_PUBSUB_TOPIC: nexum.artifact-events
+        run: python -m pytest nexum -q -m integration
+
+      - name: Report success
+        run: echo "NEXUM CI passed - unit + integration tests green."
