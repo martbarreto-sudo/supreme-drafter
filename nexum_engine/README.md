@@ -17,6 +17,7 @@ conexão**: os contratos vivem em `ports.py`, as implementações em
 | `schema/precedentes.sql` | DDL do Supabase (`precedentes_verificados`): quarentena, CHECKs de fonte, RLS leitura-só-citável, GIN em tags, pgvector reservado p/ fase 2 |
 | `schema/migrations/0002_fase2_busca_semantica.sql` | Fase 2: pgvector, coluna `vetor_semantico vector(768)` e índice HNSW (cosseno, m=16/ef=64) |
 | `verdade/exportar_sql.py` | Carga MINDJUS → SQL: manifesto idempotente de INSERTs (dedupe por número normalizado, órfãos sem fonte entram quarentenados) |
+| `verdade/backfill_embeddings.py` | Backfill (tese+ementa) → `vetor_semantico` — utilitário de operador (service role), idempotente, com dry-run e falha-alto |
 | `verdade/gate.py` | Gate de citações (CLI): postura binária p/ CI — bloqueado (exit 1) se citação fora da base; INCONCLUSIVO opcional sem base |
 | `tests/` | Suíte isolada (fakes; zero credenciais) + `TestModelStringRegression` |
 
@@ -101,13 +102,26 @@ quebram os CHECKs nem viram citáveis por acidente.
   determinístico por sobreposição de tokens em tags + tese/ementa.
 
 HITL da fase 2: aplicar `schema/migrations/0002_fase2_busca_semantica.sql`,
-fazer o backfill de `vetor_semantico` como service role (mesmo modelo de
-embedding do `VertexEmbedAdapter`) e injetar o embedder na `FonteSupabase`.
+rodar o backfill como service role e injetar o embedder na `FonteSupabase`:
+
+```python
+from nexum_engine.adapters import AsyncpgAdapter, VertexEmbedAdapter
+from nexum_engine.verdade.backfill_embeddings import backfill_embeddings
+
+adapter = VertexEmbedAdapter(client, modelo="...")   # MESMO modelo da busca
+db_admin = AsyncpgAdapter(pool_service_role)          # RLS nega a role da engine
+print(await backfill_embeddings(db_admin, adapter, dry_run=True))  # ensaio
+print(await backfill_embeddings(db_admin, adapter))                # gravação
+```
+
+O backfill é idempotente (só pega `vetor_semantico IS NULL`) e FALHA ALTO
+em inconsistência (texto vazio, contagem divergente do provedor) — ao
+contrário da busca, que degrada com fallback.
 
 ## Testes
 
 ```bash
-pytest -q nexum_engine/   # 79 testes; sem rede, sem credenciais
+pytest -q nexum_engine/   # 88 testes; sem rede, sem credenciais
 ```
 
 CI: `.github/workflows/nexum-engine-tests.yml` roda a suíte em todo
