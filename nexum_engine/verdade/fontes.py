@@ -16,11 +16,27 @@ verificação NUNCA é retornado como citável.
 from __future__ import annotations
 
 import json
+import logging
 from pathlib import Path
 from typing import Protocol, Sequence, runtime_checkable
 
-from ..ports import DatabasePort
+from ..ports import DatabasePort, EmbedderPort
 from .precedente import Precedente, normalizar_citacao
+
+logger = logging.getLogger(__name__)
+
+# Limiar mínimo de similaridade de cosseno para um match semântico.
+LIMIAR_SIMILARIDADE_PADRAO = 0.7
+
+
+def _vetor_para_sql(vetor: Sequence[float]) -> str:
+    """Literal pgvector ('[0.1,0.2,...]') para bind parametrizado ::vector."""
+    return "[" + ",".join(str(float(v)) for v in vetor) + "]"
+
+
+def _tokens_de_busca(query: str) -> list[str]:
+    """Tokens (>2 chars, minúsculos) para o fallback honesto por tags."""
+    return [t.strip().lower() for t in query.split() if len(t.strip()) > 2]
 
 
 @runtime_checkable
@@ -33,6 +49,13 @@ class FonteDePrecedentes(Protocol):
 
     async def buscar_por_tags(self, tags: Sequence[str]) -> list[Precedente]:
         """Precedentes citáveis que tenham ao menos uma das tags."""
+        ...
+
+    async def buscar_por_semelhanca(
+        self, query: str, limite: int = 5
+    ) -> list[Precedente]:
+        """Busca semântica (analogia fática), com fallback honesto por tags
+        quando não há embeddings/credenciais — nunca falha silenciosamente."""
         ...
 
 
@@ -81,6 +104,24 @@ class FonteJsonVerificada:
             if alvo & {t.lower() for t in p.tags}
         ]
 
+    async def buscar_por_semelhanca(
+        self, query: str, limite: int = 5
+    ) -> list[Precedente]:
+        """Local-first não tem vetores: ranqueia por sobreposição de tokens
+        nas tags e no texto da tese (fallback honesto, determinístico)."""
+        tokens = _tokens_de_busca(query)
+        if not tokens:
+            return []
+        ranqueados: list[tuple[int, Precedente]] = []
+        for p in self._todos:
+            tags = {t.lower() for t in p.tags}
+            texto = f"{p.tese} {p.ementa}".lower()
+            acertos = sum(1 for t in tokens if t in tags or t in texto)
+            if acertos:
+                ranqueados.append((acertos, p))
+        ranqueados.sort(key=lambda par: (-par[0], par[1].numero_normalizado))
+        return [p for _, p in ranqueados[:limite]]
+
 
 class FonteSupabase:
     """Base verificada no PostgreSQL/Supabase, via DatabasePort.
@@ -96,8 +137,16 @@ class FonteSupabase:
     )
     _CITAVEL = "fonte_verificacao <> '' AND NOT verificacao_pendente"
 
-    def __init__(self, db: DatabasePort) -> None:
+    def __init__(
+        self,
+        db: DatabasePort,
+        embedder: EmbedderPort | None = None,
+        *,
+        limiar_similaridade: float = LIMIAR_SIMILARIDADE_PADRAO,
+    ) -> None:
         self._db = db
+        self._embedder = embedder
+        self._limiar = limiar_similaridade
 
     async def obter_por_numero(self, numero: str) -> Precedente | None:
         linha = await self._db.fetchrow(
@@ -117,3 +166,42 @@ class FonteSupabase:
             alvo,
         )
         return [Precedente.de_dict(l) for l in linhas]
+
+    async def buscar_por_semelhanca(
+        self, query: str, limite: int = 5
+    ) -> list[Precedente]:
+        """Busca vetorial (operador <=>, distância de cosseno) com fallback.
+
+        Cenários de contingência (nunca exceção para o chamador):
+        1. Embedder não injetado (zero-credencial) → fallback por tags.
+        2. Falha do provedor de embeddings ou do banco → log + fallback.
+        Registros sem ``vetor_semantico`` (backfill pendente) são ignorados
+        pela consulta vetorial — o fallback os cobre.
+        """
+        if not query.strip():
+            return []
+        if self._embedder is None:
+            return await self._fallback_tags(query, limite)
+        try:
+            vetores = await self._embedder.embed([query])
+            literal = _vetor_para_sql(vetores[0])
+            linhas = await self._db.fetch(
+                f"SELECT {self._COLUNAS}, "
+                f"1 - (vetor_semantico <=> $1::vector) AS similaridade "
+                f"FROM precedentes_verificados "
+                f"WHERE {self._CITAVEL} AND vetor_semantico IS NOT NULL "
+                f"AND 1 - (vetor_semantico <=> $1::vector) >= $2 "
+                f"ORDER BY vetor_semantico <=> $1::vector LIMIT $3",
+                literal, self._limiar, limite,
+            )
+            return [Precedente.de_dict(l) for l in linhas]
+        except Exception:  # noqa: BLE001 — contingência deliberada
+            logger.warning(
+                "busca semântica indisponível (embedder/banco); usando "
+                "fallback por tags", exc_info=True,
+            )
+            return await self._fallback_tags(query, limite)
+
+    async def _fallback_tags(self, query: str, limite: int) -> list[Precedente]:
+        achados = await self.buscar_por_tags(_tokens_de_busca(query))
+        return achados[:limite]
