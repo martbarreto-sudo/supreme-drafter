@@ -25,6 +25,10 @@ import time
 from datetime import datetime, timezone
 from typing import Any, Callable, Protocol
 
+from opentelemetry.trace import Status, StatusCode
+
+from nexum.observability.tracing import TRACER
+
 logger = logging.getLogger("nexum.relay")
 
 # Maximo de tentativas de publicacao antes de dead-letter (env: NEXUM_MAX_ATTEMPTS).
@@ -78,6 +82,35 @@ def _to_bytes(payload: Any) -> bytes:
     return json.dumps(payload, ensure_ascii=False).encode("utf-8")
 
 
+def _annotate_publish_span(span: Any, topic: str, payload: Any) -> None:
+    """Anota o span `relay.publish` com atributos de mensageria e forenses.
+
+    Le `type`/`correlationid`/`idempotencykey` do payload JSON quando possivel;
+    falhas de parse sao silenciosas (o span nao deve interferir na drenagem).
+    Sob o provider no-op os `set_attribute` sao no-ops.
+    """
+
+    span.set_attribute("messaging.system", "gcp_pubsub")
+    span.set_attribute("messaging.destination", topic)
+    try:
+        import json
+
+        obj: Any = payload
+        if isinstance(obj, (bytes, bytearray, str)):
+            obj = json.loads(obj)
+        if isinstance(obj, dict):
+            if obj.get("type") is not None:
+                span.set_attribute("nexum.event_type", str(obj["type"]))
+            if obj.get("correlationid") is not None:
+                span.set_attribute("nexum.correlation_id", str(obj["correlationid"]))
+            if obj.get("idempotencykey") is not None:
+                span.set_attribute(
+                    "nexum.idempotency_key", str(obj["idempotencykey"])
+                )
+    except Exception:  # noqa: BLE001 - anotacao best-effort, nunca falha a drenagem
+        pass
+
+
 def drain_once(
     conn: Any,
     publisher: Publisher,
@@ -104,37 +137,49 @@ def drain_once(
     try:
         cur.execute(SELECT_BATCH_SQL, (batch_size,))
         rows = cur.fetchall()
-        for row in rows:
-            row_id, payload, attempts = row[0], row[1], row[2]
-            try:
-                publisher.publish(topic, _to_bytes(payload))
-            except Exception as exc:  # noqa: BLE001 - isola a linha faltosa
-                now = datetime.now(timezone.utc)
-                cur.execute(
-                    RECORD_FAILURE_SQL,
-                    (f"{type(exc).__name__}: {exc}", max_attempts, now, row_id),
-                )
-                if attempts + 1 >= max_attempts:
-                    logger.error(
-                        "Outbox id=%s dead-lettered apos %s tentativas: %s",
-                        row_id,
-                        attempts + 1,
-                        exc,
+        with TRACER.start_as_current_span("relay.drain_once") as batch_span:
+            batch_span.set_attribute("messaging.batch.count", len(rows))
+            for row in rows:
+                row_id, payload, attempts = row[0], row[1], row[2]
+                with TRACER.start_as_current_span("relay.publish") as span:
+                    _annotate_publish_span(span, topic, payload)
+                    try:
+                        publisher.publish(topic, _to_bytes(payload))
+                    except Exception as exc:  # noqa: BLE001 - isola a linha faltosa
+                        span.record_exception(exc)
+                        span.set_status(Status(StatusCode.ERROR, str(exc)))
+                        now = datetime.now(timezone.utc)
+                        cur.execute(
+                            RECORD_FAILURE_SQL,
+                            (
+                                f"{type(exc).__name__}: {exc}",
+                                max_attempts,
+                                now,
+                                row_id,
+                            ),
+                        )
+                        if attempts + 1 >= max_attempts:
+                            logger.error(
+                                "Outbox id=%s dead-lettered apos %s tentativas: %s",
+                                row_id,
+                                attempts + 1,
+                                exc,
+                            )
+                        else:
+                            logger.warning(
+                                "Falha de publicacao outbox id=%s "
+                                "(tentativa %s/%s): %s",
+                                row_id,
+                                attempts + 1,
+                                max_attempts,
+                                exc,
+                            )
+                        continue
+                    cur.execute(
+                        MARK_PUBLISHED_SQL,
+                        (datetime.now(timezone.utc), row_id),
                     )
-                else:
-                    logger.warning(
-                        "Falha de publicacao outbox id=%s (tentativa %s/%s): %s",
-                        row_id,
-                        attempts + 1,
-                        max_attempts,
-                        exc,
-                    )
-                continue
-            cur.execute(
-                MARK_PUBLISHED_SQL,
-                (datetime.now(timezone.utc), row_id),
-            )
-            published += 1
+                    published += 1
         conn.commit()
         return published
     except Exception:

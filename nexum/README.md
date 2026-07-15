@@ -150,6 +150,45 @@ SELECT id, event_type, attempts, last_error, dead_lettered_at
   FROM transactional_outbox WHERE dead_lettered_at IS NOT NULL;
 ```
 
+## Observabilidade (OpenTelemetry)
+
+O pipeline e instrumentado com **OpenTelemetry** (tracing distribuido). Os spans
+percorrem o fluxo ponta-a-ponta:
+
+```
+relay.drain_once ──► relay.publish ──► [pub/sub] ──► consumer.handle_event ──► alerting.dispatch
+```
+
+| Span                    | Origem                          | Atributos principais |
+|-------------------------|---------------------------------|----------------------|
+| `relay.drain_once`      | `nexum/relay/worker.py`         | `messaging.batch.count` |
+| `relay.publish`         | `nexum/relay/worker.py`         | `messaging.system`, `messaging.destination`, `nexum.event_type`, `nexum.correlation_id`, `nexum.idempotency_key` |
+| `consumer.handle_event` | `nexum/consumer/app.py`         | `nexum.event_type`, `nexum.correlation_id`, `nexum.idempotency_key`, `nexum.priority`, `nexum.is_duplicate` |
+| `alerting.dispatch`     | `nexum/alerting/dispatcher.py`  | `nexum.sink.siem`, `nexum.sink.pagerduty`, `nexum.priority` |
+
+A configuracao vive em `nexum/observability/tracing.py`
+(`configure_tracing(service_name, exporter=None)`), com selecao de exportador via
+argumento ou variaveis de ambiente:
+
+| Variavel                       | Efeito |
+|--------------------------------|--------|
+| `OTEL_TRACES_EXPORTER=none`    | **Default no-op** — spans criados mas nao exportados; nao exige collector |
+| `OTEL_TRACES_EXPORTER=console` | Imprime spans no stdout (`ConsoleSpanExporter`) |
+| `OTEL_TRACES_EXPORTER=otlp`    | Exporta via OTLP/gRPC (`OTLPSpanExporter`, importado tardiamente) |
+| `OTEL_EXPORTER_OTLP_ENDPOINT`  | Endpoint do collector OTLP (ex.: `http://otel-collector:4317`) |
+
+Por padrao (**no-op**) nada quebra sem um collector: `TRACER.start_as_current_span`
+opera sob o provider no-op da API, os spans nao gravam nem exportam e o
+comportamento do relay/consumidor permanece identico. O exportador OTLP e uma
+dependencia **opcional** (importada apenas quando `OTEL_TRACES_EXPORTER=otlp`);
+`opentelemetry-api`/`opentelemetry-sdk` sao dependencias reais para os testes.
+
+Os spans do relay sao **locais** (sem propagacao cross-process): a `traceparent`
+nao e embutida no payload publicado para preservar byte-a-byte o contrato de
+transporte (o consumidor abre um novo trace por evento). Os testes
+(`nexum/tests/test_tracing.py`) usam `InMemorySpanExporter` — puramente
+unitarios, sem rede.
+
 ## Garantia de Entrega
 
 > **at-least-once no transporte + SETNX no Redis = effectively-once**
