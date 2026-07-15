@@ -57,6 +57,42 @@
             .findings { overflow-x: auto; }
             .findings table { min-width: 640px; }
         }
+
+        /* Dashboard de Alertas (demo · Chronos) */
+        .alerts-lab { border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--bg-elev); padding: 24px 26px; }
+        .mon-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0 20px; }
+        .mon { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg-card); padding: 14px 16px; position: relative; overflow: hidden; }
+        .mon::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg, var(--mint), transparent); }
+        .mon .k { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--mint); }
+        .mon .v { font-family: var(--serif); font-size: 0.98rem; font-weight: 700; color: var(--gold-soft); margin-top: 6px; }
+        .mon .s { font-size: 0.68rem; color: var(--text-dim); margin-top: 6px; display: flex; align-items: center; gap: 7px; }
+        .mon .s .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 6px var(--mint); flex-shrink: 0; }
+        .alert-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 14px; }
+        .alert-controls .ac-label { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); margin-right: 4px; }
+        .sev { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.5px; padding: 6px 12px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; color: var(--text-dim); cursor: pointer; transition: .2s var(--ease); }
+        .sev:hover { border-color: var(--mint); color: var(--mint); }
+        .sev.is-on { background: rgba(16,185,129,0.10); border-color: var(--mint); color: var(--gold-bright); }
+        .alert-list { display: flex; flex-direction: column; gap: 10px; }
+        .alert { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; border: 1px solid var(--line); border-left-width: 3px; border-radius: var(--radius-sm); background: var(--bg); padding: 12px 15px; }
+        .alert .badge { font-family: var(--mono); font-size: 0.6rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 9px; border-radius: 5px; white-space: nowrap; }
+        .alert .msg { font-size: 0.8rem; color: var(--text); font-weight: 300; line-height: 1.5; }
+        .alert .msg .who { font-family: var(--mono); font-size: 0.66rem; color: var(--text-faint); display: block; margin-top: 4px; }
+        .alert .when { font-family: var(--mono); font-size: 0.66rem; color: var(--text-faint); white-space: nowrap; }
+        .alert[data-sev="critico"] { border-left-color: var(--crimson); }
+        .alert[data-sev="critico"] .badge { color: var(--crimson); background: rgba(239,68,68,0.10); }
+        .alert[data-sev="alto"] { border-left-color: var(--amber); }
+        .alert[data-sev="alto"] .badge { color: var(--amber); background: rgba(245,158,11,0.10); }
+        .alert[data-sev="medio"] { border-left-color: var(--gold-soft); }
+        .alert[data-sev="medio"] .badge { color: var(--gold-soft); background: rgba(16,185,129,0.08); }
+        .alert[data-sev="ok"] { border-left-color: var(--mint); }
+        .alert[data-sev="ok"] .badge { color: var(--mint); background: rgba(16,185,129,0.10); }
+        .alert.is-hidden { display: none; }
+        .payload-wrap { margin-top: 18px; }
+        .payload-wrap .pk { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 8px; }
+        .payload { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 14px; overflow-x: auto; font-family: var(--mono); font-size: 0.72rem; line-height: 1.55; color: var(--text-dim); margin: 0; white-space: pre; }
+        .gen-link { display: inline-block; margin-top: 14px; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.5px; color: var(--mint); text-decoration: none; border-bottom: 1px dashed rgba(16,185,129,0.4); }
+        .gen-link:hover { color: var(--gold-bright); }
+        @media (max-width: 720px) { .mon-grid { grid-template-columns: 1fr; } .alert { grid-template-columns: auto 1fr; } .alert .when { grid-column: 2; } }
     </style>
 </head>
 <body>
@@ -158,6 +194,7 @@
                     <span class="c-amber"><b>1</b> 90 dias</span>
                     <span class="c-crimson"><b>1</b> crítico</span>
                 </div>
+                <a class="gen-link" href="#alertas">▾ Ver dashboard de alertas</a>
             </article>
         </section>
 
@@ -235,6 +272,78 @@
 
         <p class="note">⚠ Painel de demonstração da interface V18. Todos os workspaces, contagens e achados exibidos são fictícios e ilustrativos — nenhum dado processual real é publicado nesta página.</p>
 
+        <!-- DASHBOARD DE ALERTAS (Chronos) -->
+        <div class="section-head reveal">
+            <span class="idx">03</span>
+            <h2>Dashboard de Alertas · Chronos</h2>
+            <span class="line"></span>
+        </div>
+
+        <section class="alerts-lab reveal" id="alertas" aria-label="Dashboard de alertas processuais — demonstração">
+            <span class="demo-badge">⚠ Demonstração · motor de alertas anonimizado · dados fictícios</span>
+
+            <div class="mon-grid">
+                <div class="mon">
+                    <div class="k">Gatilho P1 · Prazos Extremos</div>
+                    <div class="v">STJ / STF</div>
+                    <div class="s"><span class="dot"></span> Varredura diária · 1 crítico</div>
+                </div>
+                <div class="mon">
+                    <div class="k">Gatilho P2 · Intimações 2º Grau</div>
+                    <div class="v">PJe / DJe</div>
+                    <div class="s"><span class="dot"></span> Em lote · 1 em contagem</div>
+                </div>
+                <div class="mon">
+                    <div class="k">Gatilho P3 · Prevenção / Reiteração</div>
+                    <div class="v">RHC · distribuição</div>
+                    <div class="s"><span class="dot"></span> Sob demanda · 1 sinal</div>
+                </div>
+            </div>
+
+            <div class="alert-controls" role="group" aria-label="Filtrar alertas por severidade">
+                <span class="ac-label">Filtrar:</span>
+                <button type="button" class="sev is-on" data-sev="todos">Todos</button>
+                <button type="button" class="sev" data-sev="critico">Crítico</button>
+                <button type="button" class="sev" data-sev="alto">Alto</button>
+                <button type="button" class="sev" data-sev="medio">Médio</button>
+                <button type="button" class="sev" data-sev="ok">Sinal verde</button>
+            </div>
+
+            <div class="alert-list" id="alert-list">
+                <div class="alert" data-sev="critico">
+                    <span class="badge">Crítico</span>
+                    <span class="msg">Prazo recursal expirando em ~24h sem registro de petição correspondente no tribunal de origem (Gatilho P1).<span class="who">ref. interna: CLIENTE_PLACEHOLDER_A</span></span>
+                    <span class="when">há 2 min</span>
+                </div>
+                <div class="alert" data-sev="alto">
+                    <span class="badge">Alto</span>
+                    <span class="msg">Nova intimação disponibilizada no DJe (2º Grau) — cronômetro regressivo iniciado pelo rito cabível (Gatilho P2).<span class="who">ref. interna: CLIENTE_PLACEHOLDER_B</span></span>
+                    <span class="when">há 18 min</span>
+                </div>
+                <div class="alert" data-sev="medio">
+                    <span class="badge">Médio</span>
+                    <span class="msg">Distribuição conexa detectada por Origem_ID — verificar ineditismo do objeto antes do protocolo (Gatilho P3).<span class="who">ref. interna: CLIENTE_PLACEHOLDER_C</span></span>
+                    <span class="when">há 1 h</span>
+                </div>
+                <div class="alert" data-sev="ok">
+                    <span class="badge">Sinal verde</span>
+                    <span class="msg">Objeto jurídico distinto do processo conexo — ineditismo confirmado, protocolo liberado (Gatilho P3).<span class="who">ref. interna: CLIENTE_PLACEHOLDER_C</span></span>
+                    <span class="when">há 1 h</span>
+                </div>
+            </div>
+
+            <div class="payload-wrap">
+                <div class="pk">Canal de saída · payload de notificação (exemplo anonimizado)</div>
+                <pre class="payload">{
+  "alerta_id": "ERR-PRECLUSAO-01",
+  "classe_alerta": "CRITICO",
+  "mensagem": "Prazo recursal expirando em 24h sem registro de petição correspondente no tribunal de origem.",
+  "identificador_interno_banca": "CLIENTE_PLACEHOLDER_A",
+  "timestamp_verificacao": "2026-07-15T19:48:00Z"
+}</pre>
+            </div>
+        </section>
+
         <!-- FOOTER -->
         <footer>
             <span>© <span id="year">2026</span> RIBEIRO &amp; TIGRE · NEXUM</span>
@@ -245,5 +354,27 @@
     </div>
 
     <script src="assets/app.js"></script>
+    <script>
+    (function () {
+        "use strict";
+        var alertList = document.getElementById("alert-list");
+        if (!alertList) { return; }
+        var sevBtns = document.querySelectorAll(".alert-controls .sev");
+        function applyFilter(sev) {
+            var alerts = alertList.querySelectorAll(".alert"), i;
+            for (i = 0; i < alerts.length; i++) {
+                var show = (sev === "todos") || (alerts[i].getAttribute("data-sev") === sev);
+                alerts[i].classList.toggle("is-hidden", !show);
+            }
+        }
+        for (var b = 0; b < sevBtns.length; b++) {
+            sevBtns[b].addEventListener("click", function () {
+                for (var j = 0; j < sevBtns.length; j++) { sevBtns[j].classList.remove("is-on"); }
+                this.classList.add("is-on");
+                applyFilter(this.getAttribute("data-sev"));
+            });
+        }
+    })();
+    </script>
 </body>
 </html>
