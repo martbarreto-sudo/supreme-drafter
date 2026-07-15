@@ -141,6 +141,56 @@ def test_falha_do_banco_na_rota_vetorial_cai_no_fallback():
     assert "tags &&" in db.consultas[1][0]
 
 
+# --- FonteSupabase: filtros de metadados na consulta vetorial ----------------------
+
+def test_filtros_de_metadados_entram_no_sql_com_binds_numerados():
+    db, emb = FakeDB(linhas=[LINHA]), FakeEmbedder()
+    fonte = FonteSupabase(db, emb)
+    executar(fonte.buscar_por_semelhanca(
+        "espelhamento", limite=3, tribunal="STJ", tema="cadeia de custódia",
+    ))
+    query, args = db.consultas[0]
+    assert "AND upper(tribunal) = upper($3)" in query
+    assert "AND upper(tema) = upper($4)" in query
+    assert "LIMIT $5" in query
+    assert args[1:] == (0.7, "STJ", "cadeia de custódia", 3)
+
+
+def test_filtro_unico_renumera_o_limit():
+    db = FakeDB(linhas=[])
+    fonte = FonteSupabase(db, FakeEmbedder())
+    executar(fonte.buscar_por_semelhanca("abcd", tema="júri"))
+    query, args = db.consultas[0]
+    assert "upper(tribunal)" not in query
+    assert "AND upper(tema) = upper($3)" in query
+    assert "LIMIT $4" in query
+    assert args[2] == "júri" and args[3] == 5
+
+
+def test_sem_filtros_o_sql_continua_o_de_producao():
+    db = FakeDB(linhas=[])
+    executar(FonteSupabase(db, FakeEmbedder()).buscar_por_semelhanca("abcd"))
+    query, args = db.consultas[0]
+    assert "upper(" not in query
+    assert "LIMIT $3" in query and len(args) == 3
+
+
+def test_fallback_por_tags_respeita_os_filtros_sem_alargar_o_escopo():
+    stj = {**LINHA, "tribunal": "STJ"}
+    tjsp = {
+        **LINHA,
+        "numero": "HC 111.222/SP",
+        "tribunal": "TJSP",
+    }
+    db = FakeDB(linhas=[stj, tjsp])
+    fonte = FonteSupabase(db, embedder=None)  # zero-credencial → rota de tags
+    achados = executar(
+        fonte.buscar_por_semelhanca("nulidade whatsapp", tribunal="stj")
+    )
+    assert [p.numero for p in achados] == ["HC 598.051/SP"]  # só o STJ
+    assert "tags &&" in db.consultas[0][0]
+
+
 # --- FonteJsonVerificada: ranking local-first --------------------------------------
 
 @pytest.fixture
@@ -180,6 +230,44 @@ def test_json_respeita_o_limite(fonte_json):
 
 def test_json_query_sem_tokens_uteis_devolve_vazio(fonte_json):
     assert executar(fonte_json.buscar_por_semelhanca("a de o")) == []
+
+
+def test_json_filtra_metadados_antes_do_ranking(tmp_path):
+    base = {
+        "tema": "cadeia de custódia",
+        "precedentes": [
+            {
+                "numero": "HC 598.051/SP",
+                "tese": "quebra da cadeia de custódia no whatsapp",
+                "tags": ["whatsapp"],
+                "tribunal": "STJ",
+                "fonte_verificacao": "STJ",
+            },
+            {
+                "numero": "HC 111.222/SP",
+                "tese": "cadeia de custódia no whatsapp estadual",
+                "tags": ["whatsapp"],
+                "tribunal": "TJSP",
+                "fonte_verificacao": "TJSP",
+            },
+        ],
+    }
+    (tmp_path / "05.json").write_text(json.dumps(base, ensure_ascii=False), "utf-8")
+    fonte = FonteJsonVerificada(tmp_path)
+    # Case-insensitivo, mesma semântica do SQL upper() = upper().
+    achados = executar(
+        fonte.buscar_por_semelhanca("custódia whatsapp", tribunal="stj")
+    )
+    assert [p.numero for p in achados] == ["HC 598.051/SP"]
+    assert executar(
+        fonte.buscar_por_semelhanca("custódia whatsapp", tribunal="TRF1")
+    ) == []
+    combinados = executar(
+        fonte.buscar_por_semelhanca(
+            "custódia whatsapp", tema="cadeia de custódia", tribunal="TJSP"
+        )
+    )
+    assert [p.numero for p in combinados] == ["HC 111.222/SP"]
 
 
 # --- contrato ---------------------------------------------------------------------
