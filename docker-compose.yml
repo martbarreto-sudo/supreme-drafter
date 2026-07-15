@@ -71,6 +71,8 @@ services:
       # O cliente pubsub_v1 publica no caminho completo do topico.
       NEXUM_PUBSUB_TOPIC: projects/nexum-local/topics/nexum.artifact-events
       NEXUM_POLL_INTERVAL: "1.0"
+      # Tentativas de publicacao por linha antes de dead-letter (DLQ).
+      NEXUM_MAX_ATTEMPTS: "5"
       # Direciona o cliente google-cloud-pubsub ao emulador.
       PUBSUB_EMULATOR_HOST: pubsub:8085
       PUBSUB_PROJECT: nexum-local

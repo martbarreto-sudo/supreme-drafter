@@ -1,26 +1,42 @@
 -- NEXUM TIER 0 — DDL da Transactional Outbox (Postgres)
 --
--- A coluna `payload` (JSONB) carrega o CloudEvent v1.0 serializado. O nome da
--- coluna deve casar EXATAMENTE com a query do relay em nexum/relay/worker.py:
---   SELECT id, payload FROM transactional_outbox
---   WHERE published_at IS NULL ORDER BY created_at
---   FOR UPDATE SKIP LOCKED LIMIT %s
--- e com MARK_PUBLISHED_SQL: UPDATE ... SET published_at = %s WHERE id = %s
+-- A coluna `payload` (JSONB) carrega o CloudEvent v1.0 serializado. Os nomes
+-- das colunas devem casar EXATAMENTE com as queries do relay em
+-- nexum/relay/worker.py (drenagem/publicacao/falha) e nexum/relay/replay.py
+-- (reprocessamento autorizado da DLQ).
 
 CREATE TABLE IF NOT EXISTS transactional_outbox (
-    id            BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    aggregate_id  TEXT NOT NULL,            -- artifact_id do CloudEvent
-    event_type    TEXT NOT NULL,            -- CloudEvent `type`
-    payload       JSONB NOT NULL,           -- CloudEvent v1.0 serializado
-    created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
-    published_at  TIMESTAMPTZ NULL          -- NULL => aguardando publicacao
+    id               BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    aggregate_id     TEXT NOT NULL,            -- artifact_id do CloudEvent
+    event_type       TEXT NOT NULL,            -- CloudEvent `type`
+    payload          JSONB NOT NULL,           -- CloudEvent v1.0 serializado
+    created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+    published_at     TIMESTAMPTZ NULL,         -- NULL => aguardando publicacao
+    attempts         INT NOT NULL DEFAULT 0,   -- tentativas de publicacao falhas
+    last_error       TEXT NULL,                -- ultima falha de publicacao
+    dead_lettered_at TIMESTAMPTZ NULL          -- NOT NULL => na DLQ (fora da drenagem)
 );
 
+-- Migracao idempotente para volumes de dev criados antes da DLQ (o compose so
+-- executa este arquivo no primeiro boot do cluster; ALTERs cobrem re-execucao
+-- manual via psql em bancos ja existentes).
+ALTER TABLE transactional_outbox ADD COLUMN IF NOT EXISTS attempts         INT NOT NULL DEFAULT 0;
+ALTER TABLE transactional_outbox ADD COLUMN IF NOT EXISTS last_error       TEXT NULL;
+ALTER TABLE transactional_outbox ADD COLUMN IF NOT EXISTS dead_lettered_at TIMESTAMPTZ NULL;
+
 -- Indice parcial que acelera a query de drenagem do relay (somente linhas
--- ainda nao publicadas, ordenadas por created_at).
-CREATE INDEX IF NOT EXISTS idx_outbox_unpublished
+-- ainda nao publicadas nem dead-lettered, ordenadas por created_at).
+-- DROP + CREATE porque o predicado mudou com a DLQ (IF NOT EXISTS nao
+-- atualizaria um indice antigo de mesmo nome).
+DROP INDEX IF EXISTS idx_outbox_unpublished;
+CREATE INDEX idx_outbox_unpublished
     ON transactional_outbox (created_at)
-    WHERE published_at IS NULL;
+    WHERE published_at IS NULL AND dead_lettered_at IS NULL;
+
+-- Indice parcial da DLQ (varrida pelo replay autorizado).
+CREATE INDEX IF NOT EXISTS idx_outbox_dead_letters
+    ON transactional_outbox (created_at)
+    WHERE dead_lettered_at IS NOT NULL;
 
 -- --------------------------------------------------------------------------- #
 -- Seeds: dois CloudEvents reais (integridade P1 e quarentena P2), ainda nao
