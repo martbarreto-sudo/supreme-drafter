@@ -1,0 +1,48 @@
+EXCELENTÍSSIMO(A) SENHOR(A) MINISTRO(A) RELATOR(A) — {{ feito.tribunal_destino or "[TRIBUNAL SUPERIOR — preencher no ambiente do operador]" }}
+
+RECURSO ORDINÁRIO EM HABEAS CORPUS — {{ feito.id }}
+
+Quadrante dogmático: {{ feito.quadrante }}
+Eixo: {{ feito.eixo_dogmatico }}
+
+[TEMPESTIVIDADE — interposto no quinquídio legal (art. 30 da Lei 8.038/1990); comprovar a intimação do acórdão denegatório no ambiente do operador.]
+
+I — DA DECISÃO RECORRIDA
+
+[Síntese objetiva do acórdão que denegou a ordem na origem — preencher com o dispositivo e a data de julgamento. O recurso devolve ao Tribunal Superior a integralidade da matéria (efeito devolutivo amplo do recurso ordinário).]
+
+II — DOS FATOS
+
+{% for fato in fatos -%}
+{{ loop.index }}. {{ fato.verificado }}
+   (Fonte primária: {{ fato.fonte.uri }})
+
+{% endfor %}
+III — DA MATRIZ DE VULNERABILIDADES
+
+| # | Fato Proposto (Narrativa do Estado) | Realidade dos Dados Líquidos | Status | Vício Jurídico / Risco |
+|---|---|---|---|---|
+{% for v in feito.vulnerabilidades -%}
+| {{ loop.index }} | {{ v.proposto }} | {{ v.realidade_verificada }} | {{ v.status.value }} | {{ v.impacto }} |
+{% endfor %}
+
+IV — DA QUEBRA DE CONFIABILIDADE DA PROVA
+
+[Eixo argumentativo do RHC — gerado na fase LLM em Temperatura Zero. A ausência de hash de integridade e de cadeia de custódia sobre a prova digital (art. 158-A ss. CPP) contamina a confiabilidade do elemento probatório: o que não tem origem auditável não sustenta juízo condenatório. Desenvolver o contágio (fruit of the poisonous tree) a partir do ato viciado, ancorado no eixo: {{ feito.eixo_dogmatico }}.]
+
+V — DOS PEDIDOS
+
+a) o conhecimento e provimento do recurso ordinário;
+b) a reforma do acórdão recorrido para [EFEITO CONCRETO — especificar: trancamento da ação penal / relaxamento da prisão / anulação a partir do ato viciado];
+c) subsidiariamente, a concessão da ordem de ofício, se reconhecido constrangimento ilegal patente (art. 654, §2º, CPP);
+d) a intimação do Ministério Público e demais providências de estilo.
+
+AUDITORIA DE SILÊNCIO
+
+{% if feito.fontes_silenciadas -%}
+{% for s in feito.fontes_silenciadas -%}
+- {{ s }}
+{% endfor %}
+{%- else -%}
+[Itens que o dossiê não entregou e que podem ser determinantes — preencher a partir do SilenceAuditor: hash da mídia, cadeia de custódia, laudo de extração, termo de rastreabilidade.]
+{%- endif %}

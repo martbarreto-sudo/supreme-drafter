@@ -1,0 +1,61 @@
+EXCELENTÍSSIMO(A) SENHOR(A) MINISTRO(A) PRESIDENTE — {{ feito.tribunal_destino or "[STF / STJ — preencher no ambiente do operador]" }}
+
+RECLAMAÇÃO CONSTITUCIONAL COM PEDIDO DE LIMINAR — {{ feito.id }}
+
+Quadrante dogmático: {{ feito.quadrante }}
+Eixo: {{ feito.eixo_dogmatico }}
+
+I — DO CABIMENTO
+
+A presente reclamação funda-se no art. 102, I, "l" (ou art. 105, I, "f", CF) e nos arts. 988 ss. do CPC, por [ASSINALAR A HIPÓTESE — preencher pelo operador]:
+( ) descumprimento de tese firmada em julgamento vinculante ({{ feito.eixo_dogmatico }});
+( ) usurpação de competência do Tribunal;
+( ) desrespeito a decisão de eficácia vinculante proferida em controle concentrado ou em precedente qualificado.
+
+[Comprovar o esgotamento das instâncias ordinárias quando exigível, e a aderência estrita entre o ato reclamado e o paradigma — a reclamação não é sucedâneo recursal.]
+
+II — DO ATO RECLAMADO
+
+[Identificação do ato de autoridade que se pretende cassar — órgão, data, teor. Anexar cópia. Quando o vício for de juiz natural, apontar o ato praticado por magistrado sem portaria pública de designação.]
+
+III — DOS FATOS
+
+{% for fato in fatos -%}
+{{ loop.index }}. {{ fato.verificado }}
+   (Fonte primária: {{ fato.fonte.uri }})
+
+{% endfor %}
+IV — DA MATRIZ DE VULNERABILIDADES
+
+| # | Fato Proposto (Narrativa do Estado) | Realidade dos Dados Líquidos | Status | Vício Jurídico / Risco |
+|---|---|---|---|---|
+{% for v in feito.vulnerabilidades -%}
+| {{ loop.index }} | {{ v.proposto }} | {{ v.realidade_verificada }} | {{ v.status.value }} | {{ v.impacto }} |
+{% endfor %}
+
+V — DA AFRONTA AO PARADIGMA E AO JUIZ NATURAL
+
+[Eixo argumentativo da reclamação — gerado na fase LLM em Temperatura Zero. Demonstrar (a) a identidade material entre o ato reclamado e a tese vinculante descumprida e (b), quando aplicável, a violação da garantia do juiz natural (art. 5º, LIII, CF): ato decisório sem portaria pública de designação é ato de autoridade incompetente. Ancorar no eixo: {{ feito.eixo_dogmatico }}.]
+
+VI — DO PEDIDO LIMINAR
+
+Presentes a plausibilidade do direito (aderência ao paradigma demonstrada supra) e o
+perigo na demora (eficácia imediata do ato reclamado), requer-se a suspensão liminar
+do ato impugnado (art. 989, II, CPC), até o julgamento final.
+
+VII — DOS PEDIDOS
+
+a) o conhecimento e a procedência da reclamação;
+b) a concessão da liminar nos termos do item VI;
+c) no mérito, a cassação do ato reclamado e a garantia da autoridade do paradigma;
+d) a requisição de informações à autoridade reclamada e a intimação do Ministério Público.
+
+AUDITORIA DE SILÊNCIO
+
+{% if feito.fontes_silenciadas -%}
+{% for s in feito.fontes_silenciadas -%}
+- {{ s }}
+{% endfor %}
+{%- else -%}
+[Itens que o dossiê não entregou e que podem ser determinantes — preencher a partir do SilenceAuditor: portaria pública de designação do magistrado, ata de distribuição, certidão de competência.]
+{%- endif %}
