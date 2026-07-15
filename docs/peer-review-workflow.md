@@ -48,6 +48,27 @@ Todo PDF passa pelo **pré-filtro LGPD determinístico** ANTES de qualquer envio
 API: mascara CPF, CNPJ, RG, telefone, e-mail e endereço; preserva as OABs dos
 sócios R&T (27.543 e 27.482) por whitelist.
 
+### Ponte NEXUM — verificação determinística de precedentes
+
+Além dos dois LLMs, todo PR de peça passa pelo
+`verificador_precedentes.py` (Job 1, antes de qualquer chamada de API): as
+citações de jurisprudência da peça são extraídas por regex e conferidas
+**localmente** contra o manifesto da base MINDJUS verificada do repo irmão
+`warroom-tigre` (vendorizado em `.github/scripts/nexum_bridge/`). Nenhum dado
+sai do runner.
+
+| Classificação | Efeito |
+|---|---|
+| 🔴 **Fabricada conhecida** (blocklist da depuração MINDJUS) | **REPROVA o gate automaticamente**, ainda que os LLMs deem score 100 |
+| 🟢 Verificada em fonte oficial | listada no relatório consolidado |
+| 🟡 Na base, fonte não registrada | listada — confirmar em fonte oficial |
+| ⚪ Fora da base | listada — conferência humana obrigatória |
+
+Isso fecha o furo P1 do `PARECER_CONSELHO_2026-06-19` (warroom-tigre): o portão
+100/100 não pode mais ser furado por citação fabricada que os dois modelos
+deixem passar. Atualização do manifesto: ver
+`.github/scripts/nexum_bridge/README.md`.
+
 ---
 
 ## 2. Setup necessário (uma vez, pelo Dr. Marcelo)

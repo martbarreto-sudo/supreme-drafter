@@ -1,0 +1,45 @@
+# =============================================================================
+# ci-scripts.yml — Testes dos scripts de peer-review + Ponte NEXUM
+# Ribeiro & Tigre Advocacia Criminal · Recife/PE · OAB/PE 27.543
+#
+# Roda a suíte de .github/scripts/tests/ em todo push/PR que toque os scripts.
+# Inclui o teste cross-repo da Ponte NEXUM (fixture idêntica no warroom-tigre)
+# e a integridade do manifesto vendorizado em nexum_bridge/.
+# =============================================================================
+
+name: CI — Scripts de peer-review (TIER 0)
+
+on:
+  push:
+    paths:
+      - ".github/scripts/**"
+      - ".github/workflows/ci-scripts.yml"
+  pull_request:
+    paths:
+      - ".github/scripts/**"
+      - ".github/workflows/ci-scripts.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    name: pytest .github/scripts/tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências de teste
+        # Os SDKs (anthropic/pdfplumber) são de import preguiçoso — a suíte
+        # não depende de rede nem de credenciais.
+        run: pip install --no-cache-dir pytest
+
+      - name: Rodar suíte
+        run: python -m pytest .github/scripts/tests -q
