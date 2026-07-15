@@ -29,7 +29,7 @@ versionamento [SemVer](https://semver.org/lang/pt-BR/).
 - System prompt canônico versionado em `system_prompts/auditor_juridico_rt.md`.
 - Script `setup_workload_identity.sh` para configuração WIF (uma vez, no GCP).
 - Suíte de 25 testes pytest (cobertura 94 % no orquestrador, gate TIER 0 ≥ 90 %).
-- Documentação de setup em `docs/peer-review-workflow.md`.
+- Documentação de setup em [`peer-review-workflow.md`](peer-review-workflow.md).
 
 ### Decisões técnicas
 - **WIF para Gemini, secret para Anthropic**: usa-se o mecanismo mais seguro

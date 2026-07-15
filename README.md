@@ -6,7 +6,8 @@ tipografia mono). **Sem dados reais**: todos os painéis usam dados fictícios
 rotulados como demonstração.
 
 > 📘 **Comece pelo [Manual da Plataforma NEXUM](docs/MANUAL-NEXUM.md)** — guia
-> único para operadores (uso diário) e admin (runbook de configuração).
+> único para operadores (uso diário) e admin (runbook de configuração). Índice
+> completo da documentação em [`docs/`](docs/README.md).
 
 ## 🌐 No ar (GitHub Pages)
 
