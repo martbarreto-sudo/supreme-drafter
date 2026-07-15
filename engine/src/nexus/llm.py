@@ -57,6 +57,41 @@ Nunca inclua fatos não-fornecidos. Nunca omita o precedente-chave do eixo dogm�
 """
 
 
+# Diretriz concreta por modo redacional. Injetada no USER message (volátil),
+# nunca no SYSTEM_PROMPT — este é cacheado byte-a-byte para cache hit e não
+# pode variar por requisição. O modo muda ênfase e ordem dos pedidos; NUNCA
+# afrouxa Temperatura Zero nem introduz fato/fonte novos.
+_DIRETRIZES_MODO: dict[str, str] = {
+    "PERTINAZ": (
+        "Combatividade padrão Tigre: equilibre nulidades de ordem pública e mérito. "
+        "Ataque o vício de origem e sustente a tese central sem hierarquizar um sobre o outro."
+    ),
+    "PREQUESTIONADOR": (
+        "Peça voltada à instância superior. PLANTE PREQUESTIONAMENTO: cite por número cada "
+        "dispositivo constitucional e legal tido por violado (art., §, inciso) e afirme "
+        "expressamente que a matéria fica prequestionada para fim de admissibilidade de REsp/RExt. "
+        "Priorize a densidade da tese de direito sobre a narrativa fática."
+    ),
+    "CUSTODIA": (
+        "Foco em liberdade IMEDIATA. Traga a tese cautelar (relaxamento de prisão ilegal / "
+        "liberdade provisória) no TOPO dos pedidos, ancorada em proporcionalidade e "
+        "excepcionalidade da prisão. Tom objetivo e urgente; mérito exauriente fica subordinado "
+        "ao pleito de liberdade."
+    ),
+    "NULIDADE": (
+        "Micro-desconstrução processual à Toron: isole CADA vício formal em item próprio, "
+        "identifique o ato processual contaminado e o dispositivo violado, e peça a nulidade a "
+        "partir do ato viciado (efeito cascata). Não dilua os vícios em prosa corrida — "
+        "fragmente ponto a ponto."
+    ),
+}
+
+
+def _diretriz_modo(modo: str) -> str:
+    """Diretriz do modo; fallback silencioso a PERTINAZ para modo desconhecido."""
+    return _DIRETRIZES_MODO.get(modo, _DIRETRIZES_MODO["PERTINAZ"])
+
+
 @dataclass
 class MinutaLLM:
     texto: str
@@ -123,6 +158,9 @@ def _montar_user_message(
     )
 
     return f"""Gerar **{peca_tipo}** em modo **[{modo}]** para o feito **{feito.id}**.
+
+## Modo redacional [{modo}]
+{_diretriz_modo(modo)}
 
 ## Feito
 - ID: {feito.id}

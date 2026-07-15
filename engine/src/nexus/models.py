@@ -12,6 +12,21 @@ class StatusFato(str, Enum):
     DESCARTADO = "DESCARTADO"
 
 
+class ModoRedacional(str, Enum):
+    """Estratégia defensiva que orienta a semântica e a dosimetria da peça.
+
+    O modo NÃO altera fatos nem fontes (Temperatura Zero é invariante) — muda
+    apenas a ênfase retórica e a ordem dos pedidos. A diretriz concreta de cada
+    modo vive em `llm._DIRETRIZES_MODO`, injetada no user message (o system
+    prompt é cacheado byte-a-byte e não pode variar por requisição).
+    """
+
+    PERTINAZ = "PERTINAZ"                # combatividade padrão Tigre — nulidade + mérito equilibrados
+    PREQUESTIONADOR = "PREQUESTIONADOR"  # agressivo p/ instância superior — planta prequestionamento
+    CUSTODIA = "CUSTODIA"                # foco em liberdade imediata — tese cautelar no topo
+    NULIDADE = "NULIDADE"                # estrito — micro-desconstrução processual (Toron), vício a vício
+
+
 class FontePrimaria(BaseModel):
     uri: str = Field(..., description="ex.: log_pje://..., certidao://..., hash://...")
     descricao: str | None = None
@@ -82,6 +97,7 @@ class DraftRequest(BaseModel):
     feito_id: str
     peca_tipo: PecaTipo
     fatos: list[Fato]
+    modo_redacional: ModoRedacional = ModoRedacional.PERTINAZ
 
 
 class HaltResponse(BaseModel):

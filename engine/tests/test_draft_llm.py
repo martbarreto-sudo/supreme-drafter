@@ -173,6 +173,63 @@ async def test_draft_llm_sucesso_consome_uma_peca(client, monkeypatch, db_sessio
     assert sub.pecas_consumidas_no_periodo == 1
 
 
+async def test_draft_llm_default_modo_pertinaz(client, monkeypatch):
+    """Payload sem modo_redacional ecoa PERTINAZ (default)."""
+    _mock_llm_pipeline(monkeypatch)
+    _, token = signup_and_login(client)
+    r = client.post(
+        "/draft/llm",
+        headers={"Authorization": f"Bearer {token}"},
+        json=_payload_valido(),
+    )
+    assert r.status_code == 200
+    assert r.json()["modo_redacional"] == "PERTINAZ"
+
+
+async def test_draft_llm_propaga_modo_ate_gerar_minuta(client, monkeypatch):
+    """modo_redacional do payload chega a gerar_minuta e ecoa na resposta."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    capturado: dict = {}
+
+    def _captura(*a, **kw):
+        capturado.update(kw)
+        return _FakeMinuta()
+
+    import nexus.llm
+    import nexus.quality
+    monkeypatch.setattr(nexus.llm, "gerar_minuta", _captura)
+    monkeypatch.setattr(
+        nexus.quality, "avaliar_qualidade",
+        lambda *a, **kw: QualityReport(score=80, gates=[GateResult("g", True, "ok")]),
+    )
+    monkeypatch.setattr(nexus.llm, "validar_feito_hbm", lambda texto: [])
+
+    _, token = signup_and_login(client)
+    payload = _payload_valido()
+    payload["modo_redacional"] = "CUSTODIA"
+    r = client.post(
+        "/draft/llm",
+        headers={"Authorization": f"Bearer {token}"},
+        json=payload,
+    )
+    assert r.status_code == 200
+    assert r.json()["modo_redacional"] == "CUSTODIA"
+    assert capturado.get("modo") == "CUSTODIA"
+
+
+async def test_draft_llm_modo_invalido_422(client, monkeypatch):
+    _mock_llm_pipeline(monkeypatch)
+    _, token = signup_and_login(client)
+    payload = _payload_valido()
+    payload["modo_redacional"] = "TURBO"
+    r = client.post(
+        "/draft/llm",
+        headers={"Authorization": f"Bearer {token}"},
+        json=payload,
+    )
+    assert r.status_code == 422
+
+
 async def test_draft_llm_tres_chamadas_esgotam_trial(client, monkeypatch, db_session):
     """Trial = 3 peças. Três chamadas OK, quarta retorna 402."""
     _mock_llm_pipeline(monkeypatch)

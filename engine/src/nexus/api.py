@@ -178,7 +178,9 @@ async def draft_llm(
     from .llm import gerar_minuta, validar_feito_hbm
     from .quality import avaliar_qualidade
 
-    minuta = gerar_minuta(feito, req.fatos, req.peca_tipo)
+    minuta = gerar_minuta(
+        feito, req.fatos, req.peca_tipo, modo=req.modo_redacional.value
+    )
     # quality_score é avaliado sobre o TEXTO ORIGINAL do LLM (sem disclaimer),
     # para que gates como "submissão burocrática" não sofram interferência do
     # cabeçalho. Disclaimer é cosmético/legal, não afeta avaliação técnica.
@@ -231,6 +233,7 @@ async def draft_llm(
             auditor=parecer_adversarial,
             assertions_falhas=falhas,
             data_iso=data_iso,
+            modo_redacional=req.modo_redacional.value,
         )
         gravar_romaneio(audit, romaneio_texto)
     except CasoDataDirAusente:
@@ -240,6 +243,7 @@ async def draft_llm(
         "audit_id": audit_id,
         "feito_id": req.feito_id,
         "peca_tipo": req.peca_tipo,
+        "modo_redacional": req.modo_redacional.value,
         "texto": texto_final,  # com disclaimer
         "modelo": minuta.modelo,
         "usage": {

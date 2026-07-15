@@ -70,6 +70,7 @@ def compor_romaneio(
     auditor: AuditorAdversarialReport,
     assertions_falhas: list[str],
     data_iso: str,
+    modo_redacional: str = "PERTINAZ",
 ) -> str:
     """Devolve o markdown do romaneio. Caller persiste em
     `$CASO_DATA_DIR/{user_id}/audits/{audit_id}.romaneio.md`.
@@ -106,6 +107,7 @@ def compor_romaneio(
         linhas.append(f"- **Destinatário:** {feito.tribunal_destino}")
     if feito.peca_alvo:
         linhas.append(f"- **Peça-alvo do eixo:** {feito.peca_alvo}")
+    linhas.append(f"- **Modo redacional:** {modo_redacional}")
     linhas.append(f"- **Modelo:** {modelo}")
     linhas.append(
         f"- **Quality score:** {quality.score}/100  ·  "
