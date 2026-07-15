@@ -1,0 +1,78 @@
+name: Gate de citações (loop de verdade NEXUM)
+
+# Audita citações jurisprudenciais de peças/minutas em texto contra a base
+# MINDJUS verificada (warroom-tigre/mindjus_data). Postura binária: citação
+# fora da base => NAO_PROTOCOLAVEL => pipeline vermelho.
+#
+# A base vive em repositório PRIVADO: sem o secret WARROOM_TIGRE_TOKEN
+# (PAT fine-grained com Contents: Read no warroom-tigre), o gate sela
+# ⚪ INCONCLUSIVO — nunca reprova o que não pôde auditar (desenho do #27).
+#
+# PDFs de pecas/** seguem no pipeline jurídico dual-provider; este gate
+# cobre as fontes em texto (.md/.txt/.html).
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "pecas/**"
+      - "minutas/**"
+
+jobs:
+  citacoes:
+    name: Auditoria de citações contra a base verificada
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Listar peças/minutas alteradas
+        id: alteradas
+        run: |
+          git fetch -q origin "${{ github.base_ref }}"
+          ARQUIVOS=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
+            -- 'pecas/**' 'minutas/**' | grep -Ei '\.(md|txt|html)$' || true)
+          echo "lista<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$ARQUIVOS" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+          echo "Arquivos auditáveis alterados:"; echo "${ARQUIVOS:-<nenhum>}"
+
+      - name: Obter a base MINDJUS verificada (warroom-tigre)
+        if: steps.alteradas.outputs.lista != ''
+        id: base
+        env:
+          TOKEN: ${{ secrets.WARROOM_TIGRE_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "disponivel=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::WARROOM_TIGRE_TOKEN ausente — gate será INCONCLUSIVO"
+            exit 0
+          fi
+          git clone --depth 1 \
+            "https://x-access-token:${TOKEN}@github.com/martbarreto-sudo/warroom-tigre.git" \
+            /tmp/warroom-tigre
+          echo "disponivel=true" >> "$GITHUB_OUTPUT"
+
+      - name: Auditar citações
+        if: steps.alteradas.outputs.lista != ''
+        run: |
+          if [ "${{ steps.base.outputs.disponivel }}" = "true" ]; then
+            BASE=/tmp/warroom-tigre/mindjus_data
+          else
+            BASE=/tmp/base-inexistente
+          fi
+          echo "${{ steps.alteradas.outputs.lista }}" | xargs -r \
+            python -m nexum_engine.verdade.gate \
+              --base "$BASE" --inconclusivo-sem-base
+
+      - name: Nada a auditar
+        if: steps.alteradas.outputs.lista == ''
+        run: echo "PR não altera peças/minutas em texto — gate não aplicável."

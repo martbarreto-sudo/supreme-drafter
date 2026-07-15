@@ -16,6 +16,7 @@ conexão**: os contratos vivem em `ports.py`, as implementações em
 | `verdade/` | **Loop de verdade**: `Precedente`, `FonteDePrecedentes` (JSON local-first e Supabase) e `auditar_citacoes()` — o portão `zero_tolerance` do auditor |
 | `schema/precedentes.sql` | DDL do Supabase (`precedentes_verificados`): quarentena, CHECKs de fonte, RLS leitura-só-citável, GIN em tags, pgvector reservado p/ fase 2 |
 | `verdade/exportar_sql.py` | Carga MINDJUS → SQL: manifesto idempotente de INSERTs (dedupe por número normalizado, órfãos sem fonte entram quarentenados) |
+| `verdade/gate.py` | Gate de citações (CLI): postura binária p/ CI — bloqueado (exit 1) se citação fora da base; INCONCLUSIVO opcional sem base |
 | `tests/` | Suíte isolada (fakes; zero credenciais) + `TestModelStringRegression` |
 
 ## Cânone de modelos
@@ -86,9 +87,15 @@ quebram os CHECKs nem viram citáveis por acidente.
 ## Testes
 
 ```bash
-pytest -q nexum_engine/   # 57 testes; sem rede, sem credenciais
+pytest -q nexum_engine/   # 64 testes; sem rede, sem credenciais
 ```
 
 CI: `.github/workflows/nexum-engine-tests.yml` roda a suíte em todo
 push/PR que toque `nexum_engine/**`. O gate de peer-review dual-provider
 (`peer-review.yml`) já observa `nexum_engine/**` desde o commit `817afbc`.
+
+O **gate de citações** (`.github/workflows/citation-gate.yml`) audita
+peças/minutas em texto (`pecas/**`, `minutas/**`) contra a base MINDJUS a
+cada PR: com o secret `WARROOM_TIGRE_TOKEN` (PAT fine-grained, Contents:
+Read no warroom-tigre) ele clona a base e aplica a postura binária; sem o
+token, sela ⚪ INCONCLUSIVO — nunca reprova o que não pôde auditar.
