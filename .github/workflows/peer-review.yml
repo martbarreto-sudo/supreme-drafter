@@ -306,11 +306,29 @@ jobs:
           [ -f artefatos/claude/review_claude.json ] || echo "$neutro" > artefatos/claude/review_claude.json
           [ -f artefatos/gemini/review_gemini.json ] || echo "$neutro" > artefatos/gemini/review_gemini.json
 
+      - name: Obter base MINDJUS verificada (autodenúncia de citações)
+        env:
+          TOKEN: ${{ secrets.WARROOM_TIGRE_TOKEN }}
+        run: |
+          # Sem o token, a auditoria de citações das revisões sela INCONCLUSIVO
+          # (nunca reprova o que não pôde auditar) — mesmo desenho do
+          # citation-gate.yml.
+          if [ -n "$TOKEN" ]; then
+            git clone --depth 1 \
+              "https://x-access-token:${TOKEN}@github.com/martbarreto-sudo/warroom-tigre.git" \
+              /tmp/warroom-tigre \
+              && echo "MINDJUS_BASE_DIR=/tmp/warroom-tigre/mindjus_data" >> "$GITHUB_ENV" \
+              || echo "::warning::clone da base falhou — autodenúncia INCONCLUSIVA"
+          else
+            echo "::warning::WARROOM_TIGRE_TOKEN ausente — autodenúncia INCONCLUSIVA"
+          fi
+
       - name: Consolidar e aplicar o gate TIER 0
         id: consolidar
         env:
           # Gate configurável; default 97 (padrão TIER 0).
           TIER0_GATE_SCORE: ${{ vars.TIER0_GATE_SCORE || '97' }}
+          # MINDJUS_BASE_DIR herdado do GITHUB_ENV (vazio => INCONCLUSIVO).
         run: |
           # O exit code != 0 quando reprovado FALHA o job (gate de qualidade).
           python .github/scripts/peer_review_orchestrator.py consolidar \

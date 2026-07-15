@@ -365,3 +365,96 @@ def test_cli_consolidar_reprovado_falha(tmp_path, rev_aprovado_claude, rev_repro
         ["consolidar", "--claude", str(pc), "--gemini", str(pg), "--out", str(out), "--gate", "97"]
     )
     assert rc == 1  # gate reprovado -> exit code 1 quebra o job
+
+
+# --------------------------------------------------------------------------- #
+# Autodenúncia — auditoria de citações das revisões (loop de verdade)
+# --------------------------------------------------------------------------- #
+
+import json as _json
+
+from peer_review_orchestrator import auditar_citacoes_de_revisao
+
+
+def _base_verificada(tmp_path):
+    base = tmp_path / "mindjus_data"
+    base.mkdir()
+    (base / "03.json").write_text(_json.dumps({
+        "tema": "cadeia de custódia",
+        "precedentes": [{
+            "numero": "HC 598.051/SP",
+            "tese": "ônus do Estado",
+            "fonte_verificacao": "STJ — HC 598.051/SP, 6ª Turma",
+        }],
+    }, ensure_ascii=False), encoding="utf-8")
+    return base
+
+
+def _rev(score=100, jurisprudencia=None):
+    return {
+        "tipo_peca": "agravo_regimental", "disponivel": True,
+        "risco_rejeicao": 5, "vicios_formais": [],
+        "preliminares_ausentes": [], "fundamentos_fragilizados": [],
+        "jurisprudencia_omitida": jurisprudencia or [],
+        "veredito_tier0": "protocolavel", "score": score, "recomendacoes": [],
+    }
+
+
+def test_autodenuncia_bloqueia_citacao_fabricada(tmp_path):
+    base = _base_verificada(tmp_path)
+    aud = auditar_citacoes_de_revisao(
+        _rev(jurisprudencia=["Aplicar o HC 612.234/RJ ao caso"]), str(base)
+    )
+    assert aud["status"] == "BLOQUEADO"
+    assert aud["nao_verificadas"] == ["HC 612.234/RJ"]
+
+
+def test_autodenuncia_verifica_citacao_legitima(tmp_path):
+    base = _base_verificada(tmp_path)
+    aud = auditar_citacoes_de_revisao(
+        _rev(jurisprudencia=["Invocar o HC 598.051/SP"]), str(base)
+    )
+    assert aud["status"] == "VERIFICADO" and aud["total_citacoes"] == 1
+
+
+def test_autodenuncia_sem_base_e_inconclusiva():
+    aud = auditar_citacoes_de_revisao(_rev(), None)
+    assert aud["status"] == "INCONCLUSIVO"
+    assert aud["nao_verificadas"] == []
+
+
+def test_consolidador_veta_selo_quando_provedor_cita_fabricado(tmp_path):
+    base = _base_verificada(tmp_path)
+    cons = orq.TIER0Consolidator(gate_score=97)
+    rev_c = _rev(score=100, jurisprudencia=["HC 612.234/RJ"])
+    rev_g = _rev(score=100)
+    res = cons.consolidar(
+        rev_c, rev_g,
+        aud_claude=auditar_citacoes_de_revisao(rev_c, str(base)),
+        aud_gemini=auditar_citacoes_de_revisao(rev_g, str(base)),
+    )
+    assert res.score_consolidado == 100.0
+    assert res.aprovado is False  # veto independe do score
+    assert res.citacoes_denunciadas == {"Claude Opus 4.8": ["HC 612.234/RJ"]}
+    assert "Autodenúncia" in res.markdown
+    assert "HC 612.234/RJ" in res.markdown
+    assert "Veredito vetado" in res.markdown
+
+
+def test_consolidador_sem_base_nao_veta(tmp_path):
+    cons = orq.TIER0Consolidator(gate_score=97)
+    rev = _rev(score=100, jurisprudencia=["HC 612.234/RJ"])
+    res = cons.consolidar(
+        rev, _rev(score=100),
+        aud_claude=auditar_citacoes_de_revisao(rev, None),
+        aud_gemini=auditar_citacoes_de_revisao(_rev(), None),
+    )
+    assert res.aprovado is True  # inconclusivo não reprova
+    assert "inconclusiva" in res.markdown
+
+
+def test_consolidador_sem_auditoria_mantem_comportamento_antigo():
+    cons = orq.TIER0Consolidator(gate_score=97)
+    res = cons.consolidar(_rev(score=100), _rev(score=100))
+    assert res.aprovado is True
+    assert "Autodenúncia" not in res.markdown
