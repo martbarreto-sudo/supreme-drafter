@@ -142,6 +142,25 @@ jobs:
           python .github/scripts/peer_review_orchestrator.py rotear < arquivos.txt > rota.json
           cat rota.json
 
+      # Ponte NEXUM — verificação determinística de precedentes contra a base
+      # MINDJUS verificada (warroom-tigre). Roda ANTES dos LLMs, 100% local
+      # (nenhum dado sai do runner) e independe de API key. Citação FABRICADA
+      # reprova o gate na consolidação, qualquer que seja o score dos modelos.
+      - name: Ponte NEXUM — verificar precedentes citados
+        run: |
+          python .github/scripts/verificador_precedentes.py \
+            --rota rota.json --out verificacao_precedentes.json
+          cat verificacao_precedentes.json
+
+      - name: Publicar artefato (verificação de precedentes)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verificacao-precedentes
+          path: verificacao_precedentes.json
+          if-no-files-found: warn
+          retention-days: 30
+
       - name: Executar auditoria Claude Opus 4.8
         env:
           # Repository secret tradicional — mascarado nos logs.
@@ -295,6 +314,13 @@ jobs:
           path: artefatos/gemini
         continue-on-error: true
 
+      - name: Baixar artefato da Ponte NEXUM (verificação de precedentes)
+        uses: actions/download-artifact@v4
+        with:
+          name: verificacao-precedentes
+          path: artefatos/ponte
+        continue-on-error: true
+
       - name: Normalizar JSONs ausentes
         run: |
           # Se um provedor falhou, cria um JSON neutro para não quebrar o merge
@@ -313,9 +339,12 @@ jobs:
           TIER0_GATE_SCORE: ${{ vars.TIER0_GATE_SCORE || '97' }}
         run: |
           # O exit code != 0 quando reprovado FALHA o job (gate de qualidade).
+          # --verificacao: Ponte NEXUM. Arquivo ausente é tolerado (inconclusivo);
+          # citação fabricada detectada reprova o gate seja qual for o score.
           python .github/scripts/peer_review_orchestrator.py consolidar \
             --claude artefatos/claude/review_claude.json \
             --gemini artefatos/gemini/review_gemini.json \
+            --verificacao artefatos/ponte/verificacao_precedentes.json \
             --out relatorio_consolidado.md \
             --gate "$TIER0_GATE_SCORE"
 

@@ -1,0 +1,23 @@
+EXCERTO SINTÉTICO DE PEÇA — FIXTURE DA PONTE NEXUM (cross-repo)
+
+Este arquivo é IDÊNTICO nos dois repositórios (warroom-tigre:
+tests/fixtures/peca_ponte_nexum.txt · supreme-drafter:
+.github/scripts/tests/fixtures/peca_ponte_nexum.txt). Os testes dos dois lados
+classificam este mesmo texto e exigem o MESMO resultado — é o teste de
+integração ponta a ponta entre os repos. Se editar, edite nos dois.
+
+------------------------------------------------------------------------------
+
+Conforme assentado pelo Superior Tribunal de Justiça no HC 598.051/SP (Rel.
+Min. Rogerio Schietti Cruz, 6ª Turma), o ônus de comprovar a voluntariedade do
+consentimento do morador é do Estado. No mesmo sentido, o AgRg no HC
+828.054/RN reafirmou a imprestabilidade da prova cuja cadeia de custódia foi
+rompida.
+
+A defesa invoca ainda o HC 612.234/RJ, segundo o qual a ausência de hash MD5
+tornaria nula a prova digital, e a Súmula 444 do STJ, que veda a utilização de
+inquéritos e ações em curso para agravar a pena-base. Quanto à busca sem
+mandado, aplica-se o RE 603.616/RO (Tema 280) do Supremo Tribunal Federal.
+
+Por fim, cita-se o REsp 9.999.999/ZZ, julgado que trataria da matéria em sede
+de recurso repetitivo.

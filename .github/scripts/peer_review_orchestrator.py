@@ -578,6 +578,13 @@ def main(argv: Optional[list[str]] = None) -> int:
     p_cons.add_argument(
         "--gate", type=int, default=int(os.environ.get("TIER0_GATE_SCORE", GATE_SCORE_PADRAO))
     )
+    p_cons.add_argument(
+        "--verificacao",
+        default=None,
+        help="JSON do verificador_precedentes.py (Ponte NEXUM). Se contiver "
+        "citação fabricada, o gate REPROVA independentemente do score dos LLMs. "
+        "Arquivo ausente/ilegível é tolerado (ponte inconclusiva, não reprova).",
+    )
 
     args = parser.parse_args(argv)
 
@@ -601,6 +608,22 @@ def main(argv: Optional[list[str]] = None) -> int:
         rev_claude = _carregar_json(args.claude)
         rev_gemini = _carregar_json(args.gemini)
 
+        # Ponte NEXUM (verificador_precedentes.py) — determinística, opcional.
+        # Ausência/erro de leitura NÃO reprova (ponte inconclusiva); citação
+        # fabricada presente REPROVA o gate seja qual for o score dos LLMs.
+        verificacao: dict[str, Any] = {}
+        secao_ponte = ""
+        if args.verificacao:
+            try:
+                verificacao = _carregar_json(args.verificacao)
+            except (OSError, json.JSONDecodeError):
+                verificacao = {}
+            if verificacao:
+                from verificador_precedentes import render_secao_markdown
+
+                secao_ponte = render_secao_markdown(verificacao)
+        citacoes_fabricadas = list(verificacao.get("fabricadas") or [])
+
         # Classificação honesta antes do gate:
         #   - "nao_aplicavel": PR sem peça jurídica → o gate não se aplica (passa).
         #   - "indisponivel": provedor não configurado (sem ANTHROPIC_API_KEY/WIF)
@@ -617,15 +640,26 @@ def main(argv: Optional[list[str]] = None) -> int:
                 "\n\n---\n_Ribeiro & Tigre Advocacia Criminal · NEXUM TIER 0_"
             )
             if _is_indis(rev_claude) or _is_indis(rev_gemini):
+                # Mesmo sem LLM, a ponte determinística fala: fabricada reprova.
+                alerta_fab = (
+                    "\n\n" + secao_ponte if citacoes_fabricadas and secao_ponte else ""
+                )
                 Path(args.out).write_text(
                     "## 🛡️ Peer-Review TIER 0 — ⚪ INCONCLUSIVO\n\n"
                     "Provedor(es) de revisão não configurado(s) "
                     "(`ANTHROPIC_API_KEY` e/ou WIF do Gemini). "
                     "A peça **não** foi reprovada — apenas não pôde ser auditada. "
-                    "Configure os provedores (ver `docs/peer-review-workflow.md`)." + rodape,
+                    "Configure os provedores (ver `docs/peer-review-workflow.md`)."
+                    + alerta_fab + rodape,
                     encoding="utf-8",
                 )
-                print("GATE TIER 0 INCONCLUSIVO: provedores não configurados.")
+                if citacoes_fabricadas:
+                    print(
+                        "GATE TIER 0 REPROVADO (Ponte NEXUM): citação fabricada "
+                        f"{citacoes_fabricadas} — independe dos provedores LLM."
+                    )
+                else:
+                    print("GATE TIER 0 INCONCLUSIVO: provedores não configurados.")
                 return 1
             Path(args.out).write_text(
                 "## 🛡️ Peer-Review TIER 0 — ⚪ NÃO APLICÁVEL\n\n"
@@ -638,7 +672,18 @@ def main(argv: Optional[list[str]] = None) -> int:
 
         cons = TIER0Consolidator(gate_score=args.gate)
         res = cons.consolidar(rev_claude, rev_gemini)
-        Path(args.out).write_text(res.markdown, encoding="utf-8")
+        markdown = res.markdown
+        if secao_ponte:
+            markdown += "\n\n" + secao_ponte
+        Path(args.out).write_text(markdown, encoding="utf-8")
+        # Citação fabricada = reprovação automática, ainda que o score passe:
+        # a ponte é determinística e não negocia com a média dos LLMs.
+        if citacoes_fabricadas:
+            print(
+                "GATE TIER 0 REPROVADO (Ponte NEXUM): citação fabricada "
+                f"{citacoes_fabricadas} — reprovação automática, score ignorado."
+            )
+            return 1
         # Falha o gate se reprovado (exit code != 0 quebra o job de consolidação).
         if not res.aprovado:
             print(f"GATE TIER 0 REPROVADO: score {res.score_consolidado} < {args.gate}")

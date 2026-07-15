@@ -1,0 +1,134 @@
+{
+  "schema": "nexum-ponte/1",
+  "origem": "martbarreto-sudo/warroom-tigre · mindjus_data/",
+  "contagens": {
+    "verificadas": 6,
+    "na_base_sem_fonte": 10,
+    "fabricadas_conhecidas": 3
+  },
+  "fabricadas_conhecidas": [
+    "1055941",
+    "587456",
+    "612234"
+  ],
+  "verificadas": {
+    "HC 598051": {
+      "numero": "HC 598.051/SP",
+      "fonte_verificacao": "STJ — HC 598.051/SP, 6ª Turma, Rel. Min. Rogério Schietti Cruz (2020/0176244-9). Verificado em 17/06/2026 contra fonte oficial (stj.jus.br).",
+      "arquivos": [
+        "01_nulidades_processuais.json",
+        "02_provas_ilicitas.json",
+        "03_cadeia_custodia.json",
+        "04_teses_absolvicao.json"
+      ]
+    },
+    "HC 653515": {
+      "numero": "HC 653.515/RJ",
+      "fonte_verificacao": "STJ — Informativo n. 720 (06/12/2021) e Ed. Extraordinária n. 4 (31/01/2022). Verificado em 17/06/2026.",
+      "arquivos": [
+        "03_cadeia_custodia.json"
+      ]
+    },
+    "HC 828054": {
+      "numero": "AgRg no HC 828.054/RN",
+      "fonte_verificacao": "STJ — Informativo n. 811 (14/05/2024). Verificado em 17/06/2026.",
+      "arquivos": [
+        "03_cadeia_custodia.json"
+      ]
+    },
+    "RE 603616": {
+      "numero": "RE 603.616/RO (Tema 280)",
+      "fonte_verificacao": "STF — RE 603.616/RO, Tema 280 da Repercussão Geral. Verificado em 17/06/2026 (portal.stf.jus.br).",
+      "arquivos": [
+        "05_repercussao_geral_stf.json"
+      ]
+    },
+    "SUMULA 545": {
+      "numero": "Súmula 545/STJ",
+      "fonte_verificacao": "STJ — Súmula 545 com redação REVISTA em 10/09/2025 (alinhada ao Tema repetitivo 1.194). Versão anterior condicionava a atenuante ao uso da confissão. Verificado em 17/06/2026.",
+      "arquivos": [
+        "06_sumulas_stj_criminal.json"
+      ]
+    },
+    "TEMA 280": {
+      "numero": "RE 603.616/RO (Tema 280)",
+      "fonte_verificacao": "STF — RE 603.616/RO, Tema 280 da Repercussão Geral. Verificado em 17/06/2026 (portal.stf.jus.br).",
+      "arquivos": [
+        "05_repercussao_geral_stf.json"
+      ]
+    }
+  },
+  "na_base_sem_fonte": {
+    "ADC 43": {
+      "numero": "ADC 43, 44 e 54",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "05_repercussao_geral_stf.json"
+      ]
+    },
+    "ADC 44": {
+      "numero": "ADC 43, 44 e 54",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "05_repercussao_geral_stf.json"
+      ]
+    },
+    "ADC 54": {
+      "numero": "ADC 43, 44 e 54",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "05_repercussao_geral_stf.json"
+      ]
+    },
+    "HC 589270": {
+      "numero": "HC 589.270/GO",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "08_tribunal_do_juri.json"
+      ]
+    },
+    "HC 598886": {
+      "numero": "HC 598.886/SC",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "07_reconhecimento_art226.json"
+      ]
+    },
+    "HC 712781": {
+      "numero": "HC 712.781/RJ",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "07_reconhecimento_art226.json"
+      ]
+    },
+    "SUMULA 231": {
+      "numero": "Súmula 231/STJ",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "06_sumulas_stj_criminal.json"
+      ]
+    },
+    "SUMULA 444": {
+      "numero": "Súmula 444/STJ",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "06_sumulas_stj_criminal.json"
+      ]
+    },
+    "SUMULA 455": {
+      "numero": "Súmula 455/STJ",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "06_sumulas_stj_criminal.json"
+      ]
+    },
+    "SV 11": {
+      "numero": "Súmula Vinculante 11",
+      "fonte_verificacao": "",
+      "arquivos": [
+        "05_repercussao_geral_stf.json"
+      ]
+    }
+  },
+  "sha256": "ed9a7726bb0e4353b4b64d73d041a31049a1d6ecec7997ab42e3e9201ed46c4d"
+}
