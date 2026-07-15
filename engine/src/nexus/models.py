@@ -5,11 +5,23 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+# Primitivos vêm da camada base; re-exportados abaixo para retro-compat.
+from .dossier.schema import DossierHunterSchema
+from .primitives import FontePrimaria, StatusFato
 
-class StatusFato(str, Enum):
-    LIQUIDO = "LIQUIDO"
-    PENDENTE = "PENDENTE"
-    DESCARTADO = "DESCARTADO"
+__all__ = [
+    "StatusFato",
+    "FontePrimaria",
+    "ModoRedacional",
+    "Fato",
+    "Vulnerabilidade",
+    "Feito",
+    "PecaTipo",
+    "DraftRequest",
+    "HaltResponse",
+    "Minuta",
+    "DossierHunterSchema",
+]
 
 
 class ModoRedacional(str, Enum):
@@ -25,11 +37,6 @@ class ModoRedacional(str, Enum):
     PREQUESTIONADOR = "PREQUESTIONADOR"  # agressivo p/ instância superior — planta prequestionamento
     CUSTODIA = "CUSTODIA"                # foco em liberdade imediata — tese cautelar no topo
     NULIDADE = "NULIDADE"                # estrito — micro-desconstrução processual (Toron), vício a vício
-
-
-class FontePrimaria(BaseModel):
-    uri: str = Field(..., description="ex.: log_pje://..., certidao://..., hash://...")
-    descricao: str | None = None
 
 
 class Fato(BaseModel):
@@ -98,6 +105,9 @@ class DraftRequest(BaseModel):
     peca_tipo: PecaTipo
     fatos: list[Fato]
     modo_redacional: ModoRedacional = ModoRedacional.PERTINAZ
+    # Insumo síncrono e transiente do DEEP HUNTER — enriquece a Auditoria de
+    # Silêncio da peça. Opcional: payloads sem dossiê seguem inalterados.
+    dossier: DossierHunterSchema | None = None
 
 
 class HaltResponse(BaseModel):
