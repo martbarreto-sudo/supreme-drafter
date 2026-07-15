@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexum.fullname" . }}-consumer
+  labels:
+    {{- include "nexum.consumer.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.consumer.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.consumer.service.port }}
+      targetPort: {{ .Values.consumer.containerPort }}
+      protocol: TCP
+  selector:
+    {{- include "nexum.consumer.selectorLabels" . | nindent 4 }}
