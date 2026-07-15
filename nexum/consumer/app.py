@@ -19,9 +19,11 @@ from typing import Any, Callable, Optional, Protocol
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+from opentelemetry.trace import Status, StatusCode
 
 from nexum.alerting import dispatcher as default_dispatcher
 from nexum.cloudevents import CloudEvent, Priority
+from nexum.observability.tracing import TRACER
 
 logger = logging.getLogger("nexum.consumer")
 
@@ -60,50 +62,59 @@ def create_app(redis_client: RedisLike, dispatcher: Any) -> FastAPI:
 
     @app.post("/events")
     def receive_event(event: CloudEvent) -> dict:
-        key = f"{IDEMPOTENCY_PREFIX}{event.idempotencykey}"
-        created = redis_client.set(
-            key, event.id, nx=True, ex=IDEMPOTENCY_TTL_SECONDS
-        )
-        if not created:
-            logger.info(
-                "Evento duplicado descartado idempotencykey=%s",
-                event.idempotencykey,
-            )
-            return {
-                "status": "duplicate",
-                "idempotencykey": event.idempotencykey,
-            }
-
         priority = event.priority()
-        logger.info(
-            "Evento aceito type=%s priority=%s idempotencykey=%s",
-            event.type,
-            priority.value,
-            event.idempotencykey,
-        )
-        if priority is Priority.P1:
-            try:
-                dispatcher.dispatch(event)
-            except Exception:
-                # Libera a chave para que a redelivery (at-least-once) seja
-                # reprocessada em vez de descartada como duplicata. Os sinks
-                # sao idempotentes (dedup_key = idempotencykey), entao um
-                # eventual re-dispatch parcial nao duplica o incidente.
-                logger.exception(
-                    "Falha no dispatch P1 idempotencykey=%s; "
-                    "chave liberada para redelivery",
+        with TRACER.start_as_current_span("consumer.handle_event") as span:
+            span.set_attribute("nexum.event_type", event.type)
+            span.set_attribute("nexum.correlation_id", event.correlationid)
+            span.set_attribute("nexum.idempotency_key", event.idempotencykey)
+            span.set_attribute("nexum.priority", priority.value)
+
+            key = f"{IDEMPOTENCY_PREFIX}{event.idempotencykey}"
+            created = redis_client.set(
+                key, event.id, nx=True, ex=IDEMPOTENCY_TTL_SECONDS
+            )
+            span.set_attribute("nexum.is_duplicate", not bool(created))
+            if not created:
+                logger.info(
+                    "Evento duplicado descartado idempotencykey=%s",
                     event.idempotencykey,
                 )
-                redis_client.delete(key)
-                return JSONResponse(
-                    status_code=500,
-                    content={
-                        "status": "dispatch_failed",
-                        "idempotencykey": event.idempotencykey,
-                    },
-                )
+                return {
+                    "status": "duplicate",
+                    "idempotencykey": event.idempotencykey,
+                }
 
-        return {"status": "accepted"}
+            logger.info(
+                "Evento aceito type=%s priority=%s idempotencykey=%s",
+                event.type,
+                priority.value,
+                event.idempotencykey,
+            )
+            if priority is Priority.P1:
+                try:
+                    dispatcher.dispatch(event)
+                except Exception as exc:
+                    # Libera a chave para que a redelivery (at-least-once) seja
+                    # reprocessada em vez de descartada como duplicata. Os sinks
+                    # sao idempotentes (dedup_key = idempotencykey), entao um
+                    # eventual re-dispatch parcial nao duplica o incidente.
+                    span.record_exception(exc)
+                    span.set_status(Status(StatusCode.ERROR, str(exc)))
+                    logger.exception(
+                        "Falha no dispatch P1 idempotencykey=%s; "
+                        "chave liberada para redelivery",
+                        event.idempotencykey,
+                    )
+                    redis_client.delete(key)
+                    return JSONResponse(
+                        status_code=500,
+                        content={
+                            "status": "dispatch_failed",
+                            "idempotencykey": event.idempotencykey,
+                        },
+                    )
+
+            return {"status": "accepted"}
 
     return app
 

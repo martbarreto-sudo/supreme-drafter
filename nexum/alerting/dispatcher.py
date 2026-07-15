@@ -12,6 +12,7 @@ import os
 from typing import Callable, Optional
 
 from nexum.cloudevents import CloudEvent, Priority
+from nexum.observability.tracing import TRACER
 
 
 def _message_of(event: CloudEvent) -> str:
@@ -81,14 +82,21 @@ def dispatch(
 
     is_p1 = event.priority() is Priority.P1
 
-    siem_record = map_to_siem(event)
-    if siem_sink is not None:
-        siem_sink(siem_record)
+    with TRACER.start_as_current_span("alerting.dispatch") as span:
+        # Contagem de sinks acionados: SIEM sempre; PagerDuty apenas P1.
+        span.set_attribute("nexum.sink.siem", 1)
+        span.set_attribute("nexum.sink.pagerduty", 1 if is_p1 else 0)
+        span.set_attribute("nexum.event_type", event.type)
+        span.set_attribute("nexum.priority", event.priority().value)
 
-    pagerduty_record: Optional[dict] = None
-    if is_p1:
-        pagerduty_record = map_to_pagerduty(event)
-        if pagerduty_sink is not None:
-            pagerduty_sink(pagerduty_record)
+        siem_record = map_to_siem(event)
+        if siem_sink is not None:
+            siem_sink(siem_record)
 
-    return {"siem": siem_record, "pagerduty": pagerduty_record}
+        pagerduty_record: Optional[dict] = None
+        if is_p1:
+            pagerduty_record = map_to_pagerduty(event)
+            if pagerduty_sink is not None:
+                pagerduty_sink(pagerduty_record)
+
+        return {"siem": siem_record, "pagerduty": pagerduty_record}
