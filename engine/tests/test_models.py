@@ -10,7 +10,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from nexus.models import DraftRequest
+from nexus.models import DraftRequest, ModoRedacional
 
 
 _BASE = {
@@ -42,3 +42,25 @@ def test_peca_tipo_case_sensitive():
     """Pydantic Literal é case-sensitive — 'hc' minúsculo é rejeitado."""
     with pytest.raises(ValidationError):
         DraftRequest(**_BASE, peca_tipo="hc")
+
+
+# ---------- modo_redacional ----------
+
+
+def test_modo_redacional_default_pertinaz():
+    """Omitir o modo cai em PERTINAZ — retro-compatível com payloads antigos."""
+    req = DraftRequest(**_BASE, peca_tipo="HC")
+    assert req.modo_redacional == ModoRedacional.PERTINAZ
+
+
+@pytest.mark.parametrize(
+    "modo", ["PERTINAZ", "PREQUESTIONADOR", "CUSTODIA", "NULIDADE"]
+)
+def test_modo_redacional_valido_aceita(modo):
+    req = DraftRequest(**_BASE, peca_tipo="HC", modo_redacional=modo)
+    assert req.modo_redacional.value == modo
+
+
+def test_modo_redacional_invalido_rejeita():
+    with pytest.raises(ValidationError):
+        DraftRequest(**_BASE, peca_tipo="HC", modo_redacional="TURBO")

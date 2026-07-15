@@ -169,6 +169,35 @@ def test_compor_inclui_metadados_do_feito():
     assert "HC" in md  # peca_alvo (commit a09cfa5)
 
 
+def test_compor_registra_modo_redacional():
+    md = compor_romaneio(
+        audit_id="abc-123",
+        feito=FEITOS["Feito-HBM"],
+        peca_tipo="RHC",
+        modelo="claude-opus-4-8",
+        quality=_quality_perfect(),
+        auditor=_auditor_clean(),
+        assertions_falhas=[],
+        data_iso="01/06/2026 10:00 UTC",
+        modo_redacional="PREQUESTIONADOR",
+    )
+    assert "**Modo redacional:** PREQUESTIONADOR" in md
+
+
+def test_compor_modo_redacional_default_pertinaz():
+    md = compor_romaneio(
+        audit_id="abc-123",
+        feito=FEITOS["Feito-HBM"],
+        peca_tipo="HC",
+        modelo="claude-opus-4-8",
+        quality=_quality_perfect(),
+        auditor=_auditor_clean(),
+        assertions_falhas=[],
+        data_iso="01/06/2026 10:00 UTC",
+    )
+    assert "**Modo redacional:** PERTINAZ" in md
+
+
 # ---------- /draft/llm gera .romaneio.md no disco ----------
 
 

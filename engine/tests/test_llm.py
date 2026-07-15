@@ -107,6 +107,56 @@ def test_user_message_omite_fato_argumentativo():
     assert "**hipotese**" not in user_msg
 
 
+def test_modo_default_e_pertinaz_no_user_message():
+    client = MagicMock()
+    client.messages.create.return_value = _mock_response("...")
+    gerar_minuta(FEITOS["Feito-HBM"], [_fato_liquido()], "HC", client=client)
+
+    user_msg = client.messages.create.call_args.kwargs["messages"][0]["content"]
+    assert "Modo redacional [PERTINAZ]" in user_msg
+    # diretriz concreta do modo, não só o rótulo
+    assert "nulidades de ordem pública e mérito" in user_msg
+
+
+def test_modo_prequestionador_injeta_diretriz_de_prequestionamento():
+    client = MagicMock()
+    client.messages.create.return_value = _mock_response("...")
+    gerar_minuta(
+        FEITOS["Feito-HBM"], [_fato_liquido()], "RHC",
+        modo="PREQUESTIONADOR", client=client,
+    )
+
+    user_msg = client.messages.create.call_args.kwargs["messages"][0]["content"]
+    assert "[PREQUESTIONADOR]" in user_msg
+    assert "PLANTE PREQUESTIONAMENTO" in user_msg
+    assert "REsp/RExt" in user_msg
+
+
+def test_modo_custodia_poe_tese_cautelar_no_topo():
+    client = MagicMock()
+    client.messages.create.return_value = _mock_response("...")
+    gerar_minuta(
+        FEITOS["Feito-HBM"], [_fato_liquido()], "HC",
+        modo="CUSTODIA", client=client,
+    )
+    user_msg = client.messages.create.call_args.kwargs["messages"][0]["content"]
+    assert "[CUSTODIA]" in user_msg
+    assert "liberdade IMEDIATA" in user_msg
+
+
+def test_modo_desconhecido_cai_em_pertinaz():
+    """gerar_minuta é permissivo: modo fora do enum usa a diretriz PERTINAZ."""
+    client = MagicMock()
+    client.messages.create.return_value = _mock_response("...")
+    gerar_minuta(
+        FEITOS["Feito-HBM"], [_fato_liquido()], "HC",
+        modo="INEXISTENTE", client=client,
+    )
+    user_msg = client.messages.create.call_args.kwargs["messages"][0]["content"]
+    # rótulo ecoa o que foi pedido, mas a diretriz é a de PERTINAZ (fallback)
+    assert "nulidades de ordem pública e mérito" in user_msg
+
+
 def test_validar_feito_hbm_aprova_minuta_completa():
     minuta_ok = """
     II. TABELA DE VULNERABILIDADES
