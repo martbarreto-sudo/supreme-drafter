@@ -12,12 +12,14 @@ SIEM e PagerDuty, com semantica *effectively-once*.
         ▼
   Worker Relay (drena a outbox)   ── nexum/relay/worker.py
         │  publish(topic, bytes)
+        │      └─ falha N× ──► DLQ (dead_lettered_at)
+        │                        └─ replay autorizado ── nexum/relay/replay.py
         ▼
   Pub/Sub (transporte at-least-once)
         │
         ▼
   Consumidor Idempotente (FastAPI) ── nexum/consumer/app.py
-        │  SET NX  (dedup Redis)
+        │  SET NX  (dedup Redis; DEL + 500 se dispatch falhar)
         ▼
   Dispatcher de Alertas (P1)       ── nexum/alerting/dispatcher.py
         ├── SIEM (ECS)      todos os eventos
@@ -30,11 +32,15 @@ SIEM e PagerDuty, com semantica *effectively-once*.
    garantida pelo banco.
 2. **Worker Relay** — drena a outbox com `SELECT ... FOR UPDATE SKIP LOCKED`,
    permitindo multiplas instancias concorrentes sem disputa de linha. Publica no
-   Pub/Sub e marca `published_at` na mesma transacao. Falha na publicacao gera
-   rollback, mantendo a linha para nova tentativa (**at-least-once**).
+   Pub/Sub e marca `published_at` na mesma transacao. Falha de publicacao e
+   **isolada por linha**: a linha faltosa acumula `attempts`/`last_error` (e vai
+   a DLQ ao atingir `NEXUM_MAX_ATTEMPTS`, padrao 5) sem derrubar o lote nem
+   bloquear a cabeca da fila; as demais linhas seguem (**at-least-once**).
 3. **Consumidor Idempotente** — API FastAPI (`POST /events`) valida o envelope
    CloudEvent, deduplica via Redis `SET NX` sobre a `idempotencykey` (TTL 7
-   dias) e roteia eventos P1 ao dispatcher.
+   dias) e roteia eventos P1 ao dispatcher. Se o dispatch P1 falhar, a chave e
+   **liberada** (`DEL`) e a resposta e 500: a redelivery reprocessa o evento em
+   vez de descarta-lo como duplicata (nenhum alerta critico se perde).
 4. **Dispatcher** — mapeia o evento para um registro SIEM no estilo ECS (todos
    os eventos) e, para P1, um payload da PagerDuty Events API v2.
 
@@ -118,14 +124,43 @@ O smoke test (`nexum/infra/smoke_test.py`) e marcado com `@pytest.mark.integrati
 e faz `pytest.skip("infra not up")` quando Postgres/Redis nao estao acessiveis,
 de modo que `make test` nunca falha por ausencia de infra.
 
+## DLQ e Replay Autorizado
+
+Uma linha cujo payload falha `NEXUM_MAX_ATTEMPTS` vezes seguidas (payload
+envenenado, downstream fora) recebe `dead_lettered_at` e **sai da drenagem** —
+a fila nunca fica bloqueada por uma linha faltosa. As colunas `attempts` e
+`last_error` preservam o diagnostico.
+
+O reprocessamento e uma acao **autorizada e auditada** (`nexum/relay/replay.py`):
+
+```bash
+python -m nexum.relay.replay --operator MATRICULA_X --justification "downstream ok"
+```
+
+O replay re-enfileira as linhas da DLQ (`attempts = 0`, payload marcado
+`isreplay=true`) e, na **mesma transacao**, insere na outbox o evento de
+auditoria [`br.nexum.infra.replay.executed.v1`](schemas/replay_executed.json)
+(P3) com o `operatorid` de quem autorizou — a trilha do replay percorre o
+proprio pipeline.
+
+Inspecao da DLQ via `make psql`:
+
+```sql
+SELECT id, event_type, attempts, last_error, dead_lettered_at
+  FROM transactional_outbox WHERE dead_lettered_at IS NOT NULL;
+```
+
 ## Garantia de Entrega
 
 > **at-least-once no transporte + SETNX no Redis = effectively-once**
 
-O relay garante que nenhum evento se perde (rollback preserva a linha na
-outbox), podendo, no pior caso, republicar. O consumidor absorve duplicatas via
-`SET NX` sobre a `idempotencykey`, resultando em processamento **efetivamente
-unico** de cada transicao de estado.
+O relay garante que nenhum evento se perde (falha de banco preserva a linha na
+outbox; falha de publicacao acumula tentativas ate a DLQ, de onde so sai por
+replay autorizado), podendo, no pior caso, republicar. O consumidor absorve
+duplicatas via `SET NX` sobre a `idempotencykey` — e libera a chave quando o
+dispatch falha, garantindo que a redelivery reprocesse. O resultado e
+processamento **efetivamente unico** de cada transicao de estado, sem perda de
+alertas P1.
 
 ## Especificacao
 

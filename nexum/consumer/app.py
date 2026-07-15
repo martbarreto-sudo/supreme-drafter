@@ -4,6 +4,11 @@ Recebe CloudEvents em modo estruturado (JSON no corpo), deduplica via Redis
 (`SET NX`) usando a `idempotencykey`, e roteia eventos P1 para o dispatcher de
 alertas (SIEM/PagerDuty). A dedup garante semantica *effectively-once* sobre um
 transporte at-least-once.
+
+Se o dispatch de um evento P1 falhar, a chave de idempotencia e LIBERADA
+(`DEL`) e a resposta e 500: a redelivery do transporte reprocessa o evento em
+vez de descarta-lo como duplicata. Sem isso, um alerta critico de integridade
+poderia se perder para sempre apos uma falha transitoria de SIEM/PagerDuty.
 """
 
 from __future__ import annotations
@@ -13,6 +18,7 @@ import os
 from typing import Any, Callable, Optional, Protocol
 
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 from nexum.alerting import dispatcher as default_dispatcher
 from nexum.cloudevents import CloudEvent, Priority
@@ -25,7 +31,7 @@ IDEMPOTENCY_PREFIX = "nexum:idem:"
 
 
 class RedisLike(Protocol):
-    """Contrato minimo de um cliente Redis para dedup (SET com NX + EX)."""
+    """Contrato minimo de um cliente Redis para dedup (SET NX + EX e DEL)."""
 
     def set(
         self,
@@ -36,6 +42,10 @@ class RedisLike(Protocol):
         ex: Optional[int] = None,
     ) -> Optional[bool]:
         """Executa SET; com nx=True retorna verdadeiro apenas se criou a chave."""
+        ...
+
+    def delete(self, *names: str) -> Any:
+        """Remove chaves (libera a dedup quando o processamento falha)."""
         ...
 
 
@@ -72,7 +82,26 @@ def create_app(redis_client: RedisLike, dispatcher: Any) -> FastAPI:
             event.idempotencykey,
         )
         if priority is Priority.P1:
-            dispatcher.dispatch(event)
+            try:
+                dispatcher.dispatch(event)
+            except Exception:
+                # Libera a chave para que a redelivery (at-least-once) seja
+                # reprocessada em vez de descartada como duplicata. Os sinks
+                # sao idempotentes (dedup_key = idempotencykey), entao um
+                # eventual re-dispatch parcial nao duplica o incidente.
+                logger.exception(
+                    "Falha no dispatch P1 idempotencykey=%s; "
+                    "chave liberada para redelivery",
+                    event.idempotencykey,
+                )
+                redis_client.delete(key)
+                return JSONResponse(
+                    status_code=500,
+                    content={
+                        "status": "dispatch_failed",
+                        "idempotencykey": event.idempotencykey,
+                    },
+                )
 
         return {"status": "accepted"}
 
