@@ -39,6 +39,20 @@ def _tokens_de_busca(query: str) -> list[str]:
     return [t.strip().lower() for t in query.split() if len(t.strip()) > 2]
 
 
+def _passa_filtros(
+    p: Precedente, tribunal: str | None, tema: str | None
+) -> bool:
+    """Filtros opcionais de metadados, case-insensitivos — a MESMA semântica
+    do SQL (``upper(coluna) = upper($n)``), para as fontes não divergirem."""
+    if tribunal is not None:
+        if p.tribunal.strip().casefold() != tribunal.strip().casefold():
+            return False
+    if tema is not None:
+        if p.tema.strip().casefold() != tema.strip().casefold():
+            return False
+    return True
+
+
 @runtime_checkable
 class FonteDePrecedentes(Protocol):
     """Contrato de consulta que o auditor consome."""
@@ -52,10 +66,17 @@ class FonteDePrecedentes(Protocol):
         ...
 
     async def buscar_por_semelhanca(
-        self, query: str, limite: int = 5
+        self,
+        query: str,
+        limite: int = 5,
+        *,
+        tribunal: str | None = None,
+        tema: str | None = None,
     ) -> list[Precedente]:
-        """Busca semântica (analogia fática), com fallback honesto por tags
-        quando não há embeddings/credenciais — nunca falha silenciosamente."""
+        """Busca semântica (analogia fática), com filtros opcionais de
+        metadados aplicados NA fonte (nunca pós-filtro no chamador) e
+        fallback honesto por tags quando não há embeddings/credenciais —
+        nunca falha silenciosamente."""
         ...
 
 
@@ -105,15 +126,23 @@ class FonteJsonVerificada:
         ]
 
     async def buscar_por_semelhanca(
-        self, query: str, limite: int = 5
+        self,
+        query: str,
+        limite: int = 5,
+        *,
+        tribunal: str | None = None,
+        tema: str | None = None,
     ) -> list[Precedente]:
         """Local-first não tem vetores: ranqueia por sobreposição de tokens
-        nas tags e no texto da tese (fallback honesto, determinístico)."""
+        nas tags e no texto da tese (fallback honesto, determinístico).
+        Filtros de metadados cortam ANTES do ranking, como no SQL."""
         tokens = _tokens_de_busca(query)
         if not tokens:
             return []
         ranqueados: list[tuple[int, Precedente]] = []
         for p in self._todos:
+            if not _passa_filtros(p, tribunal, tema):
+                continue
             tags = {t.lower() for t in p.tags}
             texto = f"{p.tese} {p.ementa}".lower()
             acertos = sum(1 for t in tokens if t in tags or t in texto)
@@ -168,9 +197,21 @@ class FonteSupabase:
         return [Precedente.de_dict(l) for l in linhas]
 
     async def buscar_por_semelhanca(
-        self, query: str, limite: int = 5
+        self,
+        query: str,
+        limite: int = 5,
+        *,
+        tribunal: str | None = None,
+        tema: str | None = None,
     ) -> list[Precedente]:
         """Busca vetorial (operador <=>, distância de cosseno) com fallback.
+
+        Filtros opcionais de metadados entram na PRÓPRIA consulta (binds
+        numerados dinamicamente), nunca como pós-filtro no repositório —
+        pós-filtrar o top-K de fora destrói recall e paginação. No pgvector
+        o WHERE é pós-filtro do índice HNSW; a migração 0003 fixa
+        ``hnsw.iterative_scan`` no nível do banco para o LIMIT continuar
+        sendo satisfeito com filtros seletivos.
 
         Cenários de contingência (nunca exceção para o chamador):
         1. Embedder não injetado (zero-credencial) → fallback por tags.
@@ -181,18 +222,31 @@ class FonteSupabase:
         if not query.strip():
             return []
         if self._embedder is None:
-            return await self._fallback_tags(query, limite)
+            return await self._fallback_tags(
+                query, limite, tribunal=tribunal, tema=tema
+            )
         try:
             vetores = await self._embedder.embed([query])
             literal = _vetor_para_sql(vetores[0])
+            params: list = [literal, self._limiar]
+            filtros = ""
+            if tribunal is not None:
+                params.append(tribunal.strip())
+                filtros += f" AND upper(tribunal) = upper(${len(params)})"
+            if tema is not None:
+                params.append(tema.strip())
+                filtros += f" AND upper(tema) = upper(${len(params)})"
+            params.append(limite)
             linhas = await self._db.fetch(
                 f"SELECT {self._COLUNAS}, "
                 f"1 - (vetor_semantico <=> $1::vector) AS similaridade "
                 f"FROM precedentes_verificados "
                 f"WHERE {self._CITAVEL} AND vetor_semantico IS NOT NULL "
-                f"AND 1 - (vetor_semantico <=> $1::vector) >= $2 "
-                f"ORDER BY vetor_semantico <=> $1::vector LIMIT $3",
-                literal, self._limiar, limite,
+                f"AND 1 - (vetor_semantico <=> $1::vector) >= $2"
+                f"{filtros} "
+                f"ORDER BY vetor_semantico <=> $1::vector "
+                f"LIMIT ${len(params)}",
+                *params,
             )
             return [Precedente.de_dict(l) for l in linhas]
         except Exception:  # noqa: BLE001 — contingência deliberada
@@ -200,8 +254,21 @@ class FonteSupabase:
                 "busca semântica indisponível (embedder/banco); usando "
                 "fallback por tags", exc_info=True,
             )
-            return await self._fallback_tags(query, limite)
+            return await self._fallback_tags(
+                query, limite, tribunal=tribunal, tema=tema
+            )
 
-    async def _fallback_tags(self, query: str, limite: int) -> list[Precedente]:
+    async def _fallback_tags(
+        self,
+        query: str,
+        limite: int,
+        *,
+        tribunal: str | None = None,
+        tema: str | None = None,
+    ) -> list[Precedente]:
+        """Fallback honesto que NÃO alarga o escopo: os mesmos filtros de
+        metadados da rota vetorial valem aqui (aplicados em Python, já que
+        ``buscar_por_tags`` mantém seu contrato próprio)."""
         achados = await self.buscar_por_tags(_tokens_de_busca(query))
-        return achados[:limite]
+        filtrados = [p for p in achados if _passa_filtros(p, tribunal, tema)]
+        return filtrados[:limite]
