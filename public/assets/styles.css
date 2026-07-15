@@ -46,7 +46,7 @@
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; color-scheme: dark; }
 
 body {
     background:
@@ -85,6 +85,19 @@ a:focus-visible, button:focus-visible {
     outline-offset: 3px;
     border-radius: 6px;
 }
+
+/* Skip-link (a11y): invisível até receber foco via teclado */
+.skip-link {
+    position: fixed; left: 16px; top: -56px; z-index: 100;
+    padding: 10px 16px;
+    background: var(--bg-elev); color: var(--mint);
+    border: 1px solid var(--line-strong); border-radius: 8px;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 1px;
+    text-decoration: none;
+    transition: top .2s var(--ease);
+}
+.skip-link:focus { top: 16px; }
+#conteudo { outline: none; }
 
 /* ---------- Logo / Crest ---------- */
 .crest { width: 46px; height: 46px; display: block; flex-shrink: 0; }
@@ -185,7 +198,8 @@ footer a { color: var(--mint); text-decoration: none; } footer a:hover { color: 
 /* ---------- Responsive ---------- */
 @media (max-width: 920px) {
     .status-strip { grid-template-columns: repeat(2, 1fr); }
-    .topbar-meta .hide-sm { display: none; }
+    /* hide-sm vale em qualquer container (nav usa fora de .topbar-meta) */
+    .hide-sm { display: none; }
 }
 @media (max-width: 560px) {
     .shell { padding: 16px 16px 48px; }
