@@ -45,12 +45,37 @@ redator **nunca** inventa factos. O elo entre eles é um contrato de dados rígi
 | `WRITE_BLOCKER` | Audita o uso de bloqueadores físicos de escrita na extração (Cellebrite/IPED). |
 | `CLOUD_EXTRACTION` | Identifica acesso remoto não autorizado a nuvem (WhatsApp Web / iCloud). |
 
+## Arquitetura de contratos (Mapeamento Agnóstico — Opção B)
+
+Os contratos de dados nascem blindados contra falhas de tipagem (Pydantic v2),
+antes de qualquer amarração de rede ou banco relacional:
+
+| Módulo | Papel |
+|---|---|
+| `schema/dossier_hunter.py` | Contrato do **Módulo Hunter** — `DossierHunterSchema` (cronologia PJe, auditoria de juiz natural, cadeia de custódia, filtros de omissão imputáveis ao Estado). Valida NPU no padrão CNJ. |
+| `core/draft_engine.py` | **Módulo Drafter** — `DraftEngine` + `ModoRedacional` (`PERTINAZ`, `PREQUESTIONADOR`, `CUSTODIA`, `NULIDADE`). Compõe a diretriz retórica sob *Temperatura Zero Invariante*, sem tocar no system prompt (cache hits). O acoplamento com o Hunter dá-se por `DraftRequest.dados_hunter`. |
+
+O pacote `deep_hunter/` (abaixo) é a **camada de transporte** que fala com a API
+Claude; os módulos `schema/` e `core/` são a **camada de contrato + retórica**.
+
+## 📋 Checklist de Ingestão e Produção (HITL — Tier 0)
+
+1. **Injeção de variáveis**: `ANTHROPIC_API_KEY` (e `GCP_WIF` para revisores paralelos, se aplicável).
+2. **Abstração por schemas**: toda entrada telemática passa obrigatoriamente pela validação de `schema/dossier_hunter.py`.
+3. **Modos redacionais**: o endpoint `/draft/llm` aceita as flags `PERTINAZ`, `PREQUESTIONADOR`, `CUSTODIA`, `NULIDADE`; entradas divergentes → HTTP 422.
+
 ## Instalação
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env   # e preencha ANTHROPIC_API_KEY
+```
+
+### Suíte de testes (Zero-Credencial, isolada de rede)
+
+```bash
+pytest        # ou: pytest tests/
 ```
 
 ## Uso
