@@ -133,6 +133,7 @@ GitHub → **Settings → Branches → Add rule** para `master`:
 ---
 
 ## 4. Mapa de documentos
+- [`ECOSSISTEMA-NEXUM.md`](ECOSSISTEMA-NEXUM.md) — arquitetura & papéis (três camadas, matriz de IA, dual-check TIER 0).
 - [`stack-ia.md`](stack-ia.md) — roteamento de IA (Perplexity/Claude/Gemini, modelos).
 - [`peer-review-workflow.md`](peer-review-workflow.md) — peer-review TIER 0 (arquitetura, gatilhos, estados, setup).
 - [`../tools/degravacao/README.md`](../tools/degravacao/README.md) — degravação de audiência.
