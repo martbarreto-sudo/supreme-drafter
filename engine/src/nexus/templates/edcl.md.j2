@@ -1,0 +1,58 @@
+EXCELENTÍSSIMO(A) SENHOR(A) DOUTOR(A) — {{ feito.tribunal_destino or "[JUÍZO / RELATOR PROLATOR — preencher no ambiente do operador]" }}
+
+EMBARGOS DE DECLARAÇÃO — {{ feito.id }}
+
+Quadrante dogmático: {{ feito.quadrante }}
+Eixo: {{ feito.eixo_dogmatico }}
+
+[TEMPESTIVIDADE — opostos no quinquídio do art. 619 do CPP; comprovar a intimação da decisão embargada no ambiente do operador. Embargos interrompem o prazo para os demais recursos (art. 1.026 CPC c/c art. 3º CPP).]
+
+I — DA DECISÃO EMBARGADA
+
+[Identificar a decisão — sentença de pronúncia, acórdão ou decisão que manteve cautelar — com data e dispositivo. Os embargos NÃO buscam rediscussão de mérito, mas a integração do julgado.]
+
+II — DOS FATOS DEDUZIDOS E NÃO APRECIADOS
+
+{% for fato in fatos -%}
+{{ loop.index }}. {{ fato.verificado }}
+   (Fonte primária: {{ fato.fonte.uri }})
+
+{% endfor %}
+III — DA MATRIZ DE VULNERABILIDADES OPORTUNAMENTE ARGUIDA
+
+| # | Fato Proposto (Narrativa do Estado) | Realidade dos Dados Líquidos | Status | Vício Jurídico / Risco |
+|---|---|---|---|---|
+{% for v in feito.vulnerabilidades -%}
+| {{ loop.index }} | {{ v.proposto }} | {{ v.realidade_verificada }} | {{ v.status.value }} | {{ v.impacto }} |
+{% endfor %}
+
+IV — DOS VÍCIOS DE INTEGRAÇÃO (art. 619 CPP)
+
+[Eixo argumentativo dos embargos — gerado na fase LLM em Temperatura Zero. Apontar, ponto a ponto, sem rediscutir mérito:]
+
+a) OMISSÃO — a decisão silenciou sobre [tese/questão oportunamente deduzida], notadamente as lacunas sequenciais de IDs apontadas pela defesa, que não foram enfrentadas;
+b) OBSCURIDADE / CONTRADIÇÃO — [ponto do julgado internamente inconsistente ou ininteligível];
+c) o enfrentamento dessas questões é pressuposto lógico da prestação jurisdicional completa (art. 93, IX, CF).
+
+V — DO PREQUESTIONAMENTO
+
+Ficam expressamente prequestionados, para fim de admissibilidade de recurso especial e/ou
+extraordinário, os arts. [DISPOSITIVOS — especificar por número no ambiente do operador],
+bem como o eixo dogmático: {{ feito.eixo_dogmatico }}.
+
+VI — DOS PEDIDOS
+
+a) o conhecimento e o provimento dos embargos;
+b) o saneamento da omissão/obscuridade/contradição apontadas no item IV, com pronunciamento expresso sobre cada ponto;
+c) o reconhecimento do efeito modificativo (infringente) quando a integração alterar a conclusão do julgado;
+d) o expresso prequestionamento dos dispositivos indicados no item V.
+
+AUDITORIA DE SILÊNCIO
+
+{% if feito.fontes_silenciadas -%}
+{% for s in feito.fontes_silenciadas -%}
+- {{ s }}
+{% endfor %}
+{%- else -%}
+[Itens que o dossiê não entregou e que podem ser determinantes — preencher a partir do SilenceAuditor: mapeamento das lacunas sequenciais, certidão de movimentação, decisão sobre requerimentos pendentes.]
+{%- endif %}
