@@ -120,9 +120,27 @@ NPU ou o payload falharem na tipagem — antes de qualquer composição.
 ```bash
 pip install "uvicorn>=0.29"
 PYTHONPATH=src:. uvicorn deep_hunter.api:app --reload
-# POST /draft/llm  {modo, conteudo_base, dados_hunter: DossierHunterSchema}
-# GET  /health
 ```
+
+Rotas:
+
+| Rota | Descrição |
+|---|---|
+| `POST /audit` | Recebe os autos em PDF (`multipart/form-data`, campo `file`) e devolve o `DossierHunterSchema` (auditor **mock local**, Zero-Credencial). PDF vazio/corrompido → **422**. |
+| `POST /draft/llm` | Recebe `{modo, conteudo_base, dados_hunter: DossierHunterSchema}` e devolve a instrução retórica. Payload espúrio → **422** nativo. |
+| `GET /health` | Sonda de saúde. |
+
+### Ciclo local completo (Zero-Credencial)
+
+```
+PDF bruto ─► POST /audit ─► DossierHunterSchema ─► POST /draft/llm ─► instrução/minuta
+```
+
+> `POST /audit` opera em **modo simulação**: extrai texto do PDF e gera um dossiê
+> determinístico (semeado pelo hash do conteúdo), com omissões intencionais derivadas
+> dos termos encontrados (`hash`, `plenário`, `portaria`, `contemporaneidade`). Não é
+> perícia real — troque `mock_auditor._extrair_texto` por pypdf/pdfplumber e ligue o
+> `DeepHunter` real quando houver credencial.
 
 ## Nota técnica sobre determinismo
 

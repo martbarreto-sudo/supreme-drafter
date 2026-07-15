@@ -61,3 +61,70 @@ def test_barra_dados_hunter_ausente():
     ruim = {"modo": "PERTINAZ", "conteudo_base": "x"}
     r = client.post("/draft/llm", json=ruim)
     assert r.status_code == 422
+
+
+# ── /audit (auditor mock local, Zero-Credencial) ─────────────────────────────
+
+# PDF válido com termos que zeram omissões (hash/plenario/portaria/contemporaneidade).
+_PDF_COM_TERMOS = (
+    b"%PDF-1.4\n"
+    b"laudo com hash sha-256 verificado; ata de plenario juntada; "
+    b"portaria de designacao extraordinaria; analise de contemporaneidade da preventiva.\n"
+    b"%%EOF\n"
+)
+# PDF válido "seco" (sem termos) → omissões e quebra de custódia sinalizadas.
+_PDF_SECO = b"%PDF-1.4\n%%EOF\n"
+
+
+def test_audit_aceita_pdf_valido_e_sinaliza_por_texto():
+    r = client.post("/audit", files={"file": ("autos.pdf", _PDF_COM_TERMOS, "application/pdf")})
+    assert r.status_code == 200
+    d = r.json()
+    # Contrato aderente ao DossierHunterSchema:
+    assert d["npu"].endswith(".2026.8.17." + d["npu"][-4:])
+    assert len(d["linha_tempo_atos"]) == 3
+    # Termos presentes → sem quebra de custódia e sem omissões.
+    assert d["auditoria_custodia"][0]["possui_quebra_custodia"] is False
+    assert d["omissao_analise_contemporaneidade"] is False
+    assert d["ausencia_ata_plenario"] is False
+    assert d["auditoria_magistrados"][0]["possui_desvio"] is True  # portaria => desvio
+
+
+def test_audit_pdf_seco_sinaliza_omissoes():
+    r = client.post("/audit", files={"file": ("autos.pdf", _PDF_SECO, "application/pdf")})
+    assert r.status_code == 200
+    d = r.json()
+    assert d["auditoria_custodia"][0]["possui_quebra_custodia"] is True
+    assert d["omissao_analise_contemporaneidade"] is True
+    assert d["ausencia_ata_plenario"] is True
+
+
+def test_audit_barra_pdf_corrompido():
+    r = client.post("/audit", files={"file": ("x.pdf", b"nao eh pdf", "application/pdf")})
+    assert r.status_code == 422
+
+
+def test_audit_barra_pdf_vazio():
+    r = client.post("/audit", files={"file": ("x.pdf", b"", "application/pdf")})
+    assert r.status_code == 422
+
+
+def test_audit_e_deterministico():
+    r1 = client.post("/audit", files={"file": ("a.pdf", _PDF_COM_TERMOS, "application/pdf")})
+    r2 = client.post("/audit", files={"file": ("a.pdf", _PDF_COM_TERMOS, "application/pdf")})
+    assert r1.json() == r2.json()
+
+
+def test_ciclo_completo_audit_para_draft():
+    """PDF → /audit → DossierHunterSchema → /draft/llm → instrução retórica."""
+    a = client.post("/audit", files={"file": ("autos.pdf", _PDF_COM_TERMOS, "application/pdf")})
+    assert a.status_code == 200
+    dossie = a.json()
+
+    d = client.post(
+        "/draft/llm",
+        json={"modo": "NULIDADE", "conteudo_base": "sintese", "dados_hunter": dossie},
+    )
+    assert d.status_code == 200
+    assert d.json()["npu"] == dossie["npu"]
+    assert "[DIRETRIZ RETÓRICA - MODO NULIDADE]" in d.json()["instrucao_retorica"]
