@@ -63,11 +63,35 @@
         .mode.is-on { border-color: var(--mint); background: rgba(16,185,129,0.08); box-shadow: inset 0 0 0 1px var(--gold-dim), 0 0 18px rgba(16,185,129,0.12); }
         .mode.is-on .m-name { color: var(--gold-bright); }
         .mode input:focus-visible + .m-name { outline: 2px solid var(--mint); outline-offset: 4px; border-radius: 4px; }
-        .doc-view { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg); overflow: hidden; }
-        .doc-view + .doc-view { margin-top: 12px; }
-        .doc-tab { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--mint);
-            background: rgba(16,185,129,0.06); border-bottom: 1px solid var(--line); padding: 8px 14px; }
-        .doc-view p { font-size: 0.8rem; color: var(--text-dim); font-weight: 300; line-height: 1.6; padding: 12px 14px 14px; margin: 0; }
+        /* Visualizador de estrutura (Dossiê simulado · demo) */
+        .dossie-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin: 2px 0 6px; }
+        .dossie-npu { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.5px; color: var(--text-dim); }
+        .lab-btn { font-family: var(--mono); font-size: 0.66rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+            color: #04130d; background: linear-gradient(135deg, var(--gold-deep), var(--mint)); border: none; border-radius: 999px;
+            padding: 8px 15px; cursor: pointer; transition: transform .2s var(--ease), box-shadow .2s var(--ease); }
+        .lab-btn:hover { transform: translateY(-1px); box-shadow: 0 0 16px rgba(16,185,129,0.3); }
+        .lab-btn[disabled] { filter: grayscale(0.35) brightness(0.85); cursor: default; transform: none; box-shadow: none; }
+        .tree { display: flex; flex-direction: column; gap: 8px; }
+        .node { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--bg); overflow: hidden; transition: border-color .3s var(--ease); }
+        .node-head { width: 100%; display: flex; align-items: center; gap: 10px; padding: 11px 13px; background: none; border: none; cursor: pointer; text-align: left; font-family: var(--mono); color: var(--text); }
+        .node-head:hover { background: rgba(16,185,129,0.04); }
+        .node-title { flex: 1; font-size: 0.78rem; letter-spacing: 0.3px; }
+        .node-caret { color: var(--text-faint); font-size: 0.7rem; transition: transform .25s var(--ease); }
+        .node-head[aria-expanded="true"] .node-caret { transform: rotate(90deg); }
+        .node-chip { font-size: 0.66rem; min-width: 24px; text-align: center; color: var(--text-faint); border: 1px solid var(--line-strong); border-radius: 6px; padding: 2px 6px; transition: color .3s var(--ease), border-color .3s var(--ease), background .3s var(--ease); }
+        .node[data-status="crit"] { border-color: rgba(239,68,68,0.5); }
+        .node[data-status="crit"] .node-chip { color: var(--crimson); border-color: rgba(239,68,68,0.6); background: rgba(239,68,68,0.08); }
+        .node[data-status="ok"] { border-color: rgba(16,185,129,0.45); }
+        .node[data-status="ok"] .node-chip { color: var(--mint); border-color: rgba(16,185,129,0.55); background: rgba(16,185,129,0.08); }
+        .node-body { padding: 0 14px 12px 47px; }
+        .node-body p { font-size: 0.74rem; color: var(--text-dim); font-weight: 300; line-height: 1.55; margin: 0; }
+        .node-body .flag { font-family: var(--mono); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); }
+        .node[data-status="crit"] .flag { color: var(--crimson); }
+        .node[data-status="ok"] .flag { color: var(--mint); }
+        .audit-summary { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 12px; }
+        .lab-chip.crit { color: var(--crimson); border-color: rgba(239,68,68,0.5); background: rgba(239,68,68,0.06); }
+        .lab-chip.crit b { color: var(--crimson); }
+        .lab-chip.ok b { color: var(--mint); }
         .lab-out { margin-top: 22px; border-top: 1px dashed var(--line-strong); padding-top: 18px; }
         .lab-out-head { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 12px; }
         .lab-chip { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 1px; padding: 6px 13px; border: 1px solid var(--line-strong);
@@ -237,36 +261,88 @@
                         <label class="mode" data-id="pertinaz">
                             <input type="radio" name="modo-redacional" value="pertinaz">
                             <span class="m-name">Pertinaz</span>
-                            <span class="m-desc">Persistência argumentativa sustentada.</span>
+                            <span class="m-desc">Ênfase na reiteração firme das teses centrais.</span>
                         </label>
                         <label class="mode" data-id="prequestionador">
                             <input type="radio" name="modo-redacional" value="prequestionador">
                             <span class="m-name">Prequestionador</span>
-                            <span class="m-desc">Prepara o acesso às cortes superiores.</span>
+                            <span class="m-desc">Ênfase no mapeamento de dispositivos violados.</span>
                         </label>
-                        <label class="mode" data-id="sintetico">
-                            <input type="radio" name="modo-redacional" value="sintetico">
-                            <span class="m-name">Sintético</span>
-                            <span class="m-desc">Concisão e impacto direto.</span>
+                        <label class="mode" data-id="custodia">
+                            <input type="radio" name="modo-redacional" value="custodia">
+                            <span class="m-name">Custódia</span>
+                            <span class="m-desc">Ênfase na legalidade da prisão e cautelares.</span>
                         </label>
-                        <label class="mode" data-id="analitico">
-                            <input type="radio" name="modo-redacional" value="analitico">
-                            <span class="m-name">Analítico</span>
-                            <span class="m-desc">Fundamentação exaustiva e minuciosa.</span>
+                        <label class="mode" data-id="nulidade">
+                            <input type="radio" name="modo-redacional" value="nulidade">
+                            <span class="m-name">Nulidade</span>
+                            <span class="m-desc">Ênfase em vícios processuais e prejuízo.</span>
                         </label>
                     </div>
                 </div>
 
                 <div class="lab-col">
-                    <div class="lab-h">▤ Dossiê &amp; Relatório Ouro</div>
-                    <p class="lab-sub">Insumos obrigatórios do protocolo (amostra fictícia).</p>
-                    <div class="doc-view">
-                        <div class="doc-tab">Dossiê · demonstração</div>
-                        <p>Caso fictício “Operação Aurora” — réu primário, prisão preventiva há 92 dias sem instrução encerrada. Excesso de prazo e ausência de contemporaneidade dos fundamentos. (dados ilustrativos)</p>
+                    <div class="lab-h">▤ Dossiê &amp; Relatório Ouro · Visualizador</div>
+                    <p class="lab-sub">Estrutura simulada — clique num item para expandir; rode a verificação para ver os achados.</p>
+                    <div class="dossie-head">
+                        <span class="dossie-npu">Processo simulado nº 0000000-00.2026.8.00.0000</span>
+                        <button type="button" class="lab-btn" id="btn-audit">▶ Rodar verificação</button>
                     </div>
-                    <div class="doc-view">
-                        <div class="doc-tab">Relatório Ouro · demonstração</div>
-                        <p>Síntese de referência: 3 precedentes do STJ sobre excesso de prazo, 1 súmula aplicável e a tese central de constrangimento ilegal consolidada para reuso. (dados ilustrativos)</p>
+                    <div class="tree" id="tree">
+                        <div class="node" data-status="pending" data-final="crit">
+                            <button type="button" class="node-head" aria-controls="nb-1">
+                                <span class="node-chip">—</span>
+                                <span class="node-title">Decisão ID 99999 · ato sob suspeita</span>
+                                <span class="node-caret">▸</span>
+                            </button>
+                            <div class="node-body" id="nb-1">
+                                <p><span class="flag">Achado:</span> ausência de hash de validação no ato decisório. (dado ilustrativo)</p>
+                            </div>
+                        </div>
+                        <div class="node" data-status="pending" data-final="crit">
+                            <button type="button" class="node-head" aria-controls="nb-2">
+                                <span class="node-chip">—</span>
+                                <span class="node-title">Prisão preventiva · prazo</span>
+                                <span class="node-caret">▸</span>
+                            </button>
+                            <div class="node-body" id="nb-2">
+                                <p><span class="flag">Achado:</span> excesso de prazo — 92 dias sem instrução encerrada. (dado ilustrativo)</p>
+                            </div>
+                        </div>
+                        <div class="node" data-status="pending" data-final="ok">
+                            <button type="button" class="node-head" aria-controls="nb-3">
+                                <span class="node-chip">—</span>
+                                <span class="node-title">Precedente STJ · citação (simulada)</span>
+                                <span class="node-caret">▸</span>
+                            </button>
+                            <div class="node-body" id="nb-3">
+                                <p><span class="flag">Validado:</span> citação conferida no loop de verdade. (dado ilustrativo)</p>
+                            </div>
+                        </div>
+                        <div class="node" data-status="pending" data-final="ok">
+                            <button type="button" class="node-head" aria-controls="nb-4">
+                                <span class="node-chip">—</span>
+                                <span class="node-title">Súmula aplicável (simulada)</span>
+                                <span class="node-caret">▸</span>
+                            </button>
+                            <div class="node-body" id="nb-4">
+                                <p><span class="flag">Validado:</span> enquadramento confere com a tese central. (dado ilustrativo)</p>
+                            </div>
+                        </div>
+                        <div class="node" data-status="pending" data-final="ok">
+                            <button type="button" class="node-head" aria-controls="nb-5">
+                                <span class="node-chip">—</span>
+                                <span class="node-title">Relatório Ouro · tese consolidada</span>
+                                <span class="node-caret">▸</span>
+                            </button>
+                            <div class="node-body" id="nb-5">
+                                <p><span class="flag">Validado:</span> síntese de referência pronta para reuso. (amostra fictícia)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="audit-summary" id="audit-summary" hidden>
+                        <span class="lab-chip crit">🔴 <b id="sum-crit">0</b> inconsistências</span>
+                        <span class="lab-chip ok">🟢 <b id="sum-ok">0</b> validados</span>
                     </div>
                 </div>
             </div>
@@ -294,28 +370,66 @@
     <script>
     (function () {
         "use strict";
-        var NAMES = { pertinaz: "Pertinaz", prequestionador: "Prequestionador", sintetico: "Sintético", analitico: "Analítico" };
+
+        /* 1 · Seletor de Modo Redacional */
+        var NAMES = { pertinaz: "Pertinaz", prequestionador: "Prequestionador", custodia: "Custódia", nulidade: "Nulidade" };
         var OUT = {
-            pertinaz: "Enquadramento <b>Pertinaz</b>: a minuta reitera com firmeza as teses centrais e fecha as brechas da tese adversária. <i>(demonstração)</i>",
-            prequestionador: "Enquadramento <b>Prequestionador</b>: a minuta explicita dispositivos e temas para viabilizar o acesso ao STJ/STF. <i>(demonstração)</i>",
-            sintetico: "Enquadramento <b>Sintético</b>: a minuta vai ao núcleo — tese, fundamento e pedido, sem excesso. <i>(demonstração)</i>",
-            analitico: "Enquadramento <b>Analítico</b>: a minuta esgota fatos, provas e precedentes, blindando cada ponto. <i>(demonstração)</i>"
+            pertinaz: "<b>Modo Pertinaz</b>: ênfase na reiteração firme e incansável das teses centrais, fechando as vias de escape da tese adversária. <i>(demonstração)</i>",
+            prequestionador: "<b>Modo Prequestionador</b>: ênfase na identificação e mapeamento de dispositivos constitucionais e federais violados. <i>(demonstração)</i>",
+            custodia: "<b>Modo Custódia</b>: ênfase no controle da legalidade da prisão e das medidas cautelares — prazo, contemporaneidade e proporcionalidade. <i>(demonstração)</i>",
+            nulidade: "<b>Modo Nulidade</b>: ênfase no mapeamento de vícios processuais — do ato viciado ao prejuízo concreto demonstrado. <i>(demonstração)</i>"
         };
         var modesEl = document.getElementById("modes");
         var chip = document.getElementById("out-modo-chip");
         var out = document.getElementById("out-text");
-        if (!modesEl) { return; }
-        var inputs = modesEl.querySelectorAll('input[name="modo-redacional"]');
-        function onSelect(id) {
-            var labels = modesEl.querySelectorAll(".mode"), i;
-            for (i = 0; i < labels.length; i++) {
-                labels[i].classList.toggle("is-on", labels[i].getAttribute("data-id") === id);
+        if (modesEl) {
+            var inputs = modesEl.querySelectorAll('input[name="modo-redacional"]');
+            var onSelect = function (id) {
+                var labels = modesEl.querySelectorAll(".mode"), i;
+                for (i = 0; i < labels.length; i++) {
+                    labels[i].classList.toggle("is-on", labels[i].getAttribute("data-id") === id);
+                }
+                if (chip) { chip.textContent = "Modo: " + (NAMES[id] || id); }
+                if (out && OUT[id]) { out.innerHTML = OUT[id]; }
+            };
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].addEventListener("change", function () { onSelect(this.value); });
             }
-            if (chip) { chip.textContent = "Modo: " + (NAMES[id] || id); }
-            if (out && OUT[id]) { out.innerHTML = OUT[id]; }
         }
-        for (var i = 0; i < inputs.length; i++) {
-            inputs[i].addEventListener("change", function () { onSelect(this.value); });
+
+        /* 2 · Visualizador de estrutura — accordion + verificação simulada */
+        var tree = document.getElementById("tree");
+        if (tree) {
+            var heads = tree.querySelectorAll(".node-head"), h, body0;
+            for (h = 0; h < heads.length; h++) {
+                body0 = document.getElementById(heads[h].getAttribute("aria-controls"));
+                heads[h].setAttribute("aria-expanded", "false");   // colapsa quando há JS (sem JS, tudo visível)
+                if (body0) { body0.hidden = true; }
+                heads[h].addEventListener("click", function () {
+                    var body = document.getElementById(this.getAttribute("aria-controls"));
+                    var open = this.getAttribute("aria-expanded") === "true";
+                    this.setAttribute("aria-expanded", open ? "false" : "true");
+                    if (body) { body.hidden = open; }
+                });
+            }
+            var auditBtn = document.getElementById("btn-audit");
+            if (auditBtn) {
+                auditBtn.addEventListener("click", function () {
+                    var nodes = tree.querySelectorAll(".node"), crit = 0, ok = 0, i, st, c;
+                    for (i = 0; i < nodes.length; i++) {
+                        st = nodes[i].getAttribute("data-final") || "ok";
+                        nodes[i].setAttribute("data-status", st);
+                        c = nodes[i].querySelector(".node-chip");
+                        if (c) { c.textContent = (st === "crit") ? "🔴" : "🟢"; }
+                        if (st === "crit") { crit++; } else { ok++; }
+                    }
+                    var sc = document.getElementById("sum-crit"); if (sc) { sc.textContent = String(crit); }
+                    var so = document.getElementById("sum-ok"); if (so) { so.textContent = String(ok); }
+                    var sum = document.getElementById("audit-summary"); if (sum) { sum.hidden = false; }
+                    this.textContent = "✓ Verificação concluída";
+                    this.setAttribute("disabled", "disabled");
+                });
+            }
         }
     })();
     </script>
