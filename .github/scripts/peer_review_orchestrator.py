@@ -393,6 +393,60 @@ class GeminiReviewer:
 # --------------------------------------------------------------------------- #
 
 
+# --------------------------------------------------------------------------- #
+# Auditoria de citações da revisão (loop de verdade — nexum_engine.verdade)
+# --------------------------------------------------------------------------- #
+
+_CAMPOS_COM_JURISPRUDENCIA = (
+    "jurisprudencia_omitida",
+    "fundamentos_fragilizados",
+    "vicios_formais",
+    "preliminares_ausentes",
+    "recomendacoes",
+)
+
+
+def auditar_citacoes_de_revisao(
+    rev: dict[str, Any], base_dir: Optional[str]
+) -> dict[str, Any]:
+    """Audita a jurisprudência citada POR UM PROVEDOR contra a base verificada.
+
+    É a autodenúncia do pipeline: se o Claude ou o Gemini citarem um julgado
+    fora da base MINDJUS verificada, o consolidador denuncia a citação no
+    relatório e veta o selo APROVADO — antes de qualquer humano ler.
+
+    Sem a base (``base_dir`` ausente), sela INCONCLUSIVO e não interfere no
+    veredito — nunca reprova o que não pôde auditar (mesmo desenho do gate
+    de provedores).
+    """
+    if not base_dir or not Path(base_dir).is_dir():
+        return {
+            "status": "INCONCLUSIVO",
+            "motivo": "base verificada indisponível (WARROOM_TIGRE_TOKEN)",
+            "nao_verificadas": [],
+            "total_citacoes": 0,
+        }
+
+    import asyncio
+
+    raiz = Path(__file__).resolve().parents[2]
+    if str(raiz) not in sys.path:  # o script roda fora do pacote
+        sys.path.insert(0, str(raiz))
+    from nexum_engine.verdade import FonteJsonVerificada, auditar_citacoes
+
+    trechos: list[str] = []
+    for campo in _CAMPOS_COM_JURISPRUDENCIA:
+        trechos.extend(str(item) for item in rev.get(campo) or [])
+    relatorio = asyncio.run(
+        auditar_citacoes("\n".join(trechos), FonteJsonVerificada(base_dir))
+    )
+    return {
+        "status": "VERIFICADO" if relatorio.protocolavel else "BLOQUEADO",
+        "nao_verificadas": [c.citacao for c in relatorio.nao_verificadas],
+        "total_citacoes": len(relatorio.citacoes),
+    }
+
+
 @dataclass
 class ResultadoConsolidado:
     score_consolidado: float
@@ -402,6 +456,7 @@ class ResultadoConsolidado:
     divergencias_gemini: list[str]
     delta_risco: int
     markdown: str
+    citacoes_denunciadas: dict[str, list[str]] = field(default_factory=dict)
 
 
 class TIER0Consolidator:
@@ -438,6 +493,8 @@ class TIER0Consolidator:
         rev_gemini: dict[str, Any],
         peso_claude: float = 0.5,
         peso_gemini: float = 0.5,
+        aud_claude: Optional[dict[str, Any]] = None,
+        aud_gemini: Optional[dict[str, Any]] = None,
     ) -> ResultadoConsolidado:
         s_claude = self._score(rev_claude)
         s_gemini = self._score(rev_gemini)
@@ -450,11 +507,21 @@ class TIER0Consolidator:
         excl_gemini = sorted(a_gemini - a_claude)
 
         delta = abs(self._risco(rev_claude) - self._risco(rev_gemini))
-        aprovado = score >= self.gate_score
+
+        # Autodenúncia: citação de provedor fora da base verificada VETA o
+        # selo, independentemente do score (zero_tolerance do loop de verdade).
+        denunciadas: dict[str, list[str]] = {}
+        for nome, aud in (("Claude Opus 4.8", aud_claude), ("Gemini 3 Pro", aud_gemini)):
+            if aud and aud.get("status") == "BLOQUEADO":
+                denunciadas[nome] = list(aud.get("nao_verificadas", []))
+        veto_citacoes = bool(denunciadas)
+        aprovado = score >= self.gate_score and not veto_citacoes
 
         md = self._render_markdown(
             rev_claude, rev_gemini, score, aprovado,
             convergencias, excl_claude, excl_gemini, delta,
+            aud_claude=aud_claude, aud_gemini=aud_gemini,
+            denunciadas=denunciadas,
         )
         return ResultadoConsolidado(
             score_consolidado=score,
@@ -464,6 +531,7 @@ class TIER0Consolidator:
             divergencias_gemini=excl_gemini,
             delta_risco=delta,
             markdown=md,
+            citacoes_denunciadas=denunciadas,
         )
 
     # ------------------------------------------------ relatório markdown
@@ -477,6 +545,9 @@ class TIER0Consolidator:
         excl_claude: list[str],
         excl_gemini: list[str],
         delta: int,
+        aud_claude: Optional[dict[str, Any]] = None,
+        aud_gemini: Optional[dict[str, Any]] = None,
+        denunciadas: Optional[dict[str, list[str]]] = None,
     ) -> str:
         selo = (
             "🟢 **APROVADO ≥97 — TIER 0**"
@@ -522,6 +593,38 @@ class TIER0Consolidator:
         linhas += (
             [f"- {c}" for c in excl_gemini] if excl_gemini else ["- _Nenhuma_"]
         )
+        if aud_claude is not None or aud_gemini is not None:
+            linhas += ["", "### 🚨 Autodenúncia — auditoria de citações (loop de verdade)", ""]
+            for nome, aud in (
+                ("Claude Opus 4.8", aud_claude),
+                ("Gemini 3 Pro", aud_gemini),
+            ):
+                if aud is None:
+                    continue
+                status = aud.get("status", "?")
+                if status == "BLOQUEADO":
+                    citadas = ", ".join(f"`{c}`" for c in aud.get("nao_verificadas", []))
+                    linhas.append(
+                        f"- ❌ **{nome}** citou jurisprudência FORA da base "
+                        f"verificada: {citadas}"
+                    )
+                elif status == "VERIFICADO":
+                    linhas.append(
+                        f"- ✅ {nome}: {aud.get('total_citacoes', 0)} citação(ões), "
+                        "todas na base verificada"
+                    )
+                else:
+                    linhas.append(
+                        f"- ⚪ {nome}: auditoria inconclusiva "
+                        f"({aud.get('motivo', 'base indisponível')})"
+                    )
+            if denunciadas:
+                linhas.append(
+                    "\n> ❌ **Veredito vetado por citação não verificada** — "
+                    "corrija a revisão do provedor ou promova o precedente à base "
+                    "(verificação em fonte oficial) antes do merge. Revisão humana "
+                    "obrigatória."
+                )
         linhas += [
             "",
             "---",
@@ -636,8 +739,20 @@ def main(argv: Optional[list[str]] = None) -> int:
             print("GATE TIER 0 NÃO APLICÁVEL: PR sem peça jurídica.")
             return 0
 
+        base_dir = os.environ.get("MINDJUS_BASE_DIR") or None
+        aud_claude = auditar_citacoes_de_revisao(rev_claude, base_dir)
+        aud_gemini = auditar_citacoes_de_revisao(rev_gemini, base_dir)
+        for nome, aud in (("Claude", aud_claude), ("Gemini", aud_gemini)):
+            if aud["status"] == "BLOQUEADO":
+                print(
+                    f"AUTODENUNCIA: revisão do {nome} cita jurisprudência fora "
+                    f"da base verificada: {aud['nao_verificadas']}"
+                )
+
         cons = TIER0Consolidator(gate_score=args.gate)
-        res = cons.consolidar(rev_claude, rev_gemini)
+        res = cons.consolidar(
+            rev_claude, rev_gemini, aud_claude=aud_claude, aud_gemini=aud_gemini
+        )
         Path(args.out).write_text(res.markdown, encoding="utf-8")
         # Falha o gate se reprovado (exit code != 0 quebra o job de consolidação).
         if not res.aprovado:
