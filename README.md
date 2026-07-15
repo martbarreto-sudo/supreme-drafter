@@ -15,6 +15,7 @@ Plataforma NEXUM de produção de minutas penais assistida por IA (Gen-Custódia
 ├── nexum/                  # Pipeline forense CloudEvents v1.0 (Tier 0)
 │   ├── infra/              # schema.sql (outbox + seeds) + smoke_test.py
 │   └── Dockerfile          # Imagem única (consumer via uvicorn / relay via -m)
+├── deploy/                 # Chart Helm K8s (consumer + relay; stores externos)
 ├── docs/                   # Documentação da plataforma
 │   ├── FLUXOS.md           # Fluxos de produção + rotas API v2
 │   ├── NEXUM_CONGLOBADO_V18.md / .pdf
