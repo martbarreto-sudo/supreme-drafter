@@ -71,6 +71,7 @@ def compor_romaneio(
     assertions_falhas: list[str],
     data_iso: str,
     modo_redacional: str = "PERTINAZ",
+    fontes_silenciadas_extra: list[str] | None = None,
 ) -> str:
     """Devolve o markdown do romaneio. Caller persiste em
     `$CASO_DATA_DIR/{user_id}/audits/{audit_id}.romaneio.md`.
@@ -127,10 +128,16 @@ def compor_romaneio(
             linhas.append(f"({chr(96 + i) if i <= 26 else i}) {c}")
         linhas.append("")
 
-    if feito.fontes_silenciadas:
+    # Silêncio do catálogo do feito + silêncio detectado pelo DEEP HUNTER no
+    # dossiê desta requisição (sem duplicar, preservando ordem).
+    silencio = list(feito.fontes_silenciadas)
+    for item in fontes_silenciadas_extra or []:
+        if item not in silencio:
+            silencio.append(item)
+    if silencio:
         linhas.append("## Auditoria de Silêncio (registrar nos autos se ausente)")
         linhas.append("")
-        for item in feito.fontes_silenciadas:
+        for item in silencio:
             linhas.append(f"- {item}")
         linhas.append("")
 

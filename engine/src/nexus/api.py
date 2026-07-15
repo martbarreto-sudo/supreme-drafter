@@ -175,8 +175,15 @@ async def draft_llm(
     except (SemAssinatura, AssinaturaInativa, PeriodoExpirado, QuotaExcedida) as exc:
         raise _quota_exception_para_http(exc) from exc
 
+    from .dossier import dossier_para_fontes_silenciadas
     from .llm import gerar_minuta, validar_feito_hbm
     from .quality import avaliar_qualidade
+
+    # DEEP HUNTER: omissões do dossiê enriquecem a Auditoria de Silêncio desta
+    # peça. Insumo transiente — não muta o catálogo FEITOS compartilhado.
+    silencio_dossier = (
+        dossier_para_fontes_silenciadas(req.dossier) if req.dossier else []
+    )
 
     minuta = gerar_minuta(
         feito, req.fatos, req.peca_tipo, modo=req.modo_redacional.value
@@ -234,6 +241,7 @@ async def draft_llm(
             assertions_falhas=falhas,
             data_iso=data_iso,
             modo_redacional=req.modo_redacional.value,
+            fontes_silenciadas_extra=silencio_dossier,
         )
         gravar_romaneio(audit, romaneio_texto)
     except CasoDataDirAusente:
@@ -258,5 +266,16 @@ async def draft_llm(
         "billing": {
             "pecas_consumidas_no_periodo": sub.pecas_consumidas_no_periodo,
             "pecas_incluidas": sub.pecas_incluidas,
+        },
+        "dossier": {
+            "presente": req.dossier is not None,
+            "auditoria_silencio": silencio_dossier,
+            "segredo_justica_aviso": (
+                "Dossiê sob segredo de justiça — aplicar mascaramento LGPD e "
+                "restringir acesso conforme Controladoria."
+                if req.dossier is not None
+                and req.dossier.dados_basicos.segredo_justica
+                else None
+            ),
         },
     }
