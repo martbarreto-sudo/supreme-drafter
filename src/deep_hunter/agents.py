@@ -1,25 +1,26 @@
-"""Os dois agentes autónomos: Deep Hunter (auditor) e Supreme Drafter (redator)."""
+"""Os dois agentes autónomos, agora acoplados ao contrato único DossierHunterSchema.
+
+- Deep Hunter  → devolve um `DossierHunterSchema` validado.
+- Supreme Drafter → consome `DossierHunterSchema` + `ModoRedacional` (via DraftEngine).
+"""
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import anthropic
 
-from .config import Comando, Modo, Peca, RunConfig
+from core.draft_engine import DraftEngine, DraftRequest, ModoRedacional
+from schema.dossier_hunter import DossierHunterSchema
+
+from .config import Comando, Modo, RunConfig
 from .pdf_ingest import load_pdf_block
-from .prompts import (
-    DEEP_HUNTER_SYSTEM,
-    SUPREME_DRAFTER_SYSTEM,
-    deep_hunter_instruction,
-    supreme_drafter_instruction,
-)
+from .prompts import DEEP_HUNTER_SYSTEM, SUPREME_DRAFTER_SYSTEM, deep_hunter_instruction
 from .schema import DOSSIE_SCHEMA
 
 
 class DeepHunter:
-    """Agente 01 — o Auditor. Processa os autos e devolve o dossiê estruturado."""
+    """Agente 01 — o Auditor. Popula e devolve o DossierHunterSchema."""
 
     def __init__(self, client: anthropic.Anthropic, config: RunConfig | None = None):
         self.client = client
@@ -31,16 +32,13 @@ class DeepHunter:
         *,
         modo: Modo = Modo.SIMBIOSE,
         comandos: list[Comando] | None = None,
-    ) -> dict:
-        """Audita os autos e devolve o Dossiê + Tabela de Nulidades (dict)."""
+    ) -> DossierHunterSchema:
+        """Audita os autos e devolve o contrato validado."""
         comandos = comandos or []
         # Structured outputs é incompatível com citations → citations=False.
         pdf_block = load_pdf_block(pdf_path, citations=False)
-        instrucao = deep_hunter_instruction(
-            modo.foco, [c.diretriz for c in comandos]
-        )
+        instrucao = deep_hunter_instruction(modo.foco, [c.diretriz for c in comandos])
 
-        # Streaming: max_tokens elevado exige stream para não estourar timeout HTTP.
         with self.client.messages.stream(
             model=self.config.model,
             max_tokens=self.config.max_tokens,
@@ -60,23 +58,51 @@ class DeepHunter:
         text = next((b.text for b in message.content if b.type == "text"), "")
         if not text.strip():
             raise RuntimeError("Deep Hunter não devolveu conteúdo (dossiê vazio).")
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError as exc:  # pragma: no cover - defensivo
-            raise RuntimeError(f"Dossiê não é JSON válido: {exc}\n{text[:500]}") from exc
+        # Validação client-side (inclui o pattern do NPU, aposentado do schema enviado).
+        return DossierHunterSchema.model_validate_json(text)
 
 
 class SupremeDrafter:
-    """Agente 02 — o Executor. Converte o dossiê auditado numa peça (Markdown)."""
+    """Agente 02 — o Executor. Converte o DossierHunterSchema numa peça (Markdown)."""
 
     def __init__(self, client: anthropic.Anthropic, config: RunConfig | None = None):
         self.client = client
         self.config = config or RunConfig()
+        self.engine = DraftEngine()
 
-    def draft(self, dossie: dict, *, peca: Peca = Peca.HABEAS_CORPUS) -> str:
-        """Redige a peça a partir do dossiê. Nunca inventa factos fora dele."""
-        dossie_json = json.dumps(dossie, ensure_ascii=False, indent=2)
-        instrucao = supreme_drafter_instruction(peca.descricao, dossie_json)
+    @staticmethod
+    def _resumo(dossie: DossierHunterSchema) -> str:
+        """Síntese fática líquida derivada do dossiê, sem inventar nada."""
+        flags = []
+        if dossie.omissao_analise_contemporaneidade:
+            flags.append("omissão de contemporaneidade")
+        if dossie.ausencia_ata_plenario:
+            flags.append("ausência de ata de plenário")
+        if dossie.quebra_sequencial_ids:
+            flags.append("quebra sequencial de IDs no PJe")
+        quebras = sum(1 for m in dossie.auditoria_custodia if m.possui_quebra_custodia)
+        desvios = sum(1 for j in dossie.auditoria_magistrados if j.possui_desvio)
+        return (
+            f"NPU {dossie.npu} ({dossie.tribunal} — {dossie.orgao_julgador}). "
+            f"Atos mapeados: {len(dossie.linha_tempo_atos)}. "
+            f"Quebras de custódia: {quebras}. Desvios de juiz natural: {desvios}. "
+            f"Omissões do Estado: {', '.join(flags) or 'nenhuma sinalizada'}."
+        )
+
+    def draft(
+        self,
+        dossie: DossierHunterSchema,
+        *,
+        modo: ModoRedacional = ModoRedacional.PERTINAZ,
+        conteudo_base: str | None = None,
+    ) -> str:
+        """Redige a peça a partir do dossiê e do modo redacional."""
+        request = DraftRequest(
+            modo=modo,
+            conteudo_base=conteudo_base or self._resumo(dossie),
+            dados_hunter=dossie,
+        )
+        instrucao = self.engine.compor_instrucao_retorica(request)
 
         with self.client.messages.stream(
             model=self.config.model,

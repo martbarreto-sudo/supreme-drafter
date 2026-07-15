@@ -1,4 +1,4 @@
-"""Orquestração: encadeia Deep Hunter → Supreme Drafter com o contrato de dados."""
+"""Orquestração: encadeia Deep Hunter → Supreme Drafter pelo contrato unificado."""
 
 from __future__ import annotations
 
@@ -7,23 +7,26 @@ from pathlib import Path
 
 import anthropic
 
+from core.draft_engine import ModoRedacional
+from schema.dossier_hunter import DossierHunterSchema
+
 from .agents import DeepHunter, SupremeDrafter
-from .config import Comando, Modo, Peca, RunConfig
+from .config import Comando, Modo, RunConfig
 
 
 @dataclass
 class Resultado:
     """Saída completa de uma execução do pipeline."""
 
-    dossie: dict
+    dossie: DossierHunterSchema
     peca_markdown: str
 
 
 class Pipeline:
     """Ponto de entrada de alto nível da Doutrina de Combate Híbrido.
 
-    O `client` é criado com o construtor de argumentos-zero da SDK, que resolve as
-    credenciais a partir do ambiente (ANTHROPIC_API_KEY ou perfil `ant auth login`).
+    O `client` usa o construtor de argumentos-zero da SDK, que resolve as credenciais
+    a partir do ambiente (ANTHROPIC_API_KEY ou perfil `ant auth login`).
     """
 
     def __init__(
@@ -42,17 +45,22 @@ class Pipeline:
         *,
         modo: Modo | str = Modo.SIMBIOSE,
         comandos: list[Comando | str] | None = None,
-    ) -> dict:
-        """Executa apenas o Agente 01 e devolve o dossiê."""
+    ) -> DossierHunterSchema:
+        """Executa apenas o Agente 01 e devolve o contrato validado."""
         return self.hunter.audit(
             pdf_path,
             modo=Modo(modo),
             comandos=[Comando(c) for c in (comandos or [])],
         )
 
-    def draft(self, dossie: dict, *, peca: Peca | str = Peca.HABEAS_CORPUS) -> str:
+    def draft(
+        self,
+        dossie: DossierHunterSchema,
+        *,
+        modo: ModoRedacional | str = ModoRedacional.PERTINAZ,
+    ) -> str:
         """Executa apenas o Agente 02 sobre um dossiê já auditado."""
-        return self.drafter.draft(dossie, peca=Peca(peca))
+        return self.drafter.draft(dossie, modo=ModoRedacional(modo))
 
     def run(
         self,
@@ -60,9 +68,9 @@ class Pipeline:
         *,
         modo: Modo | str = Modo.SIMBIOSE,
         comandos: list[Comando | str] | None = None,
-        peca: Peca | str = Peca.HABEAS_CORPUS,
+        modo_redacional: ModoRedacional | str = ModoRedacional.PERTINAZ,
     ) -> Resultado:
         """Auditoria + redação, ponta a ponta."""
         dossie = self.audit(pdf_path, modo=modo, comandos=comandos)
-        peca_md = self.draft(dossie, peca=peca)
+        peca_md = self.draft(dossie, modo=modo_redacional)
         return Resultado(dossie=dossie, peca_markdown=peca_md)

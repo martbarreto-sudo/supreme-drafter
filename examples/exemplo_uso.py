@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import sys
 
-from deep_hunter import Comando, Modo, Peca, Pipeline
+from deep_hunter import Comando, Modo, ModoRedacional, Pipeline
 
 
 def main() -> int:
@@ -22,11 +22,14 @@ def main() -> int:
         sys.argv[1],
         modo=Modo.SIMBIOSE,
         comandos=[Comando.HASH_AUDIT, Comando.WRITE_BLOCKER],
-        peca=Peca.HABEAS_CORPUS,
+        modo_redacional=ModoRedacional.CUSTODIA,
     )
 
-    print(f"Vulnerabilidades: {len(resultado.dossie['dossie_vulnerabilidades'])}")
-    print(f"Nulidades:        {len(resultado.dossie['tabela_nulidades'])}")
+    dossie = resultado.dossie
+    quebras = sum(1 for m in dossie.auditoria_custodia if m.possui_quebra_custodia)
+    print(f"NPU:               {dossie.npu}")
+    print(f"Atos mapeados:     {len(dossie.linha_tempo_atos)}")
+    print(f"Quebras custódia:  {quebras}")
     print("=" * 60)
     print(resultado.peca_markdown)
     return 0

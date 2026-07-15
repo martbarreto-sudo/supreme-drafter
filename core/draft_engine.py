@@ -8,9 +8,10 @@ Módulo Hunter dá-se por `DraftRequest.dados_hunter` (payload do DossierHunter)
 from __future__ import annotations
 
 import enum
-from typing import Any, Dict
 
 from pydantic import BaseModel, Field
+
+from schema.dossier_hunter import DossierHunterSchema
 
 
 class ModoRedacional(str, enum.Enum):
@@ -27,8 +28,8 @@ class DraftRequest(BaseModel):
 
     modo: ModoRedacional = Field(default=ModoRedacional.PERTINAZ)
     conteudo_base: str = Field(..., description="Texto base extraído do dossiê do caso")
-    dados_hunter: Dict[str, Any] = Field(
-        ..., description="Payload gerado pelo Módulo DossierHunter"
+    dados_hunter: DossierHunterSchema = Field(
+        ..., description="Contrato validado produzido pelo Módulo Hunter"
     )
 
 

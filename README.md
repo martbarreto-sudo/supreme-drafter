@@ -24,7 +24,7 @@ redator **nunca** inventa factos. O elo entre eles é um contrato de dados rígi
 
 | Componente | Papel | Perfil |
 |---|---|---|
-| **Agente 01 — Deep Hunter** | Perito forense de computação sénior. Processa os autos em PDF, audita metadados, mapeia cronologias e confronta a cadeia de custódia. Emite um *Dossiê de Vulnerabilidades* e uma *Tabela de Nulidades*. | Cético, frio, técnico. Nunca redige a peça. |
+| **Agente 01 — Deep Hunter** | Perito forense de computação sénior. Processa os autos em PDF, audita metadados, mapeia cronologias e confronta a cadeia de custódia. Popula o contrato único **`DossierHunterSchema`** (linha do tempo, auditoria de juiz natural, custódia, filtros de omissão). | Cético, frio, técnico. Nunca redige a peça. |
 | **Agente 02 — Supreme Drafter** | Converte os factos líquidos auditados em memoriais, recursos e ordens de Habeas Corpus. Proibido de pesquisar factos novos. | Retórico, agressivo, elevada cultura jurídica. |
 | **Operador Tier 0** | O advogado. Revisão final, formatação, validação das teses e assinatura. | Humano. |
 
@@ -82,23 +82,46 @@ pytest        # ou: pytest tests/
 
 ```bash
 # Auditoria + redação, saída em ./out/
-python -m deep_hunter run autos.pdf --modo SIMBIOSE --peca habeas_corpus
+python -m deep_hunter run autos.pdf --modo SIMBIOSE --modo-redacional CUSTODIA
 
-# Apenas a auditoria (JSON com Dossiê + Tabela de Nulidades)
+# Apenas a auditoria (JSON do DossierHunterSchema)
 python -m deep_hunter audit autos.pdf --modo FORENSE --comando HASH_AUDIT
 
 # Apenas a redação, a partir de um dossiê já auditado
-python -m deep_hunter draft dossie.json --peca memorial
+python -m deep_hunter draft dossie.json --modo-redacional NULIDADE
 ```
+
+> Sem instalar (`pip install -e .`), exporte `PYTHONPATH=src:.` — o pacote `deep_hunter`
+> vive em `src/` e os contratos `schema`/`core` no topo do repo.
 
 Via Python:
 
 ```python
-from deep_hunter import Pipeline
+from deep_hunter import Pipeline, Modo, ModoRedacional
 
 pipeline = Pipeline()
-resultado = pipeline.run("autos.pdf", modo="SIMBIOSE", peca="habeas_corpus")
+resultado = pipeline.run("autos.pdf", modo=Modo.SIMBIOSE, modo_redacional=ModoRedacional.CUSTODIA)
+print(resultado.dossie.npu)          # DossierHunterSchema validado
 print(resultado.peca_markdown)
+```
+
+## Gateway declarativo — `POST /draft/llm`
+
+O barramento síncrono valida o corpo nativamente (Pydantic) e devolve **HTTP 422** se o
+NPU ou o payload falharem na tipagem — antes de qualquer composição.
+
+```
+[Request] ─► POST /draft/llm ─► Validação nativa Pydantic ─► 422 (falha)
+                                          │
+                                          ▼ (payload íntegro)
+                            DraftEngine.compor_instrucao_retorica
+```
+
+```bash
+pip install "uvicorn>=0.29"
+PYTHONPATH=src:. uvicorn deep_hunter.api:app --reload
+# POST /draft/llm  {modo, conteudo_base, dados_hunter: DossierHunterSchema}
+# GET  /health
 ```
 
 ## Nota técnica sobre determinismo

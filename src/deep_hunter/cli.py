@@ -3,19 +3,21 @@
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 
-from .config import Comando, Modo, Peca
+from core.draft_engine import ModoRedacional
+from schema.dossier_hunter import DossierHunterSchema
+
+from .config import Comando, Modo
 from .pipeline import Pipeline
 
 
-def _write_outputs(out_dir: Path, dossie: dict | None, peca: str | None) -> None:
+def _write_outputs(out_dir: Path, dossie: DossierHunterSchema | None, peca: str | None) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     if dossie is not None:
         (out_dir / "dossie.json").write_text(
-            json.dumps(dossie, ensure_ascii=False, indent=2), encoding="utf-8"
+            dossie.model_dump_json(indent=2), encoding="utf-8"
         )
         print(f"[+] Dossiê gravado em {out_dir / 'dossie.json'}", file=sys.stderr)
     if peca is not None:
@@ -33,7 +35,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     modos = [m.value for m in Modo]
     comandos = [c.value for c in Comando]
-    pecas = [pc.value for pc in Peca]
+    modos_red = [m.value for m in ModoRedacional]
 
     a = sub.add_parser("audit", help="Apenas auditoria (Agente 01).")
     a.add_argument("pdf", help="Caminho dos autos em PDF.")
@@ -43,13 +45,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     d = sub.add_parser("draft", help="Apenas redação (Agente 02) a partir de um dossiê JSON.")
     d.add_argument("dossie", help="Caminho do dossiê JSON auditado.")
-    d.add_argument("--peca", choices=pecas, default=Peca.HABEAS_CORPUS.value)
+    d.add_argument("--modo-redacional", choices=modos_red, default=ModoRedacional.PERTINAZ.value)
 
     r = sub.add_parser("run", help="Auditoria + redação, ponta a ponta.")
     r.add_argument("pdf", help="Caminho dos autos em PDF.")
     r.add_argument("--modo", choices=modos, default=Modo.SIMBIOSE.value)
     r.add_argument("--comando", action="append", choices=comandos, default=[])
-    r.add_argument("--peca", choices=pecas, default=Peca.HABEAS_CORPUS.value)
+    r.add_argument("--modo-redacional", choices=modos_red, default=ModoRedacional.PERTINAZ.value)
 
     return p
 
@@ -62,19 +64,24 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "audit":
         dossie = pipeline.audit(args.pdf, modo=args.modo, comandos=args.comando)
         _write_outputs(out_dir, dossie, None)
-        print(json.dumps(dossie, ensure_ascii=False, indent=2))
+        print(dossie.model_dump_json(indent=2))
         return 0
 
     if args.cmd == "draft":
-        dossie = json.loads(Path(args.dossie).read_text(encoding="utf-8"))
-        peca = pipeline.draft(dossie, peca=args.peca)
+        dossie = DossierHunterSchema.model_validate_json(
+            Path(args.dossie).read_text(encoding="utf-8")
+        )
+        peca = pipeline.draft(dossie, modo=args.modo_redacional)
         _write_outputs(out_dir, None, peca)
         print(peca)
         return 0
 
     if args.cmd == "run":
         resultado = pipeline.run(
-            args.pdf, modo=args.modo, comandos=args.comando, peca=args.peca
+            args.pdf,
+            modo=args.modo,
+            comandos=args.comando,
+            modo_redacional=args.modo_redacional,
         )
         _write_outputs(out_dir, resultado.dossie, resultado.peca_markdown)
         print(resultado.peca_markdown)

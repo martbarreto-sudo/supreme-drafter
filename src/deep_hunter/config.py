@@ -72,24 +72,6 @@ class Comando(str, Enum):
         }[self]
 
 
-class Peca(str, Enum):
-    """Tipos de peça que o Supreme Drafter pode redigir."""
-
-    HABEAS_CORPUS = "habeas_corpus"
-    MEMORIAL = "memorial"
-    RECURSO = "recurso"
-    RELAXAMENTO = "relaxamento"
-
-    @property
-    def descricao(self) -> str:
-        return {
-            Peca.HABEAS_CORPUS: "Ordem de Habeas Corpus com pedido liminar.",
-            Peca.MEMORIAL: "Memorial de alegações finais / razões defensivas.",
-            Peca.RECURSO: "Recurso (apelação / agravo / RHC / REsp) conforme o caso.",
-            Peca.RELAXAMENTO: "Pedido de relaxamento de prisão / revogação de cautelar.",
-        }[self]
-
-
 @dataclass(frozen=True)
 class RunConfig:
     """Configuração de uma execução do pipeline."""
