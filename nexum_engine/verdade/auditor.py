@@ -16,14 +16,22 @@ from .fontes import FonteDePrecedentes
 from .precedente import Precedente, normalizar_citacao
 
 # Classes processuais e enunciados citados em peças criminais.
+# Limitação conhecida: entradas compostas da base (ex.: "ADC 43, 44 e 54")
+# só casam quando citadas na mesma forma composta; "ADC 43" isolado extrai
+# "ADC 43" e será bloqueado se não houver registro próprio — conservador
+# por desenho (nada passa sem correspondência exata na base).
 _PADRAO_CITACAO = re.compile(
     r"""
     (?:
+        (?P<adc_composta>ADC\s*\d+(?:\s*,\s*\d+)*\s+e\s+\d+)
+      |
         (?P<classe>HC|RHC|AgRg\ no\ HC|AgRg\ no\ RHC|REsp|AREsp|ADC|ADI|RE|ARE)
         \s*(?P<numero>[\d.]+)
         (?:\s*/\s*(?P<uf>[A-Z]{2}))?
       |
-        S[úu]mula\s*(?:n[ºo.]?\s*)?(?P<sumula>\d+)
+        S[úu]mula
+        (?:\s+(?P<vinculante>Vinculante))?
+        \s*(?:n[ºo.]?\s*)?(?P<sumula>\d+)
         (?:\s*(?:/|do\s+|da\s+)(?P<corte>STF|STJ))?
       |
         Tema\s*(?:n[ºo.]?\s*)?(?P<tema>\d+)
@@ -64,14 +72,19 @@ def extrair_citacoes(texto: str) -> list[str]:
     vistas: set[str] = set()
     resultado: list[str] = []
     for m in _PADRAO_CITACAO.finditer(texto):
-        if m.group("classe"):
+        if m.group("adc_composta"):
+            citacao = m.group("adc_composta")
+        elif m.group("classe"):
             citacao = f"{m.group('classe')} {m.group('numero')}"
             if m.group("uf"):
                 citacao += f"/{m.group('uf')}"
         elif m.group("sumula"):
-            citacao = f"Súmula {m.group('sumula')}"
-            if m.group("corte"):
-                citacao += f"/{m.group('corte').upper()}"
+            if m.group("vinculante"):
+                citacao = f"Súmula Vinculante {m.group('sumula')}"
+            else:
+                citacao = f"Súmula {m.group('sumula')}"
+                if m.group("corte"):
+                    citacao += f"/{m.group('corte').upper()}"
         else:
             citacao = f"Tema {m.group('tema')}"
         chave = normalizar_citacao(citacao)
