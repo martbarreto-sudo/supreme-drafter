@@ -15,6 +15,7 @@ conexão**: os contratos vivem em `ports.py`, as implementações em
 | `adapters/anthropic_adapters.py` | `AnthropicVertexAdapter` (consolidador, Opus 4.8) e `DirectAPIAdapter` (agentes paralelos, Sonnet 4.6) |
 | `verdade/` | **Loop de verdade**: `Precedente`, `FonteDePrecedentes` (JSON local-first e Supabase) e `auditar_citacoes()` — o portão `zero_tolerance` do auditor |
 | `schema/precedentes.sql` | DDL do Supabase (`precedentes_verificados`): quarentena, CHECKs de fonte, RLS leitura-só-citável, GIN em tags, pgvector reservado p/ fase 2 |
+| `schema/migrations/0002_fase2_busca_semantica.sql` | Fase 2: pgvector, coluna `vetor_semantico vector(768)` e índice HNSW (cosseno, m=16/ef=64) |
 | `verdade/exportar_sql.py` | Carga MINDJUS → SQL: manifesto idempotente de INSERTs (dedupe por número normalizado, órfãos sem fonte entram quarentenados) |
 | `verdade/gate.py` | Gate de citações (CLI): postura binária p/ CI — bloqueado (exit 1) se citação fora da base; INCONCLUSIVO opcional sem base |
 | `tests/` | Suíte isolada (fakes; zero credenciais) + `TestModelStringRegression` |
@@ -84,10 +85,29 @@ O manifesto é determinístico e idempotente; registros legítimos sem
 `fonte_verificacao` entram JÁ EM QUARENTENA com motivo automático — nunca
 quebram os CHECKs nem viram citáveis por acidente.
 
+## Busca semântica (fase 2)
+
+`buscar_por_semelhanca(query, limite)` no contrato `FonteDePrecedentes`:
+
+- **`FonteSupabase(db, embedder)`** — vetoriza a query via `EmbedderPort`
+  e consulta com o operador `<=>` (distância de cosseno) direto no SQL
+  parametrizado (sem RPC), com limiar de similaridade (padrão 0.7) e
+  filtro de citabilidade na própria query.
+- **Fallback honesto** (nunca exceção ao chamador): embedder não injetado,
+  falha do provedor ou do banco → busca por tags com os tokens da query,
+  com aviso em log. Registros sem vetor (backfill pendente) são cobertos
+  pelo fallback.
+- **`FonteJsonVerificada`** — local-first sem vetores: ranking
+  determinístico por sobreposição de tokens em tags + tese/ementa.
+
+HITL da fase 2: aplicar `schema/migrations/0002_fase2_busca_semantica.sql`,
+fazer o backfill de `vetor_semantico` como service role (mesmo modelo de
+embedding do `VertexEmbedAdapter`) e injetar o embedder na `FonteSupabase`.
+
 ## Testes
 
 ```bash
-pytest -q nexum_engine/   # 64 testes; sem rede, sem credenciais
+pytest -q nexum_engine/   # 79 testes; sem rede, sem credenciais
 ```
 
 CI: `.github/workflows/nexum-engine-tests.yml` roda a suíte em todo
