@@ -246,3 +246,41 @@ def test_fonte_do_arquivo_e_herdada_pelo_registro(tmp_path):
     assert p.fonte_verificacao.endswith("(arquivo)")
     # A herança da fonte NÃO tira ninguém da quarentena.
     assert executar(fonte.obter_por_numero("HC 000.000/XX")) is None
+
+
+def test_extrai_sumula_vinculante_e_adc_composta():
+    """Regressão do ponto cego de 15/07: 'Súmula Vinculante 11' passava SEM
+    auditoria (não era extraída) — o pior modo de falha para um gate."""
+    texto = (
+        "Nos termos da Súmula Vinculante 11 e das ADC 43, 44 e 54, "
+        "bem como da Súmula 444/STJ..."
+    )
+    assert extrair_citacoes(texto) == [
+        "Súmula Vinculante 11",
+        "ADC 43, 44 e 54",
+        "Súmula 444/STJ",
+    ]
+
+
+def test_sumula_vinculante_casa_com_a_base(tmp_path):
+    base = {
+        "tema": "STF",
+        "precedentes": [
+            {
+                "numero": "Súmula Vinculante 11",
+                "tese": "algemas: excepcionalidade justificada por escrito",
+                "fonte_verificacao": "STF — SV 11",
+            },
+            {
+                "numero": "ADC 43, 44 e 54",
+                "tese": "art. 283 CPP constitucional",
+                "fonte_verificacao": "STF — Plenário 07/11/2019",
+            },
+        ],
+    }
+    (tmp_path / "05.json").write_text(json.dumps(base, ensure_ascii=False), "utf-8")
+    fonte = FonteJsonVerificada(tmp_path)
+    rel = executar(auditar_citacoes(
+        "Aplicam-se a Súmula Vinculante 11 e as ADC 43, 44 e 54.", fonte
+    ))
+    assert rel.protocolavel, [c.citacao for c in rel.nao_verificadas]
