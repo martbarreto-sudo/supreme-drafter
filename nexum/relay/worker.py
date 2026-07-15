@@ -27,7 +27,7 @@ from typing import Any, Callable, Protocol
 
 from opentelemetry.trace import Status, StatusCode
 
-from nexum.observability.tracing import TRACER
+from nexum.observability.tracing import TRACER, configure_tracing
 
 logger = logging.getLogger("nexum.relay")
 
@@ -275,6 +275,11 @@ if __name__ == "__main__":
         "(env: NEXUM_MAX_ATTEMPTS)",
     )
     args = parser.parse_args()
+
+    # Ativa o tracing apenas no processo real (executado como modulo), antes do
+    # laco principal. No-op quando OTEL_TRACES_EXPORTER esta ausente/"none";
+    # com OTEL_* injetado pelo Helm/compose os spans passam a exportar de fato.
+    configure_tracing(service_name=os.getenv("OTEL_SERVICE_NAME", "nexum-relay"))
 
     conn_factory = _build_pg_conn_factory(args.dsn)
     publisher = _build_pubsub_publisher()
