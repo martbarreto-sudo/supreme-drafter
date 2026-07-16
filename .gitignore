@@ -19,3 +19,6 @@ dist-peca/
 # Python
 __pycache__/
 *.pyc
+
+# Local deliverables — confidential client exports, never commit (public showcase repo)
+_entregas/
