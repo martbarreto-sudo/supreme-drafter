@@ -27,7 +27,8 @@ jobs:
 
     services:
       postgres:
-        image: postgres:16-alpine
+        # Superset drop-in do postgres:16 com a extensao pgvector embutida.
+        image: pgvector/pgvector:pg16
         env:
           POSTGRES_USER: nexum
           POSTGRES_PASSWORD: nexum
@@ -67,6 +68,11 @@ jobs:
         env:
           PGPASSWORD: nexum
         run: psql -h localhost -U nexum -d nexum -f nexum/infra/schema.sql
+
+      - name: Load engine (pgvector) schema into Postgres
+        env:
+          PGPASSWORD: nexum
+        run: psql -h localhost -U nexum -d nexum -f nexum/engine/schema.sql
 
       - name: Run unit tests
         run: python -m pytest nexum -q -m "not integration"

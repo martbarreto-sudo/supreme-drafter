@@ -10,3 +10,7 @@ opentelemetry-api>=1.27
 opentelemetry-sdk>=1.27
 # Exportador OTLP OPCIONAL (importado tardiamente apenas com OTEL_TRACES_EXPORTER=otlp):
 # opentelemetry-exporter-otlp-proto-grpc>=1.27
+# pgvector OPCIONAL: a camada engine passa o vetor como literal texto (%s::vector),
+# entao nao ha dependencia dura. Descomente para registrar o adapter nativo
+# (pgvector.psycopg.register_vector) e passar listas em vez de literais:
+# pgvector>=0.2
