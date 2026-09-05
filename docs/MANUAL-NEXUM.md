@@ -74,6 +74,16 @@ Resumo (detalhe em [`stack-ia.md`](stack-ia.md)):
 - Revisão sob demanda: comentar **`@gemini-cli /review`** no PR, ou
   *Actions → Peer-Review TIER 0 → Run workflow*.
 
+### 2.6 Validar a esteira localmente (sem credenciais)
+Antes de configurar os provedores no console, dá para **ver o gate funcionando**
+offline, com revisores simulados:
+```bash
+python3 .github/scripts/dryrun_tier0.py --cenario aprovado    # exit 0
+python3 .github/scripts/dryrun_tier0.py --cenario reprovado   # exit 1
+```
+Mostra o relatório consolidado, o veredito/score e o **filtro LGPD** em ação
+(CPF/telefone/e-mail mascarados; OAB dos sócios preservada). Não faz rede.
+
 ---
 
 ## 3. Runbook do Admin
