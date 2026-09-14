@@ -139,8 +139,33 @@ PDF bruto ─► POST /audit ─► DossierHunterSchema ─► POST /draft/llm �
 > `POST /audit` opera em **modo simulação**: extrai texto do PDF e gera um dossiê
 > determinístico (semeado pelo hash do conteúdo), com omissões intencionais derivadas
 > dos termos encontrados (`hash`, `plenário`, `portaria`, `contemporaneidade`). Não é
-> perícia real — troque `mock_auditor._extrair_texto` por pypdf/pdfplumber e ligue o
-> `DeepHunter` real quando houver credencial.
+> perícia real — ligue o `DeepHunter` real quando houver credencial.
+
+### Extração de texto (`deep_hunter/pdf_text.py`)
+
+A varredura de termos lê o **texto efectivamente exibido** na página, não os bytes
+crus do ficheiro. O extractor é stdlib pura (sem dependências, sem rede): localiza os
+*content streams*, infla o que for deflate (`zlib`) e interpreta os operadores de
+exibição (`Tj`, `TJ`, `'`, `"`), remontando palavras partidas por kerning dentro dos
+vectores `TJ`. A normalização remove acentos, de modo que `plenário ≡ plenario`.
+
+Ordem de tentativa — vence a primeira que render texto:
+
+| Ordem | Via | Quando actua |
+|---|---|---|
+| 1 | Extractor stdlib | Padrão. Cobre o PDF comprimido típico do PJe. |
+| 2 | `pypdf` | Só se instalado **e** se (1) nada render — fica opcional para que a instalação padrão permaneça determinística. |
+| 3 | Varredura crua `latin-1` | Resgate para PDFs sem streams (lineares, não comprimidos). |
+
+> ⚠️ Por que isto importa: enquanto a varredura era feita sobre os bytes crus, todo
+> PDF real (texto dentro de stream comprimido) era lido como **vazio** — e portanto
+> auditado como "seco", com todas as omissões sinalizadas e a cadeia de custódia dada
+> por quebrada mesmo quando os autos traziam hash, ata e portaria. Num instrumento
+> forense esse é o pior modo de falha: **fabricar nulidades inexistentes**.
+
+Limites assumidos (é best-effort, não um parser PDF completo): não resolve `/Length`
+indirecto, não decifra PDFs encriptados e não aplica `/Differences` de codificação de
+fonte. Para perícia real, `pypdf`/`pdfplumber` continuam a ser o caminho.
 
 ## Nota técnica sobre determinismo
 

@@ -6,8 +6,9 @@ e com omissões intencionais derivadas dos termos encontrados no texto. Serve pa
 fechar o ciclo local `PDF → /audit → DossierHunterSchema → /draft/llm` sem tocar no
 provedor. Não é perícia real — é uma esteira de teste previsível.
 
-Para extração de texto real, troque `_extrair_texto` por pypdf/pdfplumber; o contrato
-de saída permanece idêntico.
+A extração de texto é real (ver `pdf_text`): infla os *content streams* e lê os
+operadores de exibição, de modo que a varredura de termos funcione em PDFs
+comprimidos — e não apenas nos não comprimidos das fixtures.
 """
 
 from __future__ import annotations
@@ -22,12 +23,18 @@ from schema.dossier_hunter import (
     MidiaPericiaCustodia,
 )
 
+from .pdf_text import extract_text, normalizar
+
 _BASE = datetime(2026, 2, 1, 9, 0, tzinfo=timezone.utc)
 
 
 def _extrair_texto(raw: bytes) -> str:
-    """Extração best-effort: decodifica o corpo bruto para varredura de termos."""
-    return raw.decode("latin-1", errors="ignore").lower()
+    """Texto dos autos, normalizado (minúsculas, sem acentos) para varredura de termos.
+
+    Delega em `pdf_text.extract_text`, que trata streams comprimidos; a normalização
+    torna a detecção insensível à acentuação e às quebras de linha da paginação.
+    """
+    return normalizar(extract_text(raw))
 
 
 def _npu_sintetico(seed_hex: str) -> str:
@@ -50,8 +57,9 @@ def audit_pdf_bytes(raw: bytes, filename: str = "autos.pdf") -> DossierHunterSch
     seed = hashlib.sha256(raw).hexdigest()
     seed_int = int(seed[:8], 16)
 
+    # O texto já chega normalizado (sem acentos), logo um termo por grafia basta.
     tem_hash = any(t in texto for t in ("hash", "sha-256", "sha256", "md5"))
-    tem_plenario = "plenário" in texto or "plenario" in texto
+    tem_plenario = "plenario" in texto
     tem_portaria = "portaria" in texto
     tem_contemporaneidade = "contemporaneidade" in texto
 

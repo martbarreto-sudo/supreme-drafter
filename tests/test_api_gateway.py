@@ -6,6 +6,7 @@ payloads legítimos — sem qualquer chamada de rede ao provedor LLM.
 
 from __future__ import annotations
 
+from conftest import build_pdf
 from fastapi.testclient import TestClient
 
 from deep_hunter.api import app
@@ -128,3 +129,29 @@ def test_ciclo_completo_audit_para_draft():
     assert d.status_code == 200
     assert d.json()["npu"] == dossie["npu"]
     assert "[DIRETRIZ RETÓRICA - MODO NULIDADE]" in d.json()["instrucao_retorica"]
+
+
+def test_audit_le_pdf_realista_com_stream_comprimido():
+    """Regressão de ponta a ponta: num PDF real o texto vive num stream comprimido.
+
+    Enquanto a varredura era feita sobre os bytes crus, estes autos — que trazem
+    hash, ata e portaria — voltavam do gateway com todas as omissões sinalizadas.
+    """
+    pdf = build_pdf(
+        b"BT (laudo com hash sha-256 verificado; ata de plenario juntada; portaria de "
+        b"designacao; analise de contemporaneidade da preventiva) Tj ET"
+    )
+    r = client.post("/audit", files={"file": ("autos.pdf", pdf, "application/pdf")})
+    assert r.status_code == 200
+    d = r.json()
+    assert d["auditoria_custodia"][0]["possui_quebra_custodia"] is False
+    assert d["omissao_analise_contemporaneidade"] is False
+    assert d["ausencia_ata_plenario"] is False
+
+    # E o dossiê resultante continua a servir o /draft/llm sem retoques.
+    draft = client.post(
+        "/draft/llm",
+        json={"modo": "CUSTODIA", "conteudo_base": "sintese", "dados_hunter": d},
+    )
+    assert draft.status_code == 200
+    assert draft.json()["npu"] == d["npu"]
