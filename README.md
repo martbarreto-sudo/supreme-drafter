@@ -126,7 +126,7 @@ Rotas:
 
 | Rota | Descrição |
 |---|---|
-| `POST /audit` | Recebe os autos em PDF (`multipart/form-data`, campo `file`) e devolve o `DossierHunterSchema` (auditor **mock local**, Zero-Credencial). PDF vazio/corrompido → **422**. |
+| `POST /audit` | Recebe os autos em PDF (`multipart/form-data`, campo `file`) e devolve o `DossierHunterSchema` (auditor **mock local**, Zero-Credencial). PDF vazio/corrompido → **422**; acima do teto de upload (~25 MB, o que cabe em 32 MB depois do base64) → **413**. |
 | `POST /draft/llm` | Recebe `{modo, conteudo_base, dados_hunter: DossierHunterSchema}` e devolve a instrução retórica. Payload espúrio → **422** nativo. |
 | `GET /health` | Sonda de saúde. |
 
@@ -174,10 +174,16 @@ parâmetro `temperature` (retorna 400). O objectivo — respostas determinístic
 ancoradas — é alcançado por:
 
 - `output_config={"effort": "high"}` e *adaptive thinking* (raciocínio controlado);
-- um **contrato de grounding** no system prompt que obriga à citação da folha (`fls.`)
-  dos autos para validar qualquer facto;
+- um **contrato de grounding** no system prompt que obriga a ancorar cada entrada no
+  `id_documento` do PJe que a comprova (citação de página fica indisponível: as
+  citações nativas da API são incompatíveis com `output_config.format` — daí
+  `load_pdf_block(..., citations=False)` no Deep Hunter);
 - **saída estruturada** (`output_config.format`) para o Deep Hunter, garantindo um
-  payload JSON estável entregue ao Supreme Drafter.
+  payload JSON estável entregue ao Supreme Drafter. As restrições que structured
+  outputs não aceita como palavra-chave (o `pattern` do NPU) seguem anexadas à
+  `description` do campo, de modo que o modelo continue a vê-las;
+- `DEEP_HUNTER_EFFORT` validado na construção do `RunConfig` (`low`…`max`), em vez de
+  falhar no servidor a meio de uma auditoria.
 
 > ⚠️ Ferramenta de apoio à investigação defensiva (Provimento 188/2018 CFOAB). Toda a
 > saída é minuta sujeita à revisão e assinatura do Operador Tier 0. Não constitui

@@ -47,3 +47,19 @@ def test_rejeita_nao_pdf(tmp_path):
     p.write_bytes(b"isto nao e um pdf")
     with pytest.raises(ValueError, match="magic bytes"):
         load_pdf_block(p)
+
+
+def test_teto_considera_a_inflacao_do_base64(tmp_path):
+    """O limite de 32 MB é do corpo enviado, e base64 infla o ficheiro em ~4/3.
+
+    Aferir o PDF cru contra 32 MB deixava passar autos de ~33 MB que viravam um
+    payload de ~45 MB — recusado pela API depois de lido, codificado e transmitido.
+    """
+    from deep_hunter.pdf_ingest import MAX_PDF_BYTES, MAX_REQUEST_BYTES
+
+    assert base64.standard_b64encode(b"x" * MAX_PDF_BYTES).__len__() <= MAX_REQUEST_BYTES
+
+    p = tmp_path / "volumoso.pdf"
+    p.write_bytes(b"%PDF-" + b"0" * MAX_PDF_BYTES)
+    with pytest.raises(ValueError, match="excede o teto"):
+        load_pdf_block(p)

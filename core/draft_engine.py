@@ -8,6 +8,7 @@ Módulo Hunter dá-se por `DraftRequest.dados_hunter` (payload do DossierHunter)
 from __future__ import annotations
 
 import enum
+from typing import Dict
 
 from pydantic import BaseModel, Field
 

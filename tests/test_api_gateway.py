@@ -155,3 +155,22 @@ def test_audit_le_pdf_realista_com_stream_comprimido():
     )
     assert draft.status_code == 200
     assert draft.json()["npu"] == d["npu"]
+
+
+def test_audit_barra_upload_acima_do_teto(monkeypatch):
+    """Sem teto, `await file.read()` trazia o upload inteiro para memória."""
+    from deep_hunter import api as api_mod
+
+    monkeypatch.setattr(api_mod, "MAX_UPLOAD_BYTES", 1024)
+    grande = b"%PDF-1.4\n" + b"0" * 4096
+    r = client.post("/audit", files={"file": ("autos.pdf", grande, "application/pdf")})
+    assert r.status_code == 413
+    assert "teto" in r.json()["detail"]
+
+
+def test_audit_aceita_upload_dentro_do_teto(monkeypatch):
+    from deep_hunter import api as api_mod
+
+    monkeypatch.setattr(api_mod, "MAX_UPLOAD_BYTES", 1 << 20)
+    r = client.post("/audit", files={"file": ("autos.pdf", _PDF_COM_TERMOS, "application/pdf")})
+    assert r.status_code == 200

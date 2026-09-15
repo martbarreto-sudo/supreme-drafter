@@ -11,6 +11,10 @@ from enum import Enum
 DEFAULT_MODEL = os.environ.get("DEEP_HUNTER_MODEL", "claude-opus-4-8")
 DEFAULT_EFFORT = os.environ.get("DEEP_HUNTER_EFFORT", "high")
 
+# Níveis aceites por `output_config.effort`. Um valor fora desta lista só falhava
+# no servidor (HTTP 400) — depois de os autos terem sido lidos e transmitidos.
+EFFORTS_VALIDOS = ("low", "medium", "high", "xhigh", "max")
+
 # Streaming é obrigatório para max_tokens grande (evita timeout HTTP do SDK).
 MAX_TOKENS = 32000
 
@@ -79,3 +83,11 @@ class RunConfig:
     model: str = DEFAULT_MODEL
     effort: str = DEFAULT_EFFORT
     max_tokens: int = MAX_TOKENS
+
+    def __post_init__(self) -> None:
+        if self.effort not in EFFORTS_VALIDOS:
+            raise ValueError(
+                f"Nível de esforço inválido: {self.effort!r}. "
+                f"Use um de {', '.join(EFFORTS_VALIDOS)} "
+                "(variável DEEP_HUNTER_EFFORT)."
+            )

@@ -3,9 +3,18 @@ modelo Pydantic — fonte única de verdade, aposentando o schema JSON duplicado
 
 Structured outputs da Messages API exige, em cada objeto, `additionalProperties:
 false` e `required` completo, e NÃO suporta restrições de string/numéricas
-(pattern, minLength, minimum, ...). Este conversor normaliza o schema do Pydantic
-para essas regras; a validação fina (ex.: pattern do NPU) permanece client-side
-no `DossierHunterSchema.model_validate_json`.
+(pattern, minLength, minimum, ...).
+
+Duas regras de segurança governam este conversor:
+
+1. **Restrição removida é restrição preservada na descrição.** Descartar o
+   `pattern` do NPU em silêncio deixava o modelo sem qualquer indicação do
+   formato do CNJ — e a validação client-side (`model_validate_json`) rejeitava
+   a resposta depois de a auditoria já ter sido paga. O que a API não aceita como
+   palavra-chave segue anexado à `description`, como faz o próprio SDK.
+2. **Só nós de schema são filtrados.** As chaves de `properties`/`$defs` são
+   nomes de campos, não palavras-chave: filtrá-las apagava do contrato, sem erro
+   algum, qualquer campo chamado `pattern`, `maxLength`, `minimum`...
 """
 
 from __future__ import annotations
@@ -14,7 +23,8 @@ from typing import Any
 
 from pydantic import BaseModel
 
-# Restrições não suportadas por structured outputs — removidas do schema enviado.
+# Restrições não suportadas por structured outputs — retiradas das palavras-chave
+# do schema e reexpostas ao modelo dentro da `description`.
 _UNSUPPORTED = {
     "pattern",
     "minLength",
@@ -29,18 +39,43 @@ _UNSUPPORTED = {
     "uniqueItems",
 }
 
+# Chaves cujo valor é um mapa `nome → subschema` (as chaves são nomes de campos).
+_MAPAS_DE_SUBSCHEMA = {"properties", "$defs", "definitions"}
+# Chaves cujo valor é dado literal do domínio, não schema — não se recorre nelas.
+_LITERAIS = {"enum", "const", "default", "examples", "title", "description"}
+
+
+def _com_restricoes(descricao: Any, descartadas: dict) -> str:
+    """Anexa à descrição as restrições que a API não aceita como palavra-chave."""
+    sufixo = "{" + ", ".join(f"{k}: {v}" for k, v in descartadas.items()) + "}"
+    return f"{descricao}\n\n{sufixo}" if descricao else sufixo
+
 
 def _normalize(node: Any) -> Any:
-    if isinstance(node, dict):
-        out = {k: _normalize(v) for k, v in node.items() if k not in _UNSUPPORTED}
-        if out.get("type") == "object":
-            props = out.get("properties", {})
-            out["additionalProperties"] = False
-            out["required"] = list(props.keys())  # strict: todos obrigatórios
-        return out
     if isinstance(node, list):
         return [_normalize(x) for x in node]
-    return node
+    if not isinstance(node, dict):
+        return node
+
+    out: dict = {}
+    descartadas: dict = {}
+    for k, v in node.items():
+        if k in _UNSUPPORTED:
+            descartadas[k] = v
+        elif k in _MAPAS_DE_SUBSCHEMA:
+            out[k] = {nome: _normalize(sub) for nome, sub in v.items()}
+        elif k in _LITERAIS:
+            out[k] = v
+        else:
+            out[k] = _normalize(v)
+
+    if descartadas:
+        out["description"] = _com_restricoes(out.get("description"), descartadas)
+
+    if out.get("type") == "object":
+        out["additionalProperties"] = False
+        out["required"] = list(out.get("properties", {}))  # strict: todos obrigatórios
+    return out
 
 
 def to_anthropic_schema(model: type[BaseModel]) -> dict:
