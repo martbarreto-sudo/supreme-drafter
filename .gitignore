@@ -16,3 +16,7 @@ out/
 .DS_Store
 .idea/
 .vscode/
+
+# Cobertura de testes
+.coverage
+htmlcov/
