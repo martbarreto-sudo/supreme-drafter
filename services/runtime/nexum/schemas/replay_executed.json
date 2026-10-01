@@ -1,0 +1,19 @@
+{
+  "specversion": "1.0",
+  "id": "993ba12d-cd77-4321-ba32-4e5a6b7c8d9e",
+  "source": "urn:nexum:platform:dlq-manager",
+  "type": "br.nexum.infra.replay.executed.v1",
+  "subject": "art_5541bda2-ef99-4c00-bb12-9c12bdae1102",
+  "time": "2026-07-02T03:40:00Z",
+  "datacontenttype": "application/json",
+  "correlationid": "550ea1a2-ff12-4cbd-8991-2bc15daff874",
+  "idempotencykey": "art_5541bda2-ef99-4c00-bb12-9c12bdae1102:REPLAY_01",
+  "isreplay": true,
+  "operatorid": "MATRICULA_YDIGORAS_8832",
+  "data": {
+    "original_event_id": "2da1bb23-4e8c-4f11-99ee-cc123ba4c718",
+    "target_topic": "nexum.artifact-events",
+    "original_dlq_timestamp": "2026-07-02T03:10:00Z",
+    "justification": "Replay autorizado por P3 tecnica. Conexao TCP reestabelecida com a base downstream."
+  }
+}

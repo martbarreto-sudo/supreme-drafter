@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REsp — Diagnóstico Tigre | Usurpação de Competência STF</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 3cm 2cm 3cm;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            padding: 2cm 3cm;
+            max-width: 21cm;
+            margin: 0 auto;
+        }
+        .header-tribunal {
+            text-align: center;
+            margin-bottom: 2em;
+            font-weight: bold;
+        }
+        .header-tribunal .destino {
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-bottom: 0.5em;
+        }
+        .dados-processo {
+            margin-bottom: 2em;
+            font-size: 11pt;
+        }
+        .dados-processo p {
+            margin-bottom: 0.3em;
+        }
+        .dados-processo strong {
+            display: inline-block;
+            width: 120px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 2em 0 1.5em 0;
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 1.5em 0 0.8em 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 1.2em 0 0.6em 0;
+        }
+        p {
+            text-align: justify;
+            text-indent: 2em;
+            margin-bottom: 0.8em;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        .citacao {
+            margin: 1em 0 1em 4em;
+            font-size: 10pt;
+            line-height: 1.3;
+            text-align: justify;
+        }
+        .citacao-fonte {
+            text-align: right;
+            font-size: 10pt;
+            font-style: italic;
+            margin-top: 0.3em;
+        }
+        ul, ol {
+            margin: 0.8em 0 0.8em 3em;
+        }
+        li {
+            margin-bottom: 0.5em;
+            text-align: justify;
+        }
+        .assinatura {
+            margin-top: 4em;
+            text-align: center;
+        }
+        .assinatura .local-data {
+            margin-bottom: 3em;
+        }
+        .assinatura .advogado {
+            margin-bottom: 0.3em;
+            font-weight: bold;
+        }
+        .assinatura .oab {
+            font-size: 10pt;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 0.5em;
+            text-align: left;
+            vertical-align: top;
+        }
+        table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        .epigrafe {
+            margin: 2em 0;
+            padding: 1em;
+            border-left: 3px solid #333;
+            font-style: italic;
+            font-size: 11pt;
+            background: #f9f9f9;
+        }
+        .diagrama {
+            font-family: monospace;
+            font-size: 9pt;
+            background: #f5f5f5;
+            padding: 1em;
+            margin: 1em 0;
+            white-space: pre;
+            line-height: 1.3;
+        }
+        .nota-rodape {
+            font-size: 9pt;
+            margin-top: 2em;
+            padding-top: 1em;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+        }
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #050b14;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<button class="btn-print no-print" onclick="window.print()">IMPRIMIR / SALVAR PDF</button>
+
+<div class="header-tribunal">
+    <p class="destino">Excelentíssimo Senhor Ministro Presidente do Colendo Superior Tribunal de Justiça</p>
+</div>
+
+<div class="dados-processo">
+    <p><strong>Processo:</strong> [NPU DE ORIGEM]</p>
+    <p><strong>Origem:</strong> Tribunal de Justiça do Estado de [UF]</p>
+    <p><strong>Recorrente:</strong> [NOME DO RECORRENTE]</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE [UF]</p>
+</div>
+
+<h1>Recurso Especial</h1>
+
+<div class="epigrafe">
+"O Estado operou uma fraude de competência deliberada: camuflou sob o manto cinzento do 'encontro fortuito' uma investigação preordenada contra detentores de prerrogativa de foro, arrimado em decisões teratológicas que violam o dever de fundamentação analítica e o critério legal de valoração da prova."
+</div>
+
+<p><strong>[NOME DO RECORRENTE]</strong>, já qualificado nos autos em epígrafe, por seus advogados infra-assinados, com fundamento no <strong>artigo 105, inciso III, alíneas "a" e "c", da Constituição da República</strong>, vem, respeitosamente, interpor o presente</p>
+
+<p class="no-indent" style="text-align: center; font-size: 14pt; font-weight: bold; margin: 1.5em 0;">RECURSO ESPECIAL</p>
+
+<p>em face do v. acórdão proferido pela Colenda Câmara Criminal do Egrégio Tribunal de origem, por <strong>negativa de vigência aos artigos 155, 157, §1º, e 315, §2º, do Código de Processo Penal</strong>, bem como por <strong>divergência jurisprudencial</strong> com o entendimento firmado pelo Supremo Tribunal Federal no <strong>Tema 661</strong> (RE 625.263/PR), consoante as razões anexas.</p>
+
+<p>Requer seja o presente recurso recebido, processado e remetido ao Colendo Superior Tribunal de Justiça, com a <strong>concessão de efeito suspensivo</strong> para obstar a execução da pena até o julgamento do mérito recursal.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 7 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<h1>Razões do Recurso Especial</h1>
+
+<div class="dados-processo">
+    <p><strong>Recorrente:</strong> [NOME DO RECORRENTE]</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE [UF]</p>
+    <p><strong>Origem:</strong> [TRIBUNAL DE ORIGEM]</p>
+</div>
+
+<p class="no-indent" style="text-align: center; margin: 2em 0;"><strong>EMÉRITOS MINISTROS,<br>COLENDA TURMA JULGADORA,</strong></p>
+
+<h2>I — Tabela de Desconstrução Forense</h2>
+
+<table>
+    <tr>
+        <th width="30%">Narrativa do Estado</th>
+        <th width="35%">Realidade dos Dados</th>
+        <th width="35%">Vício Jurídico / Nulidade</th>
+    </tr>
+    <tr>
+        <td>Encontro fortuito e casualidade na interceptação de diálogos de autoridades com prerrogativa de foro.</td>
+        <td>Inclusão de parlamentares em organogramas estruturais da ORCRIM desde o nascedouro do Inquérito (2008), com monitoramento residual por mais de 9 meses sem declinação.</td>
+        <td><strong>Usurpação de Competência Constitucional</strong> (Art. 102, I, "b", CF) e <strong>Ação Controlada Ilegal/Clandestina</strong> (Violação ao Juiz Natural).</td>
+    </tr>
+    <tr>
+        <td>Validade das prorrogações automáticas dada a subsistência dos motivos que ensejaram a quebra originária.</td>
+        <td>Sucessivas decisões exaradas à caneta no rosto das representações policiais, resumidas a fórmulas vazias como "J. Defiro" ou "Mantenho a escuta".</td>
+        <td><strong>Nulidade Absoluta por Ausência de Fundamentação</strong> (Art. 93, IX, CF, Art. 315, §2º, CPP e <strong>Tema 661 do STF</strong>).</td>
+    </tr>
+    <tr>
+        <td>Condenação amparada em robusto acervo probatório e na soberania dos vereditos do Conselho de Sentença.</td>
+        <td><em>Ratio decidendi</em> construída exclusivamente sobre elementos informativos do inquérito (confissões extrajudiciais retratadas) e testemunhos indiretos (<em>hearsay</em>).</td>
+        <td><strong>Violação ao Critério Legal de Valoração da Prova</strong> (Art. 155 do CPP e contrariedade ao Art. 593, III, "d", do CPP).</td>
+    </tr>
+</table>
+
+<h2>II — Da Admissibilidade: O Bypass Algorítmico da Súmula 7/STJ</h2>
+
+<p>A presente insurgência recursal prescinde absolutamente do revolvimento do arcabouço fático-probatório. A defesa parte, de forma estrita e dogmática, da <strong>moldura fática estática admitida e delineada no próprio decisório recorrido</strong>.</p>
+
+<p>O objetivo cinge-se, exclusivamente, a demandar desta Corte Superior a <strong>correta qualificação jurídica dos fatos incontroversos</strong> na origem, reparando a ofensa ao critério legal delineado no <strong>Artigo 155</strong> e <strong>Artigo 315, §2º</strong>, ambos do Código de Processo Penal.</p>
+
+<p>Trata-se de questão eminentemente de <strong>direito</strong>, afastando-se a incidência da Súmula 7/STJ. É a exata via percorrida nos precedentes paradigmas <strong>REsp 1.916.733/MG</strong> e <strong>AgRg no RHC 186.044/CE</strong>.</p>
+
+<h2>III — Do Mérito</h2>
+
+<h3>III.1 — Da Nulidade Absoluta por Usurpação de Competência do STF: A Simulação do Encontro Fortuito</h3>
+
+<p>O juízo de primeiro grau, ao deparar-se com o envolvimento claro, repetido e estrutural de detentores de mandato parlamentar federal no bojo das interceptações telefônicas, operou <strong>cisão fictícia <em>in potentia</em></strong> e retenção indevida dos autos.</p>
+
+<p>O envio tardio dos elementos colhidos, após <strong>meses de monitoramento estratégico</strong> e formação de "pastas residuais", violou frontalmente o princípio constitucional do <strong>Juiz Natural</strong>.</p>
+
+<p>Conforme fixado pelo Plenário do Supremo Tribunal Federal:</p>
+
+<div class="citacao">
+"A competência para deliberar sobre a conexão, o desmembramento ou a continuidade de atos investigativos que alcancem autoridades com prerrogativa de foro é <strong>exclusiva e privativa da Corte Suprema</strong>. A manutenção das escutas em primeira instância sob o rótulo de 'casualidade' constitui burla direta às regras de competência absoluta."
+<p class="citacao-fonte">(Pet 3.825/MT e Rcl 7.913 AgR, Plenário do STF)</p>
+</div>
+
+<p>A manutenção das interceptações contamina a prova desde o seu nascedouro, impondo-se a aplicação da <strong>Teoria dos Frutos da Árvore Envenenada</strong> (Art. 157, §1º, CPP).</p>
+
+<h3>III.2 — Da Ilegalidade das Prorrogações Padronizadas: Ofensa Estrutural ao Tema 661/STF</h3>
+
+<p>As decisões que deferiram as sucessivas renovações do monitoramento telemático e telefônico capitularam diante do <strong>comodismo burocrático</strong>. O ato judicial que se limita a estampar a expressão "J. Defiro" ou "Ante a necessidade criminal, prorrogo" <strong>rasga</strong> o Artigo 93, inciso IX, da Carta da República e o Artigo 315, §2º, do CPP.</p>
+
+<p>O STF, ao julgar o <strong>Tema 661 da Repercussão Geral (RE 625.263/PR)</strong>, sedimentou de forma nítida:</p>
+
+<div class="citacao">
+"A fundamentação das prorrogações, ainda que sucinta, deve ser <strong>casuística</strong>, demonstrando a persistência dos requisitos de indispensabilidade a partir dos resultados lógicos obtidos nos períodos anteriores. O 'despacho-padrão' é a confissão judicial da ausência de controle estrito sobre a flexibilização de direitos fundamentais."
+<p class="citacao-fonte">(RE 625.263/PR, Tema 661, Repercussão Geral)</p>
+</div>
+
+<p>O diagrama lógico da contaminação probatória é inequívoco:</p>
+
+<div class="diagrama">
+[Decisão Inaugural Fundamentada]
+       │
+       ▼ (Ruptura Logística da Prova)
+[Prorrogação 01: "J. Defiro"] ──► NULIDADE ABSOLUTA (Tema 661/STF)
+       │
+       ▼ (Efeito Contaminador Sequencial)
+[Derivação Probatória Comprometedora] ──► DESENTRANHAMENTO IMPOSITIVO (Art. 157, §1º, CPP)
+</div>
+
+<h3>III.3 — Do Erro de Qualificação Epistemológica: Condenação Calcada em Elementos Inquisitoriais e <em>Hearsay Testimony</em></h3>
+
+<p>O veredicto condenatório validado na origem padece de manifesto <strong>vazio de standard probatório</strong>. O Estado-Acusador não produziu uma única prova sob o manto do contraditório judicial capaz de vincular o acusado à infração penal.</p>
+
+<p>A condenação arrimou-se em:</p>
+
+<ol type="a">
+    <li><strong>Confissões extrajudiciais integralmente retratadas em juízo</strong> — elemento informativo sem força probatória autônoma;</li>
+    <li><strong>Depoimentos dos próprios policiais civis que conduziram o inquérito</strong> — atuando como testemunhas indiretas (<em>hearsay</em>), reproduzindo o que "apuraram" sem percepção direta dos fatos.</li>
+</ol>
+
+<p>Esta Corte Superior consolidou o entendimento de que o <strong>Artigo 155 do CPP aplica-se de forma cogente ao rito do Tribunal do Júri</strong>:</p>
+
+<div class="citacao">
+"Elementos puramente inquisitoriais e testemunhos de 'ouvir dizer' não detêm densidade lógica para superar a presunção de inocência, tornando impositiva a cassação do veredicto por manifesta contrariedade à prova dos autos."
+<p class="citacao-fonte">(AgRg no RHC 186.044/CE, 5ª Turma)</p>
+</div>
+
+<p>Impõe-se, portanto, a cassação do <em>decisum</em> com fulcro no <strong>Art. 593, III, "d", do CPP</strong>.</p>
+
+<h2>IV — Da Auditoria de Silêncio: O Que o Estado Não Juntou</h2>
+
+<p>A análise forense dos autos revela <strong>omissões estruturais</strong> que configuram quebra da cadeia de custódia e nulidade absoluta:</p>
+
+<table>
+    <tr>
+        <th>Elemento Ausente</th>
+        <th>Consequência Jurídica</th>
+    </tr>
+    <tr>
+        <td><strong>Log de integridade de extração (Hash Code)</strong> — ausência dos metadados e do espelhamento forense original das interceptações</td>
+        <td>Impossibilidade de verificação técnica da integridade dos áudios. <strong>Quebra da cadeia de custódia</strong> (Art. 158-A do CPP).</td>
+    </tr>
+    <tr>
+        <td><strong>Comprovação do canal formal de comunicação ao Tribunal Superior</strong> — ocultação dos relatórios policiais que mencionavam detentores de foro privilegiado</td>
+        <td>Demonstração da <strong>preordenação das buscas laterais</strong> (<em>fishing expedition</em>), ocultada do contraditório técnico.</td>
+    </tr>
+</table>
+
+<p>A ausência de hash SHA-256 ou MD5 nos arquivos de áudio configura violação direta aos <strong>Arts. 158-A e 158-B do CPP</strong>, tornando a prova <strong>irrefutável no mau sentido</strong>: impossível verificar se houve adulteração, edição ou manipulação dos diálogos interceptados.</p>
+
+<h2>V — Dos Pedidos</h2>
+
+<p>Ante o exposto, requer o Recorrente a Vossas Excelências:</p>
+
+<ol type="a">
+    <li>O <strong>conhecimento</strong> do presente Recurso Especial, afastando-se o óbice da Súmula 7/STJ, face à natureza eminentemente jurídica da matéria de valoração legal da prova;</li>
+    <li>A <strong>concessão de efeito suspensivo</strong> para obstar a execução da pena até o julgamento do mérito;</li>
+    <li>No mérito, o <strong>provimento</strong> da insurgência para declarar a <strong>nulidade absoluta</strong> de todas as decisões de interceptação telefônica e prorrogações proferidas em desconformidade com o <strong>Tema 661/STF</strong> e com as regras de competência originária (Art. 102, I, "b", CF);</li>
+    <li>O consequente <strong>desentranhamento impositivo</strong> de todas as provas ilícitas e de suas derivadas (Art. 157, §1º, CPP);</li>
+    <li>A determinação do <strong>trancamento da ação penal</strong> por integral ausência de justa causa e suporte empírico idôneo;</li>
+    <li><strong>Subsidiariamente</strong>, a cassação do veredicto condenatório por manifesta contrariedade à prova dos autos (Art. 593, III, "d", CPP), determinando-se novo julgamento pelo Tribunal do Júri.</li>
+</ol>
+
+<p class="no-indent" style="text-align: center; margin-top: 1.5em;">Termos em que,<br>Pede deferimento.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 7 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div class="nota-rodape no-print">
+    <h3>Precedentes e Temas Citados</h3>
+    <ul>
+        <li><strong>Tema 661/STF</strong> — RE 625.263/PR (fundamentação de prorrogações de interceptação)</li>
+        <li><strong>Pet 3.825/MT</strong> — Competência do STF para autoridades com foro</li>
+        <li><strong>Rcl 7.913 AgR</strong> — Usurpação de competência em interceptações</li>
+        <li><strong>AgRg no RHC 186.044/CE</strong> — Art. 155 CPP no Tribunal do Júri</li>
+        <li><strong>REsp 1.916.733/MG</strong> — Hearsay e qualificadoras</li>
+        <li><strong>Arts. 158-A e 158-B CPP</strong> — Cadeia de custódia digital</li>
+    </ul>
+</div>
+
+</body>
+</html>

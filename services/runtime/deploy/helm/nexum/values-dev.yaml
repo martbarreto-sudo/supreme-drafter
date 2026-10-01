@@ -1,0 +1,37 @@
+# Overlay de DESENVOLVIMENTO — espelha o docker-compose.yml.
+#
+# Uso:
+#   helm template nexum deploy/helm/nexum -f deploy/helm/nexum/values-dev.yaml
+#
+# Aponta para os nomes de servico do compose (postgres/redis/pubsub) e para o
+# emulador Pub/Sub, com 1 replica de cada componente.
+
+image:
+  # Imagem construida localmente pelo compose (build: nexum/Dockerfile).
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+consumer:
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+
+relay:
+  replicaCount: 1
+
+externalServices:
+  postgres:
+    dsn: "postgresql://nexum:nexum@postgres:5432/nexum"
+  redis:
+    url: "redis://redis:6379/0"
+  pubsub:
+    topic: "projects/nexum-local/topics/nexum.artifact-events"
+    # Emulador Pub/Sub do compose (servico `pubsub`, porta 8085).
+    emulatorHost: "pubsub:8085"
+
+otel:
+  enabled: true
+  exporter: "otlp"
+  # Collector local do stack dev (ajuste conforme seu docker-compose de otel).
+  endpoint: "http://otel-collector:4317"
+  serviceNamePrefix: "nexum"

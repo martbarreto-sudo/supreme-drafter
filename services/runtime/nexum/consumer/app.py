@@ -1,0 +1,134 @@
+"""Consumidor FastAPI idempotente do pipeline forense NEXUM.
+
+Recebe CloudEvents em modo estruturado (JSON no corpo), deduplica via Redis
+(`SET NX`) usando a `idempotencykey`, e roteia eventos P1 para o dispatcher de
+alertas (SIEM/PagerDuty). A dedup garante semantica *effectively-once* sobre um
+transporte at-least-once.
+
+Se o dispatch de um evento P1 falhar, a chave de idempotencia e LIBERADA
+(`DEL`) e a resposta e 500: a redelivery do transporte reprocessa o evento em
+vez de descarta-lo como duplicata. Sem isso, um alerta critico de integridade
+poderia se perder para sempre apos uma falha transitoria de SIEM/PagerDuty.
+"""
+
+from __future__ import annotations
+
+import logging
+import os
+from typing import Any, Callable, Optional, Protocol
+
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from opentelemetry.trace import Status, StatusCode
+
+from nexum.alerting import dispatcher as default_dispatcher
+from nexum.cloudevents import CloudEvent, Priority
+from nexum.observability.tracing import TRACER
+
+logger = logging.getLogger("nexum.consumer")
+
+# TTL da chave de idempotencia: 7 dias (em segundos).
+IDEMPOTENCY_TTL_SECONDS = 7 * 24 * 60 * 60
+IDEMPOTENCY_PREFIX = "nexum:idem:"
+
+
+class RedisLike(Protocol):
+    """Contrato minimo de um cliente Redis para dedup (SET NX + EX e DEL)."""
+
+    def set(
+        self,
+        name: str,
+        value: Any,
+        *,
+        nx: bool = False,
+        ex: Optional[int] = None,
+    ) -> Optional[bool]:
+        """Executa SET; com nx=True retorna verdadeiro apenas se criou a chave."""
+        ...
+
+    def delete(self, *names: str) -> Any:
+        """Remove chaves (libera a dedup quando o processamento falha)."""
+        ...
+
+
+def create_app(redis_client: RedisLike, dispatcher: Any) -> FastAPI:
+    """Fabrica de aplicacao FastAPI com dependencias injetadas (testavel)."""
+
+    app = FastAPI(title="NEXUM Consumidor Idempotente", version="1.0.0")
+
+    @app.get("/healthz")
+    def healthz() -> dict:
+        return {"status": "ok"}
+
+    @app.post("/events")
+    def receive_event(event: CloudEvent) -> dict:
+        priority = event.priority()
+        with TRACER.start_as_current_span("consumer.handle_event") as span:
+            span.set_attribute("nexum.event_type", event.type)
+            span.set_attribute("nexum.correlation_id", event.correlationid)
+            span.set_attribute("nexum.idempotency_key", event.idempotencykey)
+            span.set_attribute("nexum.priority", priority.value)
+
+            key = f"{IDEMPOTENCY_PREFIX}{event.idempotencykey}"
+            created = redis_client.set(
+                key, event.id, nx=True, ex=IDEMPOTENCY_TTL_SECONDS
+            )
+            span.set_attribute("nexum.is_duplicate", not bool(created))
+            if not created:
+                logger.info(
+                    "Evento duplicado descartado idempotencykey=%s",
+                    event.idempotencykey,
+                )
+                return {
+                    "status": "duplicate",
+                    "idempotencykey": event.idempotencykey,
+                }
+
+            logger.info(
+                "Evento aceito type=%s priority=%s idempotencykey=%s",
+                event.type,
+                priority.value,
+                event.idempotencykey,
+            )
+            if priority is Priority.P1:
+                try:
+                    dispatcher.dispatch(event)
+                except Exception as exc:
+                    # Libera a chave para que a redelivery (at-least-once) seja
+                    # reprocessada em vez de descartada como duplicata. Os sinks
+                    # sao idempotentes (dedup_key = idempotencykey), entao um
+                    # eventual re-dispatch parcial nao duplica o incidente.
+                    span.record_exception(exc)
+                    span.set_status(Status(StatusCode.ERROR, str(exc)))
+                    logger.exception(
+                        "Falha no dispatch P1 idempotencykey=%s; "
+                        "chave liberada para redelivery",
+                        event.idempotencykey,
+                    )
+                    redis_client.delete(key)
+                    return JSONResponse(
+                        status_code=500,
+                        content={
+                            "status": "dispatch_failed",
+                            "idempotencykey": event.idempotencykey,
+                        },
+                    )
+
+            return {"status": "accepted"}
+
+    return app
+
+
+def _default_redis_client() -> RedisLike:
+    """Constroi um cliente Redis real a partir de REDIS_URL (importacao tardia)."""
+
+    import redis  # importado apenas na inicializacao do processo real
+
+    url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    return redis.Redis.from_url(url, decode_responses=True)
+
+
+def get_app() -> FastAPI:
+    """Ponto de entrada de producao: le env e injeta cliente/dispatcher reais."""
+
+    return create_app(_default_redis_client(), default_dispatcher)
