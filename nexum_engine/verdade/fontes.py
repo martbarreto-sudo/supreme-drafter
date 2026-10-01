@@ -107,7 +107,8 @@ class FonteJsonVerificada:
                 if not p.citavel:
                     continue  # quarentena/sem fonte: invisível para o auditor
                 self._todos.append(p)
-                self._indice[p.numero_normalizado] = p
+                for chave in p.chaves_de_indice:
+                    self._indice[chave] = p
 
     @property
     def total_citaveis(self) -> int:
