@@ -167,6 +167,31 @@ Limites assumidos (é best-effort, não um parser PDF completo): não resolve `/
 indirecto, não decifra PDFs encriptados e não aplica `/Differences` de codificação de
 fonte. Para perícia real, `pypdf`/`pdfplumber` continuam a ser o caminho.
 
+## Canal do modelo — primeira parte ou Vertex AI
+
+O motor fala, por omissão, com a **API comercial da Anthropic**. Quem exija que os
+autos não saiam do seu próprio perímetro de nuvem comuta para o **Vertex AI**, onde
+o Claude é servido dentro do projecto Google Cloud do cliente, por variável de
+ambiente — sem alterar uma linha do pipeline:
+
+```bash
+DEEP_HUNTER_PROVEDOR=vertex
+ANTHROPIC_VERTEX_PROJECT_ID=meu-projecto-gcp
+CLOUD_ML_REGION=us-east5          # a região define onde a inferência ocorre
+```
+
+As credenciais do Vertex resolvem-se por ADC (`gcloud auth application-default
+login`); um provedor desconhecido é recusado na construção do `RunConfig`, e a rota
+Vertex sem as dependências instaladas falha com indicação do extra
+(`pip install "anthropic[vertex]"`).
+
+Tudo o que o Deep Hunter exige do canal é suportado nas duas rotas: PDF como bloco
+`document`, saída estruturada, *adaptive thinking* com `effort` e streaming. O que
+**não** é portável: `inference_geo` (residência de dados por parâmetro) existe
+apenas na API de primeira parte — no Vertex a localização da inferência é a região
+do projecto. A disponibilidade do modelo fixado em `DEEP_HUNTER_MODEL` numa dada
+região do Vertex é facto do catálogo do provedor, a confirmar por quem opera.
+
 ## Nota técnica sobre determinismo
 
 A especificação pede *temperatura zero*. O modelo `claude-opus-4-8` não aceita o

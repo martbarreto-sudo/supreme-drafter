@@ -12,6 +12,7 @@ from schema.dossier_hunter import DossierHunterSchema
 
 from .agents import DeepHunter, SupremeDrafter
 from .config import Comando, Modo, RunConfig
+from .providers import build_client
 
 
 @dataclass
@@ -25,8 +26,9 @@ class Resultado:
 class Pipeline:
     """Ponto de entrada de alto nível da Doutrina de Combate Híbrido.
 
-    O `client` usa o construtor de argumentos-zero da SDK, que resolve as credenciais
-    a partir do ambiente (ANTHROPIC_API_KEY ou perfil `ant auth login`).
+    Sem cliente injectado, `build_client` constrói o do provedor configurado em
+    `DEEP_HUNTER_PROVEDOR` (primeira parte por omissão, Vertex AI em alternativa);
+    as credenciais saem do ambiente em ambos os casos.
     """
 
     def __init__(
@@ -35,7 +37,7 @@ class Pipeline:
         config: RunConfig | None = None,
     ):
         self.config = config or RunConfig()
-        self.client = client or anthropic.Anthropic()
+        self.client = client or build_client(self.config)
         self.hunter = DeepHunter(self.client, self.config)
         self.drafter = SupremeDrafter(self.client, self.config)
 
