@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexum.fullname" . }}-relay
+  labels:
+    {{- include "nexum.relay.labels" . | nindent 4 }}
+spec:
+  # SELECT ... FOR UPDATE SKIP LOCKED torna seguro escalar >1; default relay.replicaCount.
+  replicas: {{ .Values.relay.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nexum.relay.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nexum.relay.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "nexum.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: relay
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Override do CMD default da imagem: executa o worker Outbox.
+          command: ["python", "-m", "nexum.relay.worker"]
+          env:
+            # NEXUM_OUTBOX_DSN: lido pelo argparse default do worker.
+            {{- if .Values.secrets.existingSecret }}
+            - name: NEXUM_OUTBOX_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.existingSecret }}
+                  key: outbox-dsn
+            {{- else }}
+            - name: NEXUM_OUTBOX_DSN
+              value: {{ .Values.externalServices.postgres.dsn | quote }}
+            {{- end }}
+            - name: NEXUM_PUBSUB_TOPIC
+              value: {{ .Values.externalServices.pubsub.topic | quote }}
+            - name: NEXUM_POLL_INTERVAL
+              value: {{ .Values.relay.pollInterval | quote }}
+            - name: NEXUM_MAX_ATTEMPTS
+              value: {{ .Values.relay.maxAttempts | quote }}
+            {{- if .Values.externalServices.pubsub.emulatorHost }}
+            # Direciona google-cloud-pubsub ao emulador (apenas dev).
+            - name: PUBSUB_EMULATOR_HOST
+              value: {{ .Values.externalServices.pubsub.emulatorHost | quote }}
+            {{- end }}
+            {{- if .Values.otel.enabled }}
+            - name: OTEL_TRACES_EXPORTER
+              value: {{ .Values.otel.exporter | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otel.endpoint | quote }}
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.otel.serviceNamePrefix }}-relay"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.namespace=nexum,service.name={{ .Values.otel.serviceNamePrefix }}-relay"
+            {{- end }}
+          # Liveness minima: o relay e um worker sem porta de entrada, entao
+          # checamos apenas se o processo do worker segue vivo. (Sem readiness:
+          # nao ha trafego inbound a "servir".)
+          livenessProbe:
+            exec:
+              command: ["pgrep", "-f", "nexum.relay.worker"]
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            {{- toYaml .Values.relay.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

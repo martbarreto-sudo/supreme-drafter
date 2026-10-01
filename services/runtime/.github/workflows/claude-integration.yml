@@ -1,0 +1,16 @@
+name: Claude Integration Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  integrate-claude:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Claude Task
+        run: |
+          echo "Iniciando integração com Claude IA..."

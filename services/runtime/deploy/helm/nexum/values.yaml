@@ -1,0 +1,116 @@
+# Valores padrao do chart NEXUM.
+#
+# O contrato de env espelha o docker-compose.yml:
+#   - consumidor  -> REDIS_URL
+#   - relay       -> NEXUM_OUTBOX_DSN / NEXUM_PUBSUB_TOPIC / PUBSUB_EMULATOR_HOST
+#                    (+ NEXUM_POLL_INTERVAL / NEXUM_MAX_ATTEMPTS)
+# Postgres/Redis/Pub-Sub sao EXTERNOS (ver externalServices).
+
+# -- Imagem unica do pipeline (consumidor via CMD default, relay via override).
+image:
+  repository: nexum
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+# -- Secrets de registry privado (opcional). Ex.: [{ name: regcred }]
+imagePullSecrets: []
+
+# Sobrescreve o nome base gerado pelos helpers (opcional).
+nameOverride: ""
+fullnameOverride: ""
+
+# -----------------------------------------------------------------------------
+# Consumidor (FastAPI/uvicorn) — nexum.consumer.asgi:app, porta HTTP 8000.
+# -----------------------------------------------------------------------------
+consumer:
+  # Replicas quando o autoscaling esta desligado.
+  replicaCount: 2
+  containerPort: 8000
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  service:
+    type: ClusterIP
+    port: 8000
+  # HPA (usado pelo template consumer-hpa.yaml quando enabled).
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 75
+
+# -----------------------------------------------------------------------------
+# Relay (worker Outbox) — python -m nexum.relay.worker. Sem porta de entrada.
+# -----------------------------------------------------------------------------
+relay:
+  # O relay usa SELECT ... FOR UPDATE SKIP LOCKED, entao e SEGURO escalar >1
+  # (multiplas instancias nao competem pela mesma linha). Default 1.
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  # Ajuste fino do laco de drenagem (env lidas por nexum/relay/worker.py).
+  pollInterval: "1.0"
+  maxAttempts: "5"
+
+# -----------------------------------------------------------------------------
+# Servicos EXTERNOS (nao provisionados por este chart).
+# Em producao, prefira injetar DSN/URL via Secret (ver secrets.existingSecret).
+# -----------------------------------------------------------------------------
+externalServices:
+  postgres:
+    # DSN lido pelo relay como NEXUM_OUTBOX_DSN.
+    dsn: "postgresql://nexum:nexum@nexum-postgres:5432/nexum"
+  redis:
+    # URL lido pelo consumidor como REDIS_URL.
+    url: "redis://nexum-redis:6379/0"
+  pubsub:
+    # Caminho completo do topico (o cliente pubsub_v1 publica no path).
+    topic: "projects/nexum-local/topics/nexum.artifact-events"
+    # Host do emulador Pub/Sub (PUBSUB_EMULATOR_HOST). Vazio = Pub/Sub real (GCP).
+    emulatorHost: ""
+
+# -----------------------------------------------------------------------------
+# OpenTelemetry — injeta OTEL_* nos dois deployments.
+# nexum/observability/tracing.py le OTEL_TRACES_EXPORTER e
+# OTEL_EXPORTER_OTLP_ENDPOINT; o service.name segue serviceNamePrefix-<componente>.
+# -----------------------------------------------------------------------------
+otel:
+  enabled: true
+  exporter: "otlp"
+  endpoint: "http://otel-collector:4317"
+  serviceNamePrefix: "nexum"
+
+# -----------------------------------------------------------------------------
+# Secrets — DSN/URL sensiveis.
+# Em producao, forneca um Secret com as chaves `outbox-dsn` e `redis-url` e
+# aponte existingSecret para ele; os deployments passam a usar secretKeyRef.
+# -----------------------------------------------------------------------------
+secrets:
+  # Nome de um Secret ja existente no cluster. Se definido, os deployments leem
+  # NEXUM_OUTBOX_DSN/REDIS_URL via secretKeyRef (chaves outbox-dsn/redis-url).
+  existingSecret: ""
+  # Se true, o chart RENDERIZA um Secret de exemplo (secret-example.yaml) a
+  # partir de externalServices (apenas conveniencia dev; nao use em prod real).
+  create: false
+
+# ServiceAccount usado por ambos os deployments.
+serviceAccount:
+  create: true
+  # Nome; vazio = derivado de nexum.fullname.
+  name: ""
+  annotations: {}
+
+# Passthrough comum a ambos os deployments.
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexum.fullname" . }}-consumer
+  labels:
+    {{- include "nexum.consumer.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.consumer.autoscaling.enabled }}
+  replicas: {{ .Values.consumer.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "nexum.consumer.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nexum.consumer.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "nexum.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: consumer
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # Sem command: usa o CMD default da imagem (uvicorn nexum.consumer.asgi:app).
+          ports:
+            - name: http
+              containerPort: {{ .Values.consumer.containerPort }}
+              protocol: TCP
+          env:
+            # REDIS_URL: lido por nexum/consumer/app.py (_default_redis_client).
+            {{- if .Values.secrets.existingSecret }}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.existingSecret }}
+                  key: redis-url
+            {{- else }}
+            - name: REDIS_URL
+              value: {{ .Values.externalServices.redis.url | quote }}
+            {{- end }}
+            {{- if .Values.otel.enabled }}
+            # OpenTelemetry (nexum/observability/tracing.py).
+            - name: OTEL_TRACES_EXPORTER
+              value: {{ .Values.otel.exporter | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otel.endpoint | quote }}
+            - name: OTEL_SERVICE_NAME
+              value: "{{ .Values.otel.serviceNamePrefix }}-consumer"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.namespace=nexum,service.name={{ .Values.otel.serviceNamePrefix }}-consumer"
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.consumer.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.consumer.containerPort }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.consumer.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
