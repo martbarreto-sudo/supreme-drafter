@@ -178,10 +178,13 @@ ancoradas — é alcançado por:
   `id_documento` do PJe que a comprova (citação de página fica indisponível: as
   citações nativas da API são incompatíveis com `output_config.format` — daí
   `load_pdf_block(..., citations=False)` no Deep Hunter);
-- **saída estruturada** (`output_config.format`) para o Deep Hunter, garantindo um
-  payload JSON estável entregue ao Supreme Drafter. As restrições que structured
-  outputs não aceita como palavra-chave (o `pattern` do NPU) seguem anexadas à
-  `description` do campo, de modo que o modelo continue a vê-las;
+- **saída estruturada nativa** para o Deep Hunter: o contrato vai como
+  `output_format=DossierHunterSchema` e é o SDK que deriva o JSON Schema estrito
+  (`output_config.format`) e valida a resposta — o bloco de texto volta com
+  `parsed_output` já tipado. Não há conversor próprio a manter: as restrições que a
+  API não aceita como palavra-chave (o `pattern` do NPU) seguem anexadas à
+  `description` pelo próprio SDK, e a validação usa `TypeAdapter.validate_json`,
+  pelo que um NPU fora do padrão CNJ continua a ser recusado;
 - `DEEP_HUNTER_EFFORT` validado na construção do `RunConfig` (`low`…`max`), em vez de
   falhar no servidor a meio de uma auditoria.
 

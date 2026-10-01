@@ -54,6 +54,9 @@ def hex_utf16(texto: str) -> bytes:
 class FakeBlock:
     type: str
     text: str = ""
+    # Espelha o `ParsedTextBlock` do SDK: quando `output_format` é passado, o
+    # bloco de texto volta com o contrato já validado.
+    parsed_output: object = None
 
 
 @dataclass
@@ -88,7 +91,7 @@ class _Messages:
 
 @dataclass
 class FakeClient:
-    """Devolve dossiê ou peça consoante `output_config.format` esteja presente."""
+    """Devolve dossiê ou peça consoante `output_format` esteja presente."""
 
     dossie: dict = field(default_factory=dict)
     peca: str = "# Peça de teste\n\n— Minuta"
@@ -99,9 +102,12 @@ class FakeClient:
         self.messages = _Messages(self)
 
     def next_message(self, kwargs) -> FakeMessage:
-        has_format = "format" in kwargs.get("output_config", {})
-        if has_format:  # Deep Hunter → JSON
+        formato = kwargs.get("output_format")
+        if formato is not None:  # Deep Hunter → contrato validado
+            texto = json.dumps(self.dossie, ensure_ascii=False)
+            # Mesma chamada que o SDK faz (`parse_text` → `validate_json`), logo um
+            # payload fora do contrato levanta aqui, como levantaria em produção.
             return FakeMessage(
-                content=[FakeBlock("text", json.dumps(self.dossie, ensure_ascii=False))]
+                content=[FakeBlock("text", texto, formato.model_validate_json(texto))]
             )
         return FakeMessage(content=[FakeBlock("text", self.peca)])  # Supreme Drafter

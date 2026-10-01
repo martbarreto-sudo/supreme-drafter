@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+from pydantic import ValidationError
 
 from deep_hunter import Modo, ModoRedacional, Pipeline
 from schema.dossier_hunter import DossierHunterSchema
@@ -50,9 +51,11 @@ def test_audit_devolve_contrato(pdf):
     assert isinstance(dossie, DossierHunterSchema)
     assert dossie.npu == "0001258-15.2026.8.17.4002"
     assert dossie.auditoria_custodia[0].possui_quebra_custodia is True
-    # Deep Hunter usa structured outputs (format presente) e sem citações no PDF.
+    # Structured outputs nativo: o contrato vai como `output_format`, sem schema
+    # montado à mão, e o PDF vai sem citações (incompatíveis com saída estruturada).
     call = client.calls[0]
-    assert "format" in call["output_config"]
+    assert call["output_format"] is DossierHunterSchema
+    assert "format" not in call["output_config"]
     pdf_block = call["messages"][0]["content"][0]
     assert "citations" not in pdf_block
 
@@ -76,3 +79,23 @@ def test_run_ponta_a_ponta(pdf):
     assert isinstance(resultado.dossie, DossierHunterSchema)
     assert resultado.peca_markdown
     assert len(client.calls) == 2  # auditoria + redação
+
+
+def test_audit_devolve_modelo_validado_e_nao_texto(pdf):
+    """O que sai do auditor é o contrato em si, não JSON por validar."""
+    pipeline = Pipeline(client=FakeClient(dossie=DOSSIE))
+    dossie = pipeline.audit(pdf)
+    assert isinstance(dossie, DossierHunterSchema)
+    assert dossie.linha_tempo_atos[0].data_ato.year == 2026  # datetime, não string
+
+
+def test_audit_rejeita_dossie_fora_do_contrato(pdf):
+    """Severidade preservada na migração: o SDK valida com TypeAdapter.validate_json.
+
+    Um NPU fora do padrão CNJ tem de levantar — antes era o nosso
+    `model_validate_json`, agora é o parse do próprio SDK.
+    """
+    ruim = {**DOSSIE, "npu": "NPU-INVENTADO"}
+    pipeline = Pipeline(client=FakeClient(dossie=ruim))
+    with pytest.raises(ValidationError):
+        pipeline.audit(pdf)

@@ -16,7 +16,6 @@ from schema.dossier_hunter import DossierHunterSchema
 from .config import Comando, Modo, RunConfig
 from .pdf_ingest import load_pdf_block
 from .prompts import DEEP_HUNTER_SYSTEM, SUPREME_DRAFTER_SYSTEM, deep_hunter_instruction
-from .schema import DOSSIE_SCHEMA
 
 
 class DeepHunter:
@@ -39,14 +38,16 @@ class DeepHunter:
         pdf_block = load_pdf_block(pdf_path, citations=False)
         instrucao = deep_hunter_instruction(modo.foco, [c.diretriz for c in comandos])
 
+        # `output_format` entrega o contrato ao SDK: ele deriva o JSON Schema estrito
+        # (preservando na `description` as restrições que a API não aceita como
+        # palavra-chave, como o pattern do NPU) e valida a resposta com
+        # `TypeAdapter.validate_json` — um NPU fora do padrão CNJ levanta aqui.
         with self.client.messages.stream(
             model=self.config.model,
             max_tokens=self.config.max_tokens,
             thinking={"type": "adaptive"},
-            output_config={
-                "effort": self.config.effort,
-                "format": {"type": "json_schema", "schema": DOSSIE_SCHEMA},
-            },
+            output_config={"effort": self.config.effort},
+            output_format=DossierHunterSchema,
             system=DEEP_HUNTER_SYSTEM,
             messages=[{"role": "user", "content": [pdf_block, {"type": "text", "text": instrucao}]}],
         ) as stream:
@@ -55,11 +56,17 @@ class DeepHunter:
         if message.stop_reason == "refusal":
             raise RuntimeError(f"Auditoria recusada pelo modelo: {message.stop_details}")
 
-        text = next((b.text for b in message.content if b.type == "text"), "")
-        if not text.strip():
-            raise RuntimeError("Deep Hunter não devolveu conteúdo (dossiê vazio).")
-        # Validação client-side (inclui o pattern do NPU, aposentado do schema enviado).
-        return DossierHunterSchema.model_validate_json(text)
+        dossie = next(
+            (
+                b.parsed_output
+                for b in message.content
+                if b.type == "text" and getattr(b, "parsed_output", None) is not None
+            ),
+            None,
+        )
+        if dossie is None:
+            raise RuntimeError("Deep Hunter não devolveu o contrato (dossiê vazio).")
+        return dossie
 
 
 class SupremeDrafter:
