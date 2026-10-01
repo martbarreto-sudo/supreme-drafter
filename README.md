@@ -29,9 +29,9 @@ Dependências do runtime: `pip install -r services/runtime/nexum/requirements.tx
 > ⚠️ **A API de `public/openapi.json` é ROADMAP, não runtime.** As rotas ali descritas
 > (`/messages/stream`, `rt_nx_auth`, barramento assíncrono) não estão implementadas em
 > `public/`; o que roda é `nexum_engine` (biblioteca) e `services/runtime` (pipeline).
-> Há **três cópias** da especificação no repositório — `public/openapi.json`, a cópia
-> embutida em `public/api.html` e `services/runtime/docs/api-spec.json`: consolidar numa
-> só é débito técnico aberto.
+> A spec tem **uma fonte canônica** — `public/openapi.json`. As outras duas cópias
+> (`public/api.html` como fallback e `services/runtime/docs/api-spec.json`) são
+> **geradas** por `tools/sync-spec.py`; o teste de paridade falha se divergirem.
 
 ## 🌐 No ar (GitHub Pages)
 
