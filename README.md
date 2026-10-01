@@ -8,6 +8,31 @@ rotulados como demonstração.
 > 📘 **Comece pelo [Manual da Plataforma NEXUM](docs/MANUAL-NEXUM.md)** — guia
 > único para operadores (uso diário) e admin (runbook de configuração).
 
+## 🗺️ Mapa do repositório (pós-unificação das árvores)
+
+Até 10/2026 este repositório abrigava **dois troncos sem ancestral comum**, e cada
+sessão ou agente que entrava descrevia uma realidade diferente conforme o tronco em
+que caísse. A branch `feature/unificacao-arvores` reconciliou os dois preservando
+ambos os históricos (`merge -s ours --allow-unrelated-histories` + `read-tree --prefix`).
+
+| Diretório | O que é | Estado |
+|---|---|---|
+| `public/` | Vitrine estática V18 publicada no GitHub Pages | **no ar** |
+| `nexum_engine/` | Biblioteca de auditoria (hexagonal: `ports`/`adapters`, `verdade/gate`, `verdade/auditor`) — o **gatekeeper de citações** | **em uso** |
+| `services/runtime/` | Pipeline CloudEvents v1.0: Outbox Relay, consumidor idempotente, DLQ com replay, OpenTelemetry, Helm/K8s, `docker-compose` com pgvector | **executável, não publicado** |
+| `minutas/` | 20 peças processuais (HTML + PDF) | entregáveis |
+| `tools/` | Degravação e geração de PDF | utilitário |
+
+**Suíte unificada:** `pytest` na raiz coleta as duas árvores (140 testes).
+Dependências do runtime: `pip install -r services/runtime/nexum/requirements.txt`.
+
+> ⚠️ **A API de `public/openapi.json` é ROADMAP, não runtime.** As rotas ali descritas
+> (`/messages/stream`, `rt_nx_auth`, barramento assíncrono) não estão implementadas em
+> `public/`; o que roda é `nexum_engine` (biblioteca) e `services/runtime` (pipeline).
+> Há **três cópias** da especificação no repositório — `public/openapi.json`, a cópia
+> embutida em `public/api.html` e `services/runtime/docs/api-spec.json`: consolidar numa
+> só é débito técnico aberto.
+
 ## 🌐 No ar (GitHub Pages)
 
 **https://martbarreto-sudo.github.io/supreme-drafter/**
