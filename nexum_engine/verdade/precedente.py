@@ -33,8 +33,18 @@ class Precedente:
 
     @property
     def citavel(self) -> bool:
-        """Doutrina 100/100: citável = fonte oficial presente e sem quarentena."""
-        return bool(self.fonte_verificacao) and not self.verificacao_pendente
+        """Doutrina 100/100: citável = fonte oficial presente e sem quarentena.
+
+        O campo ``fonte_verificacao`` é texto livre, e bases reais o usam para
+        registrar a PENDÊNCIA em vez da verificação ("PENDENTE — validar antes
+        de citar"). Lido como mera presença de string, esse aviso virava prova
+        de verificação e o gate aprovava a citação que a base proibia. Por isso
+        a pendência é detectada também no texto e no número, não só na flag.
+        """
+        if self.verificacao_pendente or _em_quarentena(self.numero):
+            return False
+        fonte = self.fonte_verificacao.strip()
+        return bool(fonte) and not _texto_indica_pendencia(fonte)
 
     @property
     def numero_normalizado(self) -> str:
@@ -67,6 +77,35 @@ class Precedente:
 
 _PONTO_ENTRE_DIGITOS = re.compile(r"(?<=\d)\.(?=\d)")
 _ESPACOS = re.compile(r"\s+")
+
+# Marcações que as bases MINDJUS usam para declarar que um registro NÃO está
+# verificado. Aparecem no início de ``fonte_verificacao`` ou como prefixo do
+# ``numero``; em ambos os casos o registro está em quarentena, não liberado.
+_SENTINELAS_DE_PENDENCIA = (
+    "PENDENTE",
+    "A CONFERIR",
+    "CONFERIR",
+    "NAO-VERIFICADO",
+    "NÃO-VERIFICADO",
+    "NAO VERIFICADO",
+    "NÃO VERIFICADO",
+    "SEM NUMERO",
+    "SEM NÚMERO",
+)
+
+
+def _texto_indica_pendencia(texto: str) -> bool:
+    """Verdadeiro quando o texto declara pendência em vez de verificação."""
+    cabeca = texto.strip().lstrip("[(*- ").upper()
+    return any(cabeca.startswith(s) for s in _SENTINELAS_DE_PENDENCIA)
+
+
+def _em_quarentena(numero: str) -> bool:
+    """Número prefixado com marcação de quarentena (ex.: '[A CONFERIR] ...')."""
+    bruto = numero.strip().upper()
+    if not bruto.startswith(("[", "(")):
+        return False
+    return any(s in bruto[:40] for s in _SENTINELAS_DE_PENDENCIA)
 
 
 def normalizar_citacao(citacao: str) -> str:
