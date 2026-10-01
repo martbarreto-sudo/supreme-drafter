@@ -22,6 +22,10 @@ from .precedente import Precedente, normalizar_citacao
 # por desenho (nada passa sem correspondência exata na base).
 _PADRAO_CITACAO = re.compile(
     r"""
+    \b                       # a classe precisa começar palavra: sem o \b,
+                             # "sobre 9 mm" extraía "RE 9" e "refere 42" extraía
+                             # "RE 42" — falsos positivos que reprovavam peças
+                             # íntegras e ensinavam a ignorar o gate.
     (?:
         (?P<adc_composta>ADC\s*\d+(?:\s*,\s*\d+)*\s+e\s+\d+)
       |
@@ -34,7 +38,10 @@ _PADRAO_CITACAO = re.compile(
         \s*(?:n[ºo.]?\s*)?(?P<sumula>\d+)
         (?:\s*(?:/|do\s+|da\s+)(?P<corte>STF|STJ))?
       |
-        Tema\s*(?:n[ºo.]?\s*)?(?P<tema>\d+)
+        # O número do tema leva milhar: sem o grupo de ponto, "Tema 1.260" e
+        # "Tema 1.196" eram ambos extraídos como "Tema 1" — temas distintos
+        # colidindo numa única chave, o pior erro possível num gate de citações.
+        Tema\s*(?:n[ºo.]?\s*)?(?P<tema>\d+(?:\.\d{3})*)
     )
     """,
     re.VERBOSE | re.IGNORECASE,
