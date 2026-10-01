@@ -1,0 +1,28 @@
+apiVersion: v2
+name: nexum
+description: >-
+  Chart Helm para orquestrar o pipeline forense NEXUM no Kubernetes
+  (consumidor FastAPI + relay Outbox). Postgres, Redis e Pub/Sub sao tratados
+  como servicos EXTERNOS (configurados via values), de modo que o chart renderiza
+  totalmente offline (helm template/lint) sem dependencias de subcharts.
+type: application
+
+# Versao do chart (SemVer) — incrementar a cada mudanca no proprio chart.
+version: 0.1.0
+# Versao da aplicacao empacotada (imagem NEXUM). Aspas para preservar como string.
+appVersion: "0.1.0"
+
+# NOTA: mantido DEPENDENCY-FREE de proposito para renderizar offline.
+# Postgres/Redis/Pub-Sub sao externos (ver values.externalServices).
+# Se no futuro quiser provisionar os stateful stores dentro do cluster, pode-se
+# adicionar subcharts do Bitnami, por exemplo:
+#
+# dependencies:
+#   - name: postgresql
+#     version: "~15.x.x"
+#     repository: https://charts.bitnami.com/bitnami
+#     condition: postgresql.enabled
+#   - name: redis
+#     version: "~19.x.x"
+#     repository: https://charts.bitnami.com/bitnami
+#     condition: redis.enabled

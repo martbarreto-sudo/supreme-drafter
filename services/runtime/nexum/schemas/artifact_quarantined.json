@@ -1,0 +1,20 @@
+{
+  "specversion": "1.0",
+  "id": "e0b4b241-7db9-4672-911b-c6b7ef14cf39",
+  "source": "urn:nexum:artifact-pipeline:scanner",
+  "type": "br.nexum.artifact.quarantined.v1",
+  "subject": "art_883c4290-0f2d-45db-99e0-05047b19dfb4",
+  "time": "2026-07-02T03:35:00Z",
+  "datacontenttype": "application/json",
+  "correlationid": "c76fb9a2-dc18-4e89-8d14-3403d159a68a",
+  "idempotencykey": "art_883c4290-0f2d-45db-99e0-05047b19dfb4:QUARANTINED",
+  "isreplay": false,
+  "operatorid": "system",
+  "data": {
+    "artifact_id": "art_883c4290-0f2d-45db-99e0-05047b19dfb4",
+    "npu_masked": "5001234-[CPF_MASKED_6a7f]-2026-8-16-0001",
+    "original_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "quarantine_bucket_uri": "gs://nexum-forensic-quarantine/isolated/art_883c4290-0f2d-45db-99e0-05047b19dfb4.pdf",
+    "incident_reason": "Assinatura positiva para Trojan.Generic.HEUR na esteira de pre-sanitizacao."
+  }
+}
