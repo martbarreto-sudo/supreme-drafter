@@ -58,3 +58,32 @@ def test_as_duas_copias_da_spec_contam_a_mesma_historia() -> None:
         "A cópia da spec embutida em api.html não traz o aviso de estado que "
         "está em openapi.json — as duas fontes divergiram."
     )
+
+
+def test_copias_da_spec_estao_sincronizadas_com_a_canonica() -> None:
+    """Uma fonte canônica, duas derivadas — e nenhuma pode divergir em silêncio."""
+    import subprocess
+    import sys
+
+    resultado = subprocess.run(
+        [sys.executable, str(RAIZ / "tools" / "sync-spec.py"), "--check"],
+        capture_output=True,
+        text=True,
+    )
+    assert resultado.returncode == 0, resultado.stdout + resultado.stderr
+
+
+def test_copia_do_runtime_aponta_para_a_canonica() -> None:
+    copia = json.loads(
+        (RAIZ / "services" / "runtime" / "docs" / "api-spec.json").read_text(encoding="utf-8")
+    )
+    assert copia["info"].get("x-nexum-canonical-source") == "public/openapi.json"
+    assert len(copia["paths"]) == len(OPENAPI["paths"])
+
+
+def test_pagina_busca_a_canonica_e_so_cai_no_embutido_como_contingencia() -> None:
+    assert 'fetch("openapi.json"' in API_HTML, (
+        "public/api.html voltou a renderizar apenas a cópia embutida — a página "
+        "deixa de refletir a spec canônica."
+    )
+    assert "render(specEmbutida)" in API_HTML, "fallback removido: a página quebra em file://"
