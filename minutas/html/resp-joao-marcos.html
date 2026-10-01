@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REsp — João Marcos dos Santos | Inclusão Federal</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 3cm 2cm 3cm;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #fff;
+            padding: 2cm 3cm;
+            max-width: 21cm;
+            margin: 0 auto;
+        }
+        .header-tribunal {
+            text-align: center;
+            margin-bottom: 2em;
+            font-weight: bold;
+        }
+        .header-tribunal .destino {
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-bottom: 0.5em;
+        }
+        .dados-processo {
+            margin-bottom: 2em;
+            font-size: 11pt;
+        }
+        .dados-processo p {
+            margin-bottom: 0.3em;
+        }
+        .dados-processo strong {
+            display: inline-block;
+            width: 120px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 2em 0 1.5em 0;
+            letter-spacing: 2px;
+        }
+        h2 {
+            font-size: 12pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 1.5em 0 0.8em 0;
+            border-bottom: 1px solid #000;
+            padding-bottom: 0.3em;
+        }
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 1.2em 0 0.6em 0;
+        }
+        p {
+            text-align: justify;
+            text-indent: 2em;
+            margin-bottom: 0.8em;
+        }
+        p.no-indent {
+            text-indent: 0;
+        }
+        .citacao {
+            margin: 1em 0 1em 4em;
+            font-size: 10pt;
+            line-height: 1.3;
+            text-align: justify;
+        }
+        .citacao-fonte {
+            text-align: right;
+            font-size: 10pt;
+            font-style: italic;
+            margin-top: 0.3em;
+        }
+        ul, ol {
+            margin: 0.8em 0 0.8em 3em;
+        }
+        li {
+            margin-bottom: 0.5em;
+            text-align: justify;
+        }
+        .assinatura {
+            margin-top: 4em;
+            text-align: center;
+        }
+        .assinatura .local-data {
+            margin-bottom: 3em;
+        }
+        .assinatura .advogado {
+            margin-bottom: 0.3em;
+            font-weight: bold;
+        }
+        .assinatura .oab {
+            font-size: 10pt;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+        table th, table td {
+            border: 1px solid #000;
+            padding: 0.4em 0.6em;
+            text-align: left;
+            vertical-align: top;
+        }
+        table th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        .nota-rodape {
+            font-size: 9pt;
+            margin-top: 2em;
+            padding-top: 1em;
+            border-top: 1px solid #ccc;
+        }
+        @media print {
+            body {
+                padding: 0;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d4af37;
+            color: #050b14;
+            border: none;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .btn-print:hover {
+            background: #b8962e;
+        }
+        .alerta-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 1em;
+            margin: 1em 0;
+            font-size: 10pt;
+        }
+        .cronologia {
+            font-size: 9pt;
+        }
+        .cronologia td {
+            padding: 0.3em 0.5em;
+        }
+    </style>
+</head>
+<body>
+
+<button class="btn-print no-print" onclick="window.print()">IMPRIMIR / SALVAR PDF</button>
+
+<div class="header-tribunal">
+    <p class="destino">Excelentíssimo Senhor Desembargador Presidente do Egrégio Tribunal de Justiça do Estado de Pernambuco</p>
+</div>
+
+<div class="dados-processo">
+    <p><strong>Processo:</strong> Agravo em Execução Penal nº 0017121-85.2025.8.17.9000</p>
+    <p><strong>Origem:</strong> 1ª Câmara Criminal do TJPE</p>
+    <p><strong>Relator:</strong> Des. Carlos Gil Rodrigues Filho</p>
+    <p><strong>Recorrente:</strong> JOÃO MARCOS DOS SANTOS</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+</div>
+
+<h1>Recurso Especial</h1>
+
+<p><strong>JOÃO MARCOS DOS SANTOS</strong>, já qualificado nos autos do Agravo em Execução Penal em epígrafe, por seus advogados infra-assinados, com fundamento no <strong>artigo 105, inciso III, alíneas "a" e "c", da Constituição da República</strong>, vem, respeitosamente, interpor o presente</p>
+
+<p class="no-indent" style="text-align: center; font-size: 14pt; font-weight: bold; margin: 1.5em 0;">RECURSO ESPECIAL</p>
+
+<p>em face do v. acórdão unânime proferido pela Colenda 1ª Câmara Criminal deste Egrégio Tribunal, publicado em 29/05/2026, que negou provimento ao recurso defensivo e manteve a decisão de inclusão do Recorrente no Sistema Penitenciário Federal, por <strong>negativa de vigência aos artigos 315, §2º, incisos III e IV, 155, 158-A e 158-B do Código de Processo Penal, e ao artigo 10, §1º, da Lei Federal nº 11.671/2008</strong>, consoante as razões anexas.</p>
+
+<p>Requer seja o presente recurso recebido, processado e remetido ao Colendo Superior Tribunal de Justiça, com a <strong>concessão de efeito suspensivo</strong> para obstar a transferência física do Recorrente até o julgamento do mérito recursal.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 4 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div style="page-break-before: always;"></div>
+
+<h1>Razões do Recurso Especial</h1>
+
+<div class="dados-processo">
+    <p><strong>Recorrente:</strong> JOÃO MARCOS DOS SANTOS</p>
+    <p><strong>Recorrido:</strong> MINISTÉRIO PÚBLICO DO ESTADO DE PERNAMBUCO</p>
+    <p><strong>Origem:</strong> Acórdão da 1ª Câmara Criminal do TJPE — Agravo nº 0017121-85.2025.8.17.9000</p>
+</div>
+
+<p class="no-indent" style="text-align: center; margin: 2em 0;"><strong>EMÉRITOS MINISTROS,<br>COLENDA TURMA JULGADORA,</strong></p>
+
+<h2>I — Síntese Fática e Cronologia da Perseguição Institucional</h2>
+
+<p>O Recorrente é reeducando sob custódia do Estado de Pernambuco, tendo cumprido <strong>quatro estadias anteriores</strong> no Sistema Penitenciário Federal em razão de faltas graves datadas de <strong>2007, 2010 e 2014</strong> — todas já exauridas e prescritas.</p>
+
+<p>Em <strong>07 de abril de 2025</strong>, o Superior Tribunal de Justiça, nos autos do <strong>HC nº 985.790/PE</strong> (Rel. Min. Ribeiro Dantas), concedeu ordem de <strong>relaxamento da prisão preventiva</strong> do Recorrente, determinando a expedição de alvará de soltura às 15:12h.</p>
+
+<p>A cronologia dos autos revela que, <strong>no exato período</strong> em que o STJ determinava a soltura, o aparato de segurança estadual acelerou de forma anômala o procedimento de inclusão federal:</p>
+
+<table class="cronologia">
+    <tr>
+        <th width="15%">Data</th>
+        <th>Evento</th>
+        <th width="25%">Anomalia</th>
+    </tr>
+    <tr>
+        <td>16/12/2024</td>
+        <td>Comunicação Interna nº 45/2025 — GTP/SEAP/PE</td>
+        <td>Articulação prévia à ordem do STJ</td>
+    </tr>
+    <tr>
+        <td>10/01/2025</td>
+        <td>Relatório de Inteligência nº 008/2025 — CIIDS/SDS</td>
+        <td>Reciclagem de fatos de 2007/2010/2014</td>
+    </tr>
+    <tr>
+        <td>16/01/2025</td>
+        <td>Ofício SEAP nº 42/2025 — Solicitação de transferência</td>
+        <td>Sem contraditório prévio</td>
+    </tr>
+    <tr>
+        <td>10/02/2025</td>
+        <td>Despacho registrando agravo "antecipado"</td>
+        <td>Recurso registrado antes da decisão</td>
+    </tr>
+    <tr>
+        <td>07/04/2025</td>
+        <td><strong>Alvará de Soltura — STJ (HC 985.790/PE)</strong></td>
+        <td>Ordem relaxada pelo Min. Ribeiro Dantas</td>
+    </tr>
+    <tr>
+        <td>29/04/2025</td>
+        <td>Decisão autorizando inclusão no SPF por 2 anos</td>
+        <td>22 dias após o alvará do STJ</td>
+    </tr>
+    <tr>
+        <td>29/04/2025</td>
+        <td>E-mail enviando peças à SENAPPEN (16:41h)</td>
+        <td>Remessa no mesmo dia da decisão</td>
+    </tr>
+    <tr>
+        <td>26/05/2026</td>
+        <td>Acórdão negando provimento ao agravo</td>
+        <td>Ignorou contraprovas documentais</td>
+    </tr>
+</table>
+
+<p>O procedimento revela <strong>lawfare institucionalizado</strong>: enquanto pedidos de remição (4.327 horas de trabalho/estudo, protocolado em 28/11/2024) e continuidade delitiva (protocolado em 18/10/2022) permanecem <strong>represados há anos</strong>, a transferência para o SPF tramitou em regime de prioridade extraordinária.</p>
+
+<h2>II — Da Admissibilidade</h2>
+
+<h3>II.1 — Do Cabimento (art. 105, III, "a" e "c", CR/88)</h3>
+
+<p>O v. acórdão recorrido negou vigência a múltiplos dispositivos de lei federal:</p>
+
+<ol type="a">
+    <li><strong>Art. 315, §2º, III e IV, do CPP</strong> — fundamentação per relationem abstrata, sem análise das contraprovas defensivas;</li>
+    <li><strong>Arts. 158-A e 158-B do CPP</strong> — admissão de prova digital (prints de WhatsApp e carta manuscrita) sem cadeia de custódia;</li>
+    <li><strong>Art. 155 do CPP</strong> — imputação de plano de fuga com helicóptero baseada em hearsay, contrariando certidão da Polícia Federal;</li>
+    <li><strong>Art. 10, §1º, da Lei nº 11.671/2008</strong> — ausência de contemporaneidade, com uso de faltas prescritas de 2007/2010/2014.</li>
+</ol>
+
+<p>Há, ainda, <strong>divergência jurisprudencial</strong> com julgados desta Corte Superior sobre cadeia de custódia digital (HC 1.036.370/PR) e contemporaneidade para inclusão federal (Súmula 661/STJ).</p>
+
+<h3>II.2 — Da Não Incidência da Súmula 7/STJ</h3>
+
+<p>Não se pretende revolvimento fático. As premissas estão <strong>documentalmente fixadas nos autos</strong>:</p>
+
+<ul>
+    <li>A <strong>Certidão da Polícia Federal</strong> (ID 49563760, fls. 142) atesta a <strong>inexistência de vínculo</strong> entre o Recorrente e a aeronave PR-SRS (suposto plano de fuga com helicóptero);</li>
+    <li>O <strong>Acórdão de Litispendência</strong> (ID 49563761, fls. 189) da Vara Criminal de Ipojuca extinguiu a ação da "Operação Smurfing" por <strong>dupla persecução</strong>;</li>
+    <li>A <strong>ausência de laudo de extração telemática</strong> (Cellebrite/UFED) é incontroversa — não há hash SHA-256, logs de conexão ou identificação de IMEI nos autos.</li>
+</ul>
+
+<p>A questão é de <strong>direito</strong>: definir se tais elementos configuram prova lícita e contemporânea para inclusão federal.</p>
+
+<h3>II.3 — Da Tempestividade e Gratuidade</h3>
+
+<p>O acórdão foi publicado em 29/05/2026. O presente recurso é tempestivo. O Recorrente é beneficiário da justiça gratuita.</p>
+
+<h2>III — Do Mérito</h2>
+
+<h3>III.1 — Eixo 1: Fundamentação Per Relationem Abstrata (Art. 315, §2º, CPP)</h3>
+
+<p>O v. acórdão recorrido limitou-se a <strong>subscrever integralmente</strong> o Relatório de Inteligência nº 008/2025 da SDS/PE, sem analisar as contraprovas documentais anexadas pela defesa:</p>
+
+<ol type="a">
+    <li><strong>Certidão da Polícia Federal</strong> (fls. 142) — atestando inexistência de investigação, vínculo ou comunicação conectando o Recorrente aos pilotos da aeronave PR-SRS;</li>
+    <li><strong>Acórdão de Litispendência</strong> (fls. 189) — extinguindo a "Operação Smurfing" por bis in idem;</li>
+    <li><strong>Incidentes de Remição e Continuidade Delitiva</strong> — demonstrando que a "chance" mencionada em carta referia-se aos benefícios represados, não a plano de fuga.</li>
+</ol>
+
+<p>Esta Corte Superior firmou entendimento de que a técnica de fundamentação <em>per relationem</em> <strong>exige acréscimo de fundamentação própria</strong>:</p>
+
+<div class="citacao">
+"A utilização da técnica de fundamentação per relationem, sob pena de nulidade absoluta, exige do magistrado acréscimo de fundamentação própria e análise concreta das teses defensivas, sendo vedada a mera remissão genérica a pareceres ou relatórios."
+<p class="citacao-fonte">(REsp 2.072.790/DF, Rel. Min. Ribeiro Dantas, 5ª Turma, Info 751)</p>
+</div>
+
+<p>O acórdão recorrido <strong>omitiu-se completamente</strong> sobre a Certidão da PF e o Acórdão de Litispendência, em frontal violação ao art. 93, IX, da CF e ao art. 315, §2º, III e IV, do CPP.</p>
+
+<h3>III.2 — Eixo 2: Quebra de Contemporaneidade e Bis in Idem (Art. 10, §1º, Lei 11.671/08)</h3>
+
+<p>O art. 10, §1º, da Lei Federal nº 11.671/2008 exige que a inclusão no SPF seja justificada por <strong>motivos contemporâneos</strong>. O Relatório de Inteligência, contudo, fundamenta-se em:</p>
+
+<table>
+    <tr>
+        <th>Fato Imputado</th>
+        <th>Data</th>
+        <th>Status</th>
+    </tr>
+    <tr>
+        <td>Fuga do COTEL</td>
+        <td>2007</td>
+        <td>Prescrito (19 anos)</td>
+    </tr>
+    <tr>
+        <td>Fuga da Barreto Campelo</td>
+        <td>2010</td>
+        <td>Prescrito (16 anos)</td>
+    </tr>
+    <tr>
+        <td>Incidente em Salgueiro</td>
+        <td>2014</td>
+        <td>Prescrito (12 anos)</td>
+    </tr>
+    <tr>
+        <td>Operação Smurfing</td>
+        <td>2022</td>
+        <td><strong>Extinta por litispendência</strong></td>
+    </tr>
+</table>
+
+<p>A <strong>Súmula 661/STJ</strong> é expressa:</p>
+
+<div class="citacao">
+"A manutenção de preso em estabelecimento penal federal de segurança máxima deve fundamentar-se em fatos ocorridos durante o período de permanência no sistema e não em registros pretéritos que já justificaram a inclusão."
+</div>
+
+<p>Todos os fatos que justificaram as <strong>quatro inclusões anteriores</strong> do Recorrente no SPF estão <strong>exauridos e prescritos</strong>. Utilizá-los para fundamentar quinta inclusão configura <strong>bis in idem</strong> e viola frontalmente o princípio da contemporaneidade.</p>
+
+<p>O prazo prescricional para faltas disciplinares graves é de <strong>3 anos</strong>, por aplicação analógica do art. 109, VI, do Código Penal. As infrações de 2007, 2010 e 2014 estão <strong>fulminadas pela prescrição</strong>, sendo juridicamente impossível sua valoração em 2025/2026.</p>
+
+<h3>III.3 — Eixo 3: Quebra da Cadeia de Custódia Digital (Arts. 158-A e 158-B, CPP)</h3>
+
+<p>O acórdão recorrido admitiu como prova:</p>
+
+<ol type="a">
+    <li><strong>Prints de WhatsApp</strong> extraídos do celular de corréu — sem hash criptográfico (MD5/SHA-256), sem logs de extração, sem relatório Cellebrite/UFED;</li>
+    <li><strong>Carta manuscrita interceptada</strong> — sem perícia grafotécnica, sem metadados de digitalização, sem termo de apreensão com cadeia de custódia.</li>
+</ol>
+
+<p>Esta Corte Superior, em recente julgado, <strong>inadmitiu</strong> provas digitais desprovidas de documentação técnica:</p>
+
+<div class="citacao">
+"São inadmissíveis as provas obtidas por capturas de tela ('prints') de WhatsApp desprovidos de hash, metadados nativos e documentação pericial técnica da cadeia de custódia. A ausência de rastreabilidade torna a prova <strong>irrefutável no mau sentido</strong>: impossível verificar adulterações."
+<p class="citacao-fonte">(HC 1.036.370/PR, Rel. Min. Joel Ilan Paciornik, 5ª Turma, Set. 2025)</p>
+</div>
+
+<p>A <strong>ABNT NBR ISO/IEC 27037:2013</strong> estabelece que a evidência digital deve ser submetida à geração de hash no momento da coleta primária. Nos autos, <strong>não há qualquer registro</strong> de função hash, logs de erro ou termo de custódia — o que <strong>invalida</strong> a prova digital utilizada para fundamentar a inclusão.</p>
+
+<h3>III.4 — Eixo 4: Hearsay e Ausência de Correlação Fática (Art. 155, CPP)</h3>
+
+<p>A narrativa de "plano de fuga cinematográfica com helicóptero" (aeronave PR-SRS) foi construída <strong>exclusivamente</strong> a partir de:</p>
+
+<ul>
+    <li>Declarações indiretas de agentes de inteligência;</li>
+    <li>Relatórios que não identificam a fonte primária da informação;</li>
+    <li>Conjecturas sobre a "Operação Além Mar" sem diligência investigativa.</li>
+</ul>
+
+<p>A <strong>Certidão Oficial da Polícia Federal</strong> (ID 49563760, fls. 142) atesta <strong>expressamente</strong>:</p>
+
+<div class="citacao">
+"Inexiste qualquer linha de investigação, vínculo subjetivo ou comunicação telemática conectando o custodiado João Marcos dos Santos aos pilotos ou ao plano de voo da aeronave PR-SRS."
+</div>
+
+<p>O acórdão recorrido <strong>ignorou</strong> esta contraprova documental da própria Polícia Federal, mantendo a imputação com base em testemunho de "ouvir dizer" (hearsay), em violação ao art. 155 do CPP.</p>
+
+<p>Esta Corte Superior é firme:</p>
+
+<div class="citacao">
+"Decisões restritivas de direitos não podem fundamentar-se exclusivamente em conjecturas ou testemunhos por 'ouvir dizer' (hearsay), impondo-se o afastamento da medida ante a carência de suporte empírico."
+<p class="citacao-fonte">(RHC 172.039/CE, Rel. Min. Daniela Teixeira, 6ª Turma)</p>
+</div>
+
+<h3>III.5 — Eixo 5: Represamento de Benefícios e Desvio de Execução</h3>
+
+<p>A análise dos autos revela que, enquanto a transferência para o SPF tramitou com celeridade extraordinária (remessa à SENAPPEN no mesmo dia da decisão), os benefícios do Recorrente permanecem <strong>represados há anos</strong>:</p>
+
+<table>
+    <tr>
+        <th>Incidente</th>
+        <th>Protocolo</th>
+        <th>Tempo de Espera</th>
+    </tr>
+    <tr>
+        <td>Remição por 4.327 horas de trabalho/estudo</td>
+        <td>28/11/2024</td>
+        <td><strong>18+ meses</strong></td>
+    </tr>
+    <tr>
+        <td>Continuidade delitiva</td>
+        <td>18/10/2022</td>
+        <td><strong>43+ meses</strong></td>
+    </tr>
+</table>
+
+<p>A carta interceptada contendo a frase "Estou apostando tudo nesta chance..." refere-se, evidentemente, a esses <strong>benefícios pendentes</strong> — cuja concessão implicaria progressão ao regime semiaberto —, e não a qualquer plano de fuga.</p>
+
+<p>O <strong>represamento seletivo</strong> de benefícios, combinado com a ultra-celeridade da inclusão federal, configura <strong>desvio de execução penal</strong> e constrangimento ilegal.</p>
+
+<h2>IV — Do Pedido de Efeito Suspensivo</h2>
+
+<p>A transferência física do Recorrente para o SPF em Porto Velho/RO, distante mais de 3.000 km de seu núcleo familiar em Pernambuco, causará <strong>dano irreparável</strong> ao direito de defesa e aos vínculos familiares, em violação ao art. 103 da Lei de Execução Penal.</p>
+
+<p>Presentes o <em>fumus boni iuris</em> (violações aos arts. 155, 158-A, 158-B e 315, §2º, do CPP) e o <em>periculum in mora</em> (iminência da transferência), requer-se a <strong>concessão de efeito suspensivo</strong> ao presente recurso.</p>
+
+<h2>V — Dos Pedidos</h2>
+
+<p>Ante o exposto, requer o Recorrente a Vossas Excelências:</p>
+
+<ol type="a">
+    <li>A <strong>concessão de efeito suspensivo</strong> para obstar a transferência física até o julgamento do mérito;</li>
+    <li>O <strong>conhecimento</strong> do presente Recurso Especial;</li>
+    <li>No mérito, o <strong>provimento integral</strong> para:
+        <ol type="i">
+            <li>Reconhecer a negativa de vigência aos artigos 315, §2º, 155, 158-A e 158-B do CPP e ao art. 10, §1º, da Lei nº 11.671/2008;</li>
+            <li><strong>Cassar</strong> a decisão de inclusão no Sistema Penitenciário Federal;</li>
+            <li>Determinar o <strong>retorno</strong> do Recorrente ao sistema estadual de origem;</li>
+        </ol>
+    </li>
+    <li><strong>Subsidiariamente</strong>, a anulação do acórdão para novo julgamento com análise das contraprovas documentais (Certidão da PF e Acórdão de Litispendência);</li>
+    <li>A determinação de <strong>julgamento prioritário</strong> dos incidentes de remição (ID 484) e continuidade delitiva represados.</li>
+</ol>
+
+<p class="no-indent" style="text-align: center; margin-top: 1.5em;">Termos em que,<br>Pede deferimento.</p>
+
+<div class="assinatura">
+    <p class="local-data">Recife, 4 de junho de 2026.</p>
+    <p class="advogado">_______________________________</p>
+    <p class="oab">OAB/PE</p>
+</div>
+
+<div class="nota-rodape no-print">
+    <h3>Evidências Documentais Referenciadas</h3>
+    <ul>
+        <li><strong>ID 49563760 (fls. 142)</strong> — Certidão da Polícia Federal atestando inexistência de vínculo com aeronave PR-SRS</li>
+        <li><strong>ID 49563761 (fls. 189)</strong> — Acórdão de Litispendência (Vara Criminal de Ipojuca) — Operação Smurfing</li>
+        <li><strong>ID 484</strong> — Incidente de Remição (4.327 horas) — pendente desde 28/11/2024</li>
+        <li><strong>ID 189</strong> — Incidente de Continuidade Delitiva — pendente desde 18/10/2022</li>
+    </ul>
+    <h3>Precedentes Citados</h3>
+    <ul>
+        <li>REsp 2.072.790/DF — Info 751/STJ (fundamentação per relationem)</li>
+        <li>HC 1.036.370/PR — Set. 2025 (cadeia de custódia digital)</li>
+        <li>RHC 172.039/CE — (hearsay)</li>
+        <li>Súmula 661/STJ (contemporaneidade para inclusão federal)</li>
+        <li>HC 985.790/PE — Min. Ribeiro Dantas (relaxamento anterior)</li>
+    </ul>
+</div>
+
+</body>
+</html>

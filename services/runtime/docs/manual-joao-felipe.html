@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Integração NEXUM | João Felipe</title>
+    <style>
+        :root {
+            --gold: #d4af37;
+            --bg: #050b14;
+            --bg-card: #0d1f3c;
+            --text: #ffffff;
+            --text-muted: #a9a9a9;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 0.5rem;
+        }
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        h2 {
+            color: var(--gold);
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        h3 {
+            color: var(--text);
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+        .section {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .gold-box {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0.05) 100%);
+            border-left: 4px solid var(--gold);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .gold-box strong {
+            color: var(--gold);
+        }
+        .route-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+        }
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .route-method {
+            background: var(--gold);
+            color: var(--bg);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .route-path {
+            font-family: monospace;
+            color: var(--gold);
+        }
+        .route-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        ul, ol {
+            margin: 0.75rem 0 0.75rem 1.5rem;
+        }
+        li {
+            margin-bottom: 0.5rem;
+        }
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+        .checklist li::before {
+            content: "☐ ";
+            color: var(--gold);
+        }
+        .checklist li.done::before {
+            content: "☑ ";
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        th, td {
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background: rgba(212, 175, 55, 0.2);
+            color: var(--gold);
+        }
+        code {
+            background: rgba(0,0,0,0.4);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: monospace;
+            color: var(--gold);
+        }
+        .tier-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        .tier-1 { background: #1a472a; color: #4ade80; }
+        .tier-2 { background: #422006; color: #fb923c; }
+        .tier-3 { background: #1e1b4b; color: #a78bfa; }
+        .tier-4 { background: #450a0a; color: #f87171; }
+        .flow-diagram {
+            background: rgba(0,0,0,0.4);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.4;
+        }
+        .highlight {
+            background: rgba(212, 175, 55, 0.3);
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
+        @media print {
+            body { background: white; color: black; }
+            .section { border-color: #ccc; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Manual de Integração NEXUM</h1>
+<p class="subtitle">Operador: João Felipe | Data: 6 de junho de 2026 | Versão: V18</p>
+
+<!-- SEÇÃO 1: VISÃO GERAL -->
+<div class="section">
+    <h2>1. Visão Geral do Ecossistema</h2>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro:</strong> O NEXUM é uma plataforma de advocacia criminal de elite que processa 148 NPUs (processos) através de 6 Workspaces especializados. Você faz parte da camada de <strong>Curadoria Humana (HITL)</strong> — a última linha de validação antes do protocolo no PJe. Sua função é garantir que nenhuma peça saia com erro de fato ou de direito.
+    </div>
+
+    <h3>Arquitetura em 4 Tiers</h3>
+    <table>
+        <tr>
+            <th>Tier</th>
+            <th>Camada</th>
+            <th>Sua Interação</th>
+        </tr>
+        <tr>
+            <td><span class="tier-badge tier-1">TIER 1</span></td>
+            <td>Borda Local (MacBook/Tauri)</td>
+            <td>Você opera aqui — valida e aprova minutas</td>
+        </tr>
+        <tr>
+            <td><span class="tier-badge tier-2">TIER 2</span></td>
+            <td>Rede (mTLS/Cloudflare)</td>
+            <td>Transparente — protege suas conexões</td>
+        </tr>
+        <tr>
+            <td><span class="tier-badge tier-3">TIER 3</span></td>
+            <td>Armazenamento (AWS S3)</td>
+            <td>Seus uploads são imutáveis aqui</td>
+        </tr>
+        <tr>
+            <td><span class="tier-badge tier-4">TIER 4</span></td>
+            <td>IA (Gens + Claude/Gemini)</td>
+            <td>Você revisa o que a IA produz</td>
+        </tr>
+    </table>
+</div>
+
+<!-- SEÇÃO 2: ATRIBUIÇÕES -->
+<div class="section">
+    <h2>2. Suas Atribuições Estratégicas</h2>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro:</strong> Você é um <strong>Validador de Borda</strong>. Isso significa que toda minuta gerada pelos Gens passa por você antes de existir juridicamente. Seu "sim" envia ao PJe; seu "não" devolve para correção. Você é o firewall humano contra erros da máquina.
+    </div>
+
+    <h3>Lista de Atribuições</h3>
+    <ol>
+        <li><strong>Curadoria de Minutas</strong> — Revisar peças geradas pelos Gens antes do protocolo</li>
+        <li><strong>Validação de Fatos</strong> — Conferir se as afirmações de fato têm lastro documental</li>
+        <li><strong>Conferência de Prazos</strong> — Monitorar o Gen-Chronos e alertar sobre vencimentos</li>
+        <li><strong>Controle de Qualidade</strong> — Garantir formatação, citações e NPUs corretos</li>
+        <li><strong>Ingestão de Casos</strong> — Fazer upload de novos dossiês via CasoUploadHub</li>
+        <li><strong>Acompanhamento de Andamentos</strong> — Monitorar feed de atualizações do PJe/STJ/STF</li>
+        <li><strong>Reporte de Anomalias</strong> — Sinalizar quando os Gens errarem sistematicamente</li>
+    </ol>
+
+    <h3>Checklist Diário</h3>
+    <ul class="checklist">
+        <li>Verificar alertas do Gen-Chronos (prazos fatais)</li>
+        <li>Revisar fila de minutas pendentes</li>
+        <li>Conferir andamentos novos nos 148 NPUs</li>
+        <li>Validar uploads de dossiês do dia anterior</li>
+        <li>Reportar inconsistências ao CEO</li>
+    </ul>
+</div>
+
+<!-- SEÇÃO 3: ROTAS DA API -->
+<div class="section">
+    <h2>3. Rotas e Subrotas — Manual Simplificado</h2>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro:</strong> A API NEXUM v2 tem <strong>7 rotas principais</strong>. Você não precisa programar — mas precisa entender o que cada uma faz para saber onde um problema pode estar quando algo falhar. Pense nas rotas como "portas" do sistema: cada uma abre para uma função específica.
+    </div>
+
+    <!-- ROTA 1 -->
+    <h3><span class="tier-badge tier-1">TIER 1</span> Autenticação</h3>
+
+    <div class="route-card">
+        <div class="route-header">
+            <span class="route-method">POST</span>
+            <span class="route-path">/api/v2/auth/revoke</span>
+        </div>
+        <div class="route-desc">
+            <strong>O que faz:</strong> Desconecta um dispositivo imediatamente (Kill-Switch).<br>
+            <strong>Quando usar:</strong> Se um laptop for perdido ou roubado, esta rota "mata" a sessão em menos de 1 segundo.<br>
+            <strong>Sua função:</strong> Você não aciona — o CEO ou o sistema automático aciona em emergências.
+        </div>
+    </div>
+
+    <!-- ROTA 2 -->
+    <h3><span class="tier-badge tier-2">TIER 2</span> Workspaces</h3>
+
+    <div class="route-card">
+        <div class="route-header">
+            <span class="route-method">POST</span>
+            <span class="route-path">/api/v2/workspaces</span>
+        </div>
+        <div class="route-desc">
+            <strong>O que faz:</strong> Cria um novo workspace (pasta isolada para um caso ou operação).<br>
+            <strong>Quando usar:</strong> Ao iniciar uma nova operação (ex: "Operação Kéfale II").<br>
+            <strong>Sua função:</strong> Você pode solicitar a criação — o sistema garante isolamento automático (RLS).
+        </div>
+    </div>
+
+    <div class="route-card">
+        <div class="route-header">
+            <span class="route-method">GET</span>
+            <span class="route-path">/api/v2/workspaces/{id}</span>
+        </div>
+        <div class="route-desc">
+            <strong>O que faz:</strong> Recupera os dados de um workspace existente.<br>
+            <strong>Quando usar:</strong> Para ver quantas fontes estão indexadas, última atividade, etc.<br>
+            <strong>Sua função:</strong> Consultar status dos workspaces que você gerencia.
+        </div>
+    </div>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro — Isolamento:</strong> Cada workspace é como um cofre separado. Mesmo que você tenha acesso ao Workspace I (Kéfale), não consegue ver dados do Workspace II (Prescrição) a menos que esteja autorizado. Isso é o <strong>Row-Level Security (RLS)</strong> — o banco de dados filtra automaticamente.
+    </div>
+
+    <!-- ROTA 3 -->
+    <h3><span class="tier-badge tier-3">TIER 3</span> Upload e Armazenamento</h3>
+
+    <div class="route-card">
+        <div class="route-header">
+            <span class="route-method">POST</span>
+            <span class="route-path">/api/v2/uploads/presign</span>
+        </div>
+        <div class="route-desc">
+            <strong>O que faz:</strong> Gera um link temporário para upload direto ao S3 da AWS.<br>
+            <strong>Quando usar:</strong> Ao enviar um PDF grande (acima de 10MB).<br>
+            <strong>Sua função:</strong> O sistema chama isso por trás quando você arrasta um arquivo no CasoUploadHub.
+        </div>
+    </div>
+
+    <div class="route-card">
+        <div class="route-header">
+            <span class="route-method">POST</span>
+            <span class="route-path">/api/v2/sources</span>
+        </div>
+        <div class="route-desc">
+            <strong>O que faz:</strong> Registra e indexa uma fonte (PDF, laudo, mídia) no sistema.<br>
+            <strong>Quando usar:</strong> Após o upload, o sistema chama esta rota para "ensinar" o RAG sobre o documento.<br>
+            <strong>Sua função:</strong> Verificar se a fonte foi indexada corretamente (status: "indexed").
+        </div>
+    </div>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro — Imutabilidade:</strong> Uma vez que um arquivo entra no S3 com <strong>Object Lock</strong>, nem você, nem o CEO, nem hackers podem deletá-lo ou alterá-lo por 365 dias. Isso garante a <strong>cadeia de custódia digital</strong> exigida pelo Art. 158-A do CPP.
+    </div>
+
+    <!-- ROTA 4 -->
+    <h3><span class="tier-badge tier-4">TIER 4</span> Inteligência Artificial (RAG)</h3>
+
+    <div class="route-card">
+        <div class="route-header">
+            <span class="route-method">POST</span>
+            <span class="route-path">/api/v2/conversations</span>
+        </div>
+        <div class="route-desc">
+            <strong>O que faz:</strong> Inicia uma "conversa" com a IA, carregando fontes específicas.<br>
+            <strong>Quando usar:</strong> Ao pedir para o sistema analisar um dossiê e gerar uma minuta.<br>
+            <strong>Sua função:</strong> Selecionar quais fontes (source_ids) a IA deve ler — ela só vê o que você autorizar.
+        </div>
+    </div>
+
+    <div class="route-card">
+        <div class="route-header">
+            <span class="route-method">GET</span>
+            <span class="route-path">/api/v2/messages/stream</span>
+        </div>
+        <div class="route-desc">
+            <strong>O que faz:</strong> Transmite a resposta da IA em tempo real (streaming).<br>
+            <strong>Quando usar:</strong> Sempre que você pedir uma análise, a resposta vem por aqui.<br>
+            <strong>Sua função:</strong> Ler e validar o que a IA gera — interromper se começar a "alucinar".
+        </div>
+    </div>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro — Context Lock:</strong> O parâmetro <code>context_lock: true</code> força a IA a responder <strong>apenas</strong> com base nos documentos que você carregou. Ela não pode "inventar" informações externas. Se você ver uma afirmação sem fonte nos autos, é alucinação — devolva para correção.
+    </div>
+</div>
+
+<!-- SEÇÃO 4: FLUXO DE TRABALHO -->
+<div class="section">
+    <h2>4. Fluxo de Produção — Onde Você Entra</h2>
+
+    <div class="flow-diagram">
+┌──────────────────────────────────────────────────────────────────────────┐
+│                         FLUXO DE PRODUÇÃO V18                            │
+├──────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│   [1] INGESTÃO        [2] SCRUBBER        [3] GENS           [4] MINUTA  │
+│   ┌─────────┐         ┌─────────┐         ┌─────────┐        ┌─────────┐ │
+│   │  PJe    │ ──────▶ │  Rust   │ ──────▶ │Custódia │ ─────▶ │ Claude  │ │
+│   │ Upload  │         │ Limpeza │         │Reconhec.│        │ Gemini  │ │
+│   └─────────┘         │ PII     │         │Chronos  │        └─────────┘ │
+│                       └─────────┘         └─────────┘              │     │
+│                                                                    │     │
+│   ════════════════════════════════════════════════════════════════╪═══  │
+│                                                                    │     │
+│                              <span class="highlight">[5] VOCÊ ENTRA AQUI</span>                        │     │
+│                              ┌─────────────────────┐               │     │
+│                              │   CURADORIA HITL    │◀──────────────┘     │
+│                              │   João Felipe       │                     │
+│                              │   • Valida fatos    │                     │
+│                              │   • Confere prazos  │                     │
+│                              │   • Aprova/Rejeita  │                     │
+│                              └──────────┬──────────┘                     │
+│                                         │                                │
+│                                    ┌────┴────┐                           │
+│                                    │ APROVADO │                          │
+│                                    └────┬────┘                           │
+│                                         │                                │
+│                              ┌──────────▼──────────┐                     │
+│                              │  [6] PROTOCOLO PJe  │                     │
+│                              │  Token OAB + mTLS   │                     │
+│                              └─────────────────────┘                     │
+│                                                                          │
+└──────────────────────────────────────────────────────────────────────────┘
+    </div>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro — Sua Posição:</strong> Você é o <strong>Estágio 5</strong> — a última verificação humana. Tudo que passou pelos Gens (Custódia, Reconhecimento, Chronos) chega a você como minuta. Sua aprovação libera o protocolo automático no PJe. Se você encontrar erro, a minuta volta ao Estágio 4 para correção.
+    </div>
+</div>
+
+<!-- SEÇÃO 5: OS 3 GENS -->
+<div class="section">
+    <h2>5. Os 3 Gens — Seus Assistentes de IA</h2>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro:</strong> Os Gens são agentes especializados que analisam os processos antes de você. Pense neles como "estagiários de IA" que fazem a triagem inicial. Você valida o trabalho deles.
+    </div>
+
+    <h3>Gen-Custódia</h3>
+    <p><strong>Especialidade:</strong> Art. 158-A e 158-B do CPP (cadeia de custódia digital)</p>
+    <p><strong>O que ele faz:</strong> Verifica se os laudos periciais têm hash SHA-256, metadados de origem e registro de quem tocou a evidência.</p>
+    <p><strong>Alerta típico:</strong> <code>METADATA_SOURCE_NOT_FOUND</code> — significa que uma extração de celular não tem hash de autenticidade.</p>
+    <p><strong>Sua ação:</strong> Quando ver esse alerta, a nulidade está configurada — valide se a minuta explora isso corretamente.</p>
+
+    <h3>Gen-Reconhecimento</h3>
+    <p><strong>Especialidade:</strong> Art. 226 do CPP / HC 598.887/SC / Lei 13.869/19</p>
+    <p><strong>O que ele faz:</strong> Identifica reconhecimentos fotográficos indutivos (tipo "ele é o cara do print") e interrogatórios sem defensor.</p>
+    <p><strong>Alerta típico:</strong> <code>PHOTO_LINEUP_VIOLATION</code> ou <code>COUNSEL_ABSENT</code></p>
+    <p><strong>Sua ação:</strong> Confirmar nos autos se o reconhecimento seguiu o rito legal (6+ fotos, pessoas semelhantes).</p>
+
+    <h3>Gen-Chronos</h3>
+    <p><strong>Especialidade:</strong> Art. 109 do CP (prescrição) / Art. 315 CPP (fundamentação)</p>
+    <p><strong>O que ele faz:</strong> Calcula prazos prescricionais e monitora datas fatais.</p>
+    <p><strong>Alerta típico:</strong> <code>PRESCRIPTION_WARNING: 300 dias para termo fatal</code></p>
+    <p><strong>Sua ação:</strong> Priorizar casos com alerta vermelho — estes devem ser protocolados antes.</p>
+</div>
+
+<!-- SEÇÃO 6: COMO AJUDAR NO DESENVOLVIMENTO -->
+<div class="section">
+    <h2>6. Como Ajudar no Desenvolvimento da Plataforma</h2>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro:</strong> Você não precisa programar para contribuir com o desenvolvimento. Seu papel é <strong>feedback estruturado</strong>. Cada erro que você encontra e documenta melhora os Gens. Cada caso edge que você reporta vira um teste automatizado.
+    </div>
+
+    <h3>Formas de Contribuição</h3>
+
+    <table>
+        <tr>
+            <th>Área</th>
+            <th>Sua Contribuição</th>
+            <th>Impacto</th>
+        </tr>
+        <tr>
+            <td>Qualidade dos Gens</td>
+            <td>Reportar quando um Gen erra sistematicamente (ex: "Gen-Chronos calculou prazo errado em 3 casos")</td>
+            <td>Melhora o modelo de IA</td>
+        </tr>
+        <tr>
+            <td>Novos Padrões</td>
+            <td>Identificar teses jurídicas que os Gens não reconhecem ainda</td>
+            <td>Expande a base de conhecimento</td>
+        </tr>
+        <tr>
+            <td>UX/Interface</td>
+            <td>Sugerir melhorias na tela de curadoria (ex: "o botão de rejeitar deveria pedir motivo")</td>
+            <td>Torna o sistema mais eficiente</td>
+        </tr>
+        <tr>
+            <td>Documentação</td>
+            <td>Criar mini-tutoriais para novos operadores baseado na sua experiência</td>
+            <td>Acelera onboarding</td>
+        </tr>
+        <tr>
+            <td>Controle de Qualidade</td>
+            <td>Manter log de erros encontrados por workspace</td>
+            <td>Base para métricas de qualidade</td>
+        </tr>
+    </table>
+
+    <h3>Template de Reporte de Bug/Melhoria</h3>
+    <div class="route-card">
+        <pre>
+TIPO: [ ] Bug  [ ] Melhoria  [ ] Novo Padrão
+WORKSPACE: _______________
+CASO/NPU: _______________
+DATA: _______________
+
+DESCRIÇÃO:
+(O que aconteceu vs. o que deveria acontecer)
+
+PASSOS PARA REPRODUZIR:
+1.
+2.
+3.
+
+EVIDÊNCIA:
+(Screenshot ou ID do documento)
+
+PRIORIDADE: [ ] Baixa  [ ] Média  [ ] Alta  [ ] Crítica
+        </pre>
+    </div>
+</div>
+
+<!-- SEÇÃO 7: CONTROLE DE FLUXO -->
+<div class="section">
+    <h2>7. Controle de Fluxo — Métricas e Monitoramento</h2>
+
+    <div class="gold-box">
+        <strong>Parágrafo de Ouro:</strong> O controle de fluxo é saber <strong>onde cada caso está</strong> a qualquer momento. Você deve conseguir responder: "Quantos casos estão na fila de curadoria? Quais têm prazo crítico? Quais foram protocolados hoje?"
+    </div>
+
+    <h3>Status dos Casos (6 Estados)</h3>
+    <ol>
+        <li><strong>INGERIDO</strong> — Dossiê entrou no sistema, aguardando processamento</li>
+        <li><strong>PROCESSANDO</strong> — Scrubber limpando PII e gerando hashes</li>
+        <li><strong>ANALISADO</strong> — Gens terminaram, minuta gerada</li>
+        <li><strong>EM CURADORIA</strong> — <span class="highlight">Na sua fila de revisão</span></li>
+        <li><strong>APROVADO</strong> — Você validou, pronto para protocolo</li>
+        <li><strong>PROTOCOLADO</strong> — Enviado ao PJe com sucesso</li>
+    </ol>
+
+    <h3>Dashboard de Controle</h3>
+    <p>O arquivo <code>dashboard.html</code> mostra em tempo real:</p>
+    <ul>
+        <li>Contador de NPUs por status</li>
+        <li>Countdown do Gen-Chronos (prazos fatais)</li>
+        <li>Feed de atividade recente</li>
+        <li>Status dos 3 Gens (online/offline)</li>
+    </ul>
+
+    <h3>KPIs que Você Deve Acompanhar</h3>
+    <table>
+        <tr>
+            <th>Métrica</th>
+            <th>Meta</th>
+            <th>Frequência</th>
+        </tr>
+        <tr>
+            <td>Tempo médio de curadoria</td>
+            <td>&lt; 30 min por minuta</td>
+            <td>Diário</td>
+        </tr>
+        <tr>
+            <td>Taxa de rejeição</td>
+            <td>&lt; 15% (se maior, Gens precisam ajuste)</td>
+            <td>Semanal</td>
+        </tr>
+        <tr>
+            <td>Casos com prazo &lt; 30 dias</td>
+            <td>0 pendentes em curadoria</td>
+            <td>Diário</td>
+        </tr>
+        <tr>
+            <td>Fila de curadoria</td>
+            <td>&lt; 10 itens ao fim do dia</td>
+            <td>Diário</td>
+        </tr>
+    </table>
+</div>
+
+<!-- SEÇÃO 8: GLOSSÁRIO -->
+<div class="section">
+    <h2>8. Glossário Rápido</h2>
+
+    <table>
+        <tr><th>Termo</th><th>Significado</th></tr>
+        <tr><td>NPU</td><td>Número de Processo Unificado (identificador único de cada caso)</td></tr>
+        <tr><td>Workspace</td><td>Pasta isolada contendo documentos de uma operação/tema</td></tr>
+        <tr><td>Gen</td><td>Agente de IA especializado em uma área do direito</td></tr>
+        <tr><td>HITL</td><td>Human-In-The-Loop — validação humana obrigatória</td></tr>
+        <tr><td>RLS</td><td>Row-Level Security — isolamento de dados por tenant</td></tr>
+        <tr><td>mTLS</td><td>Mutual TLS — autenticação de duas vias (cliente + servidor)</td></tr>
+        <tr><td>Scrubber</td><td>Módulo Rust que limpa dados pessoais antes de processar</td></tr>
+        <tr><td>Object Lock</td><td>Trava de imutabilidade no S3 (ninguém deleta por 365 dias)</td></tr>
+        <tr><td>SSE</td><td>Server-Sent Events — streaming de texto em tempo real</td></tr>
+        <tr><td>Hearsay</td><td>Testemunho de "ouvir dizer" — inadmissível como prova única</td></tr>
+    </table>
+</div>
+
+<!-- SEÇÃO 9: PRÓXIMOS PASSOS -->
+<div class="section">
+    <h2>9. Seus Próximos Passos</h2>
+
+    <ol>
+        <li><strong>Acessar o Dashboard</strong> — Abra <code>dashboard.html</code> e familiarize-se com a interface</li>
+        <li><strong>Revisar os PDFs Prontos</strong> — Leandro Vidal e João Marcos já estão finalizados</li>
+        <li><strong>Priorizar Leandro Ferreira</strong> — Prazo fatal em 31/03/2027 (prescrição)</li>
+        <li><strong>Criar seu primeiro reporte</strong> — Use o template da Seção 6 para qualquer observação</li>
+        <li><strong>Configurar alertas</strong> — Ativar notificações do Gen-Chronos para prazos &lt; 60 dias</li>
+    </ol>
+
+    <div class="gold-box">
+        <strong>Contato de Emergência:</strong> Se algo crítico falhar (sistema fora do ar, prazo vencendo), acione imediatamente o CEO pelo canal prioritário. Melhor um falso alarme do que um prazo perdido.
+    </div>
+</div>
+
+<footer style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(212,175,55,0.3); color: var(--text-muted); font-size: 0.85rem;">
+    <p>NEXUM V18 | Ribeiro & Tigre Advogados | Documento gerado em 6 de junho de 2026</p>
+    <p>Confidencial — Uso interno exclusivo</p>
+</footer>
+
+</body>
+</html>
