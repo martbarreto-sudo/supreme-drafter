@@ -30,6 +30,10 @@ class Precedente:
     tema: str = ""                   # tema do arquivo/tabela de origem
     verificacao_pendente: bool = False
     motivo_quarentena: str = ""
+    # Um repetitivo tem DUAS citações legítimas — o número do recurso e o
+    # número do tema ("REsp 2.048.687/BA" e "Tema 1.260"). Indexar só uma
+    # fazia o gate bloquear a peça que citasse a outra, embora verificada.
+    identificadores_alternativos: tuple[str, ...] = ()
 
     @property
     def citavel(self) -> bool:
@@ -49,6 +53,13 @@ class Precedente:
     @property
     def numero_normalizado(self) -> str:
         return normalizar_citacao(self.numero)
+
+    @property
+    def chaves_de_indice(self) -> tuple[str, ...]:
+        """Todas as formas pelas quais este precedente pode ser citado."""
+        chaves = [self.numero_normalizado]
+        chaves += [normalizar_citacao(a) for a in self.identificadores_alternativos]
+        return tuple(dict.fromkeys(c for c in chaves if c))
 
     @classmethod
     def de_dict(cls, dados: dict[str, Any], *, tema: str = "") -> "Precedente":
@@ -72,6 +83,9 @@ class Precedente:
             tema=tema or str(dados.get("tema", "")).strip(),
             verificacao_pendente=bool(dados.get("verificacao_pendente", False)),
             motivo_quarentena=str(dados.get("motivo_quarentena", "")).strip(),
+            identificadores_alternativos=tuple(
+                str(a).strip() for a in (dados.get("identificadores_alternativos") or ())
+            ),
         )
 
 
