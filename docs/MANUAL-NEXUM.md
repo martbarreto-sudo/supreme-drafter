@@ -140,6 +140,42 @@ GitHub → **Settings → Branches → Add rule** para `master`:
   rodar e **auditar** (não mais "INCONCLUSIVO").
 - `https://war.ribeiroetigre.org` deve responder com HTTPS após 3.4.
 
+### 3.6 Validação da busca semântica (recall e latência)
+Pré-requisitos: migrações `0002` e `0003` aplicadas e backfill rodado
+(`nexum_engine/verdade/backfill_embeddings.py`). Rode do **mesmo lugar de onde
+a engine roda em produção** — a latência inclui a rede até o banco — com o
+pool injetado (papel de **leitura** da engine: a RLS já restringe ao universo
+citável, o cenário fiel):
+
+```python
+import asyncio, asyncpg
+from nexum_engine.adapters import AsyncpgAdapter
+from nexum_engine.verdade.validar_recall import validar_recall
+from nexum_engine.verdade.medir_latencia import medir_latencia
+
+async def main():
+    pool = await asyncpg.create_pool(dsn="postgresql://...")
+    db = AsyncpgAdapter(pool)
+    print(await validar_recall(db, k=5))              # qualidade do HNSW
+    print(await medir_latencia(db, k=5, concorrencia=8,
+                               repeticoes=5, aquecimento=8))
+    print(await medir_latencia(db, k=5, concorrencia=8, repeticoes=5,
+                               aquecimento=8, tribunal="STJ"))  # com filtro
+
+asyncio.run(main())
+```
+
+Leituras de referência:
+- **Recall@5 ≥ 0.95** = índice saudável. Abaixo disso de forma persistente,
+  reconstrua o `idx_precedentes_vetor` ou eleve `hnsw.ef_search`.
+- **Com filtros seletivos**, compare com/sem filtro: recall só se sustenta com
+  a migração `0003` aplicada (`hnsw.iterative_scan`).
+- **p95/p99** estáveis pedem ~200+ medições (`amostra` × `repeticoes`).
+
+Ambos são **somente leitura** e **falham alto** em dados inconsistentes
+(vetor ilegível, dimensão divergente, norma zero): erro de backfill aparece
+aqui — não some.
+
 ---
 
 ## 4. Mapa de documentos
