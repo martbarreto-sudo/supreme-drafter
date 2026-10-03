@@ -32,16 +32,16 @@ veja [`nexum/README.md`](nexum/README.md#rodar-localmente-docker-compose) (`make
 
 | Caso | Peça | Tese central | Arquivo |
 |------|------|--------------|---------|
-| Leandro Vidal | REsp | Hearsay / Art. 155 CPP | `minutas/pdf/REsp_Leandro_Vidal_Art155_Hearsay.pdf` |
-| João Marcos | REsp | Inclusão em presídio federal | `minutas/pdf/REsp_Joao_Marcos_Inclusao_Federal.pdf` |
-| Diagnóstico Tigre | REsp | Usurpação de competência STF | `minutas/pdf/REsp_Diagnostico_Tigre_Usurpacao_Competencia.pdf` |
-| Leandro Ferreira | REsp | Prescrição intercorrente (URGENTE) | `minutas/pdf/REsp_Leandro_Ferreira_Prescricao_Intercorrente.pdf` |
-| Frederico Xavier | REsp | Abuso de autoridade — Art. 13, III, Lei 13.869/19 | `minutas/pdf/REsp_Frederico_Xavier_Abuso_Autoridade.pdf` |
-| Geovane | REsp | Falta grave / PAD nulo — Súmula 533 STJ | `minutas/pdf/REsp_Geovane_Falta_Grave_PAD.pdf` |
-| Raphael Lopes | REsp | Impronúncia hearsay — Tema 1.260/STJ | `minutas/pdf/REsp_Raphael_Lopes_Impronuncia_Hearsay.pdf` |
-| Henrique de Moraes | RHC | Consunção + afastamento hediondez (9mm) | `minutas/pdf/RHC_Henrique_Moraes_Consuncao_9mm.pdf` |
-| Osnir Cabeça | REsp | Cadeia de custódia — Op. Kéfale | `minutas/pdf/REsp_Osnir_Cabeca_Cadeia_Custodia.pdf` |
-| Brunno de Sena | Agravo | Falta grave sem apreensão física | `minutas/pdf/Agravo_Brunno_Sena_Falta_Grave.pdf` |
+| [NOME_OMITIDO] | REsp | Hearsay / Art. 155 CPP | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | REsp | Inclusão em presídio federal | `minutas/pdf/[PECA_OMITIDA]` |
+| Diagnóstico Tigre | REsp | Usurpação de competência STF | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | REsp | Prescrição intercorrente (URGENTE) | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | REsp | Abuso de autoridade — Art. 13, III, Lei 13.869/19 | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | REsp | Falta grave / PAD nulo — Súmula 533 STJ | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | REsp | Impronúncia hearsay — Tema 1.260/STJ | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | RHC | Consunção + afastamento hediondez (9mm) | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | REsp | Cadeia de custódia — [OPERACAO_OMITIDA] | `minutas/pdf/[PECA_OMITIDA]` |
+| [NOME_OMITIDO] | Agravo | Falta grave sem apreensão física | `minutas/pdf/[PECA_OMITIDA]` |
 
 **Backlog Trello: ZERADO.**
 

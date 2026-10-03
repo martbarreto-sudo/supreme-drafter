@@ -99,12 +99,12 @@ GET /api/v2/messages/stream
 
 | WS | Nome | Casos | Status |
 |----|------|-------|--------|
-| I | Operacao Kefale | Osnir, Frederico, Francismary, Regival | Pendente |
-| II | Prescricao | Leandro Ferreira | URGENTE (31/03/2027) |
-| III | Hearsay Rule | Leandro Vidal, Raphael Lopes | Entregue/Pendente |
-| IV | Consuncao | Henrique de Moraes | Analise |
-| V | Execucao Penal | Brunno de Sena | Analise |
-| VI | Medidas Protetivas | Felipe Barbalho | Pendente |
+| I | [OPERACAO_OMITIDA] | [NOME_OMITIDO], [NOME_OMITIDO], [NOME_OMITIDO], [NOME_OMITIDO] | Pendente |
+| II | Prescricao | [NOME_OMITIDO] | URGENTE (31/03/2027) |
+| III | Hearsay Rule | [NOME_OMITIDO], [NOME_OMITIDO] | Entregue/Pendente |
+| IV | Consuncao | [NOME_OMITIDO] | Analise |
+| V | Execucao Penal | [NOME_OMITIDO] | Analise |
+| VI | Medidas Protetivas | [NOME_OMITIDO] | Pendente |
 
 ---
 
@@ -131,28 +131,28 @@ GET /api/v2/messages/stream
 
 | Data | Caso | Arquivo | Tamanho |
 |------|------|---------|---------|
-| 04/06/2026 | Leandro Vidal | REsp_Leandro_Vidal_Art155_Hearsay.pdf | 41 KB |
-| 04/06/2026 | Joao Marcos | REsp_Joao_Marcos_Inclusao_Federal.pdf | 42 KB |
-| 07/06/2026 | Diagnostico Tigre | REsp_Diagnostico_Tigre_Usurpacao_Competencia.pdf | 46 KB |
-| 11/06/2026 | Leandro Ferreira | REsp_Leandro_Ferreira_Prescricao_Intercorrente.pdf | 34 KB |
+| 04/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 41 KB |
+| 04/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 42 KB |
+| 07/06/2026 | Diagnostico Tigre | [PECA_OMITIDA] | 46 KB |
+| 11/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 34 KB |
 | 11/06/2026 | Conglobado V18 | NEXUM_Conglobado_V18.pdf | 40 KB |
-| 19/06/2026 | Frederico Xavier | REsp_Frederico_Xavier_Abuso_Autoridade.pdf | 35 KB |
-| 19/06/2026 | Geovane | REsp_Geovane_Falta_Grave_PAD.pdf | 36 KB |
-| 19/06/2026 | Raphael Lopes | REsp_Raphael_Lopes_Impronuncia_Hearsay.pdf | 31 KB |
-| 19/06/2026 | Henrique Moraes | RHC_Henrique_Moraes_Consuncao_9mm.pdf | 30 KB |
-| 19/06/2026 | Osnir Cabeca | REsp_Osnir_Cabeca_Cadeia_Custodia.pdf | 34 KB |
-| 19/06/2026 | Brunno Sena | Agravo_Brunno_Sena_Falta_Grave.pdf | 30 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 35 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 36 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 31 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 30 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 34 KB |
+| 19/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 30 KB |
 
 ---
 
 ## Proximos na Fila
 
-1. ~~Leandro Ferreira~~ - ✓ ENTREGUE
-2. ~~Frederico Xavier~~ - ✓ ENTREGUE (Abuso de autoridade Art. 13, III)
-3. ~~Raphael Lopes~~ - ✓ ENTREGUE (Impronuncia hearsay Tema 1.260)
-4. ~~Henrique de Moraes~~ - ✓ ENTREGUE (Consuncao + 9mm afastar hediondez)
-5. ~~Osnir Cabeca~~ - ✓ ENTREGUE (Cadeia custodia Bambam/Kefale)
-6. ~~Brunno de Sena~~ - ✓ ENTREGUE (Falta grave sem apreensao)
+1. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE
+2. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Abuso de autoridade Art. 13, III)
+3. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Impronuncia hearsay Tema 1.260)
+4. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Consuncao + 9mm afastar hediondez)
+5. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Cadeia custodia [NOME_OMITIDO]/[OPERACAO_OMITIDA])
+6. ~~[NOME_OMITIDO]~~ - ✓ ENTREGUE (Falta grave sem apreensao)
 
 **BACKLOG TRELLO: ZERADO**
 

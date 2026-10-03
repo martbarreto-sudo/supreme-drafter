@@ -153,22 +153,22 @@
 
 ## III. Workspaces: Cartografia Processual
 
-### Workspace I: Operação Kéfale
+### Workspace I: [OPERACAO_OMITIDA]
 
 | Caso | NPU | Tese Principal | Status | Prazo |
 |------|-----|----------------|--------|-------|
-| Osnir Cabeça | 0002237-43.2025.8.17.2730 | Cadeia de Custódia (Bambam) | Pendente | — |
-| Frederico Xavier | 0002237-43.2025.8.17.2730 | Abuso Art. 13, III | Pendente | — |
-| Francismary | — | — | Pendente | — |
-| Regival | — | — | Pendente | — |
+| [NOME_OMITIDO] | [PROCESSO_GENERICO] | Cadeia de Custódia ([NOME_OMITIDO]) | Pendente | — |
+| [NOME_OMITIDO] | [PROCESSO_GENERICO] | Abuso Art. 13, III | Pendente | — |
+| [NOME_OMITIDO] | — | — | Pendente | — |
+| [NOME_OMITIDO] | — | — | Pendente | — |
 
-**Conexão Jurídica:** Celular de "Bambam" sem hash MD5/SHA-256 → litispendência → nulidade por cadeia de custódia.
+**Conexão Jurídica:** Celular de "[NOME_OMITIDO]" sem hash MD5/SHA-256 → litispendência → nulidade por cadeia de custódia.
 
 ### Workspace II: Prescrição
 
 | Caso | NPU | Tese Principal | Status | Prazo |
 |------|-----|----------------|--------|-------|
-| Leandro Ferreira | AP 0031951-54.2006.8.17.0001 | Prescrição PPP 12 anos | **URGENTE** | 31/03/2027 |
+| [NOME_OMITIDO] | AP [PROCESSO_GENERICO] | Prescrição PPP 12 anos | **URGENTE** | 31/03/2027 |
 
 **Countdown Ativo:** 300 dias para termo fatal.
 
@@ -176,16 +176,16 @@
 
 | Caso | NPU | Tese Principal | Status | Prazo |
 |------|-----|----------------|--------|-------|
-| Leandro Vidal | RSE 0018084-07.2026.8.17.2001 | Art. 155 CPP / Tema 1.260 | **ENTREGUE** | — |
-| Raphael Lopes | AP 0015384-69.2024.8.17.2990 | Impronúncia hearsay | Pendente | — |
+| [NOME_OMITIDO] | RSE [PROCESSO_GENERICO] | Art. 155 CPP / Tema 1.260 | **ENTREGUE** | — |
+| [NOME_OMITIDO] | AP [PROCESSO_GENERICO] | Impronúncia hearsay | Pendente | — |
 
-**Entrega:** `REsp_Leandro_Vidal_Art155_Hearsay.pdf` (41 KB)
+**Entrega:** `[PECA_OMITIDA]` (41 KB)
 
 ### Workspace IV: Consunção
 
 | Caso | NPU | Tese Principal | Status | Prazo |
 |------|-----|----------------|--------|-------|
-| Henrique de Moraes | RHC 232.619/PE | Consunção + 9mm uso restrito | Análise | — |
+| [NOME_OMITIDO] | RHC [PROCESSO_GENERICO] | Consunção + 9mm uso restrito | Análise | — |
 
 **Tese:** Pistola 9mm é de uso RESTRITO (não proibido) → afastamento da hediondez.
 
@@ -193,7 +193,7 @@
 
 | Caso | NPU | Tese Principal | Status | Prazo |
 |------|-----|----------------|--------|-------|
-| Brunno de Sena | GEP 1002725-87.2021.8.17.4001 | Falta grave sem apreensão | Análise | — |
+| [NOME_OMITIDO] | GEP [PROCESSO_GENERICO] | Falta grave sem apreensão | Análise | — |
 
 **Tese:** Inércia judicial em escolta não configura falta grave imputável ao apenado.
 
@@ -201,7 +201,7 @@
 
 | Caso | NPU | Tese Principal | Status | Prazo |
 |------|-----|----------------|--------|-------|
-| Felipe Barbalho | — | — | Pendente | — |
+| [NOME_OMITIDO] | — | — | Pendente | — |
 
 ---
 
@@ -383,14 +383,14 @@ dashboard:
 │  └── Gen-Chronos ............. [●] ATIVO (1 countdown ativo)   │
 │                                                                 │
 │  WORKSPACES                                                     │
-│  ├── I  Kéfale ............... 4 casos | Pendente              │
+│  ├── I  [OPERACAO_OMITIDA] ............... 4 casos | Pendente              │
 │  ├── II Prescrição ........... 1 caso  | URGENTE (300d)        │
 │  ├── III Hearsay ............. 2 casos | 1 Entregue            │
 │  ├── IV Consunção ............ 1 caso  | Análise               │
 │  ├── V  Execução Penal ....... 1 caso  | Análise               │
 │  └── VI Medidas Protetivas ... 1 caso  | Pendente              │
 │                                                                 │
-│  ENTREGAS HOJE: 3 PDFs (Vidal, João Marcos, Diagnóstico Tigre) │
+│  ENTREGAS HOJE: 3 PDFs ([NOME_OMITIDO], [NOME_OMITIDO], Diagnóstico Tigre) │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
@@ -424,9 +424,9 @@ dashboard:
 
 | Data | Caso | Arquivo | Tamanho | Tese Principal |
 |------|------|---------|---------|----------------|
-| 04/06/2026 | Leandro Vidal | REsp_Leandro_Vidal_Art155_Hearsay.pdf | 41 KB | Art. 155 CPP / Tema 1.260 |
-| 04/06/2026 | João Marcos | REsp_Joao_Marcos_Inclusao_Federal.pdf | 42 KB | Cadeia Custódia / Súmula 661 |
-| 07/06/2026 | Diagnóstico Tigre | REsp_Diagnostico_Tigre_Usurpacao_Competencia.pdf | 46 KB | Art. 102 CF / Tema 661 STF |
+| 04/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 41 KB | Art. 155 CPP / Tema 1.260 |
+| 04/06/2026 | [NOME_OMITIDO] | [PECA_OMITIDA] | 42 KB | Cadeia Custódia / Súmula 661 |
+| 07/06/2026 | Diagnóstico Tigre | [PECA_OMITIDA] | 46 KB | Art. 102 CF / Tema 661 STF |
 
 ---
 
@@ -434,12 +434,12 @@ dashboard:
 
 ### Fila Priorizada
 
-1. **[URGENTE]** Leandro Ferreira — Prescrição (300 dias para termo fatal)
-2. Frederico Xavier — Abuso de autoridade Art. 13, III
-3. Raphael Lopes — Impronúncia hearsay
-4. Henrique de Moraes — Consunção + 9mm
-5. Osnir Cabeça — Cadeia de custódia Bambam
-6. Brunno de Sena — Falta grave sem apreensão
+1. **[URGENTE]** [NOME_OMITIDO] — Prescrição (300 dias para termo fatal)
+2. [NOME_OMITIDO] — Abuso de autoridade Art. 13, III
+3. [NOME_OMITIDO] — Impronúncia hearsay
+4. [NOME_OMITIDO] — Consunção + 9mm
+5. [NOME_OMITIDO] — Cadeia de custódia [NOME_OMITIDO]
+6. [NOME_OMITIDO] — Falta grave sem apreensão
 
 ### Temas Jurídicos Pendentes de Monitoramento
 
