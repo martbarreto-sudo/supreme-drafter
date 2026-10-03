@@ -30,7 +30,7 @@ on:
   # Dispara apenas quando o PR toca conteúdo auditável (peça jurídica ou código
   # de engine). PRs de site/ferramenta/documentação NÃO acionam o gate — evita
   # falso "REPROVADO" onde não há peça a revisar. Revisão sob demanda continua
-  # disponível por workflow_dispatch e pelo comentário "@gemini-cli /review".
+  # disponível por workflow_dispatch.
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -44,9 +44,6 @@ on:
         description: "Número do PR a revisar (modo manual)"
         required: true
         type: string
-  # Delegação ao Google CLI: comentar "@gemini-cli /review" dispara a revisão.
-  issue_comment:
-    types: [created]
 
 # Princípio do menor privilégio (canon R&T). O workflow só precisa:
 #   - ler o conteúdo do repositório
@@ -65,8 +62,7 @@ concurrency:
 
 jobs:
   # ===========================================================================
-  # PORTÃO DE ENTRADA — só prossegue se for PR, dispatch manual, OU comentário
-  # contendo exatamente o gatilho "@gemini-cli /review".
+  # PORTÃO DE ENTRADA — só prossegue se for PR ou dispatch manual.
   # ===========================================================================
   gate:
     name: Portão de entrada
@@ -80,23 +76,15 @@ jobs:
         id: decisao
         env:
           EVENTO: ${{ github.event_name }}
-          CORPO_COMENTARIO: ${{ github.event.comment.body }}
           PR_DISPATCH: ${{ github.event.inputs.pr_number }}
           PR_EVENTO: ${{ github.event.pull_request.number }}
-          PR_ISSUE: ${{ github.event.issue.number }}
         run: |
-          # Comentário precisa conter o gatilho de delegação ao Google CLI.
           prosseguir="false"
           pr=""
           if [ "$EVENTO" = "pull_request" ]; then
             prosseguir="true"; pr="$PR_EVENTO"
           elif [ "$EVENTO" = "workflow_dispatch" ]; then
             prosseguir="true"; pr="$PR_DISPATCH"
-          elif [ "$EVENTO" = "issue_comment" ]; then
-            # Filtra para o gatilho exato e exige que seja um PR (não issue comum).
-            if echo "$CORPO_COMENTARIO" | grep -qi "@gemini-cli /review"; then
-              prosseguir="true"; pr="$PR_ISSUE"
-            fi
           fi
           echo "prosseguir=$prosseguir" >> "$GITHUB_OUTPUT"
           echo "pr_number=$pr" >> "$GITHUB_OUTPUT"
@@ -341,7 +329,7 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number || github.event.issue.number }}
+          PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number }}
         run: |
           if [ -f relatorio_consolidado.md ]; then
             gh pr comment "$PR_NUMBER" --body-file relatorio_consolidado.md || true
