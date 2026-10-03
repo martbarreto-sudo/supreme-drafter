@@ -2,7 +2,8 @@
 name: auditar-seguranca
 description: Auditoria estática, somente leitura, contra vazamento de credenciais e riscos de cadeia de suprimentos em workflows e dependências. Use quando o usuário pedir revisão de segurança do repositório ou antes de um commit.
 disable-model-invocation: true
-allowed-tools: Read Grep Glob Bash(git ls-files *) Bash(git diff --name-only *)
+allowed-tools: Read Grep Glob Bash(git ls-files *) Bash(git diff --name-only *) Bash(git grep -n -I -E -e *)
+disallowed-tools: Agent
 ---
 
 # Auditoria de segurança e conformidade
@@ -18,6 +19,7 @@ Sem escopo informado, audite o repositório inteiro. Com `alterados`, audite só
 3. O relatório é sensível: descreve brechas ainda abertas. Entregue-o só na conversa. Não o publique em PR, issue ou commit de repositório público.
 4. Não encerre com erro nem interrompa a tarefa por causa de um achado. Todo achado vai para o relatório.
 5. Afirme só o que leu. O que não puder ser verificado estaticamente vai para a seção "Não verificado", marcado `[CONFERIR]`.
+6. Execute você mesmo cada busca, com a expressão exatamente como está escrita aqui. Não delegue a subagentes, não simplifique nem reescreva as expressões. Use a ferramenta Grep; se ela não existir na sessão, use `git grep -n -I -E -e '<expressão>'`. Se uma busca falhar, registre o erro e a expressão em "Não verificado".
 
 ## Onde procurar
 
@@ -35,7 +37,7 @@ Liste os arquivos versionados com `git ls-files --cached` e priorize:
 ### 1. Credenciais
 
 - Arquivos sensíveis versionados: `.env*`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `id_rsa*`, `credentials*.json`, `.npmrc`, `.pypirc`, `.netrc`.
-- Tokens por formato (Grep em todo o repositório):
+- Tokens por formato. Rode esta expressão literal, inteira, em todo o repositório (regra 6):
 
   ```
   sk-ant-[A-Za-z0-9_-]{10,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{35}|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}|xox[baprs]-[A-Za-z0-9-]{10,}|-----BEGIN [A-Z ]*PRIVATE KEY
