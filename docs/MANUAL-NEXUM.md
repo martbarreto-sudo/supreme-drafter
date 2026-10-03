@@ -71,8 +71,9 @@ Resumo (detalhe em [`stack-ia.md`](stack-ia.md)):
 3. Estados do gate (sem falso-reprovado): **NÃO APLICÁVEL** (sem peça) ·
    **INCONCLUSIVO** (provedor não configurado) · **🟢/🔴** (peça auditada).
    Detalhe em [`peer-review-workflow.md`](peer-review-workflow.md).
-- Revisão sob demanda: comentar **`@gemini-cli /review`** no PR, ou
-  *Actions → Peer-Review TIER 0 → Run workflow*.
+- Disparo: automático na abertura ou atualização do PR (`pull_request`). Revisão
+  sob demanda: *Actions → Peer-Review TIER 0 → Run workflow* (`workflow_dispatch`),
+  informando o número do PR; exige permissão de escrita no repositório.
 
 ### 2.6 Validar a esteira localmente (sem credenciais)
 Antes de configurar os provedores no console, dá para **ver o gate funcionando**

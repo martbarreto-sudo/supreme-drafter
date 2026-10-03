@@ -26,8 +26,8 @@ fica refém de um único provedor.
 - `pull_request: [opened, synchronize, reopened]` — **apenas** quando o PR toca
   `pecas/**`, `engine/**` ou `nexum_engine/**`. PRs de site/ferramenta/documentação
   **não** acionam o gate (não há peça a auditar).
-- `workflow_dispatch` com input `pr_number` (botão manual na aba Actions)
-- `issue_comment` filtrado para o texto **`@gemini-cli /review`** (delegação Google CLI)
+- `workflow_dispatch` com input `pr_number` (botão manual na aba Actions; exige
+  permissão de escrita no repositório)
 
 ### Estados do gate (calibração de honestidade)
 O gate distingue três situações — "sem peça" e "provedor ausente" **nunca** são
